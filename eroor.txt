@@ -1,136 +1,38 @@
-<tbody>
-  <tr class="tr-body" *ngFor="let value of data">
-    <!-- Print out the sysLandscape1 value -->
-    <td>{{value.sysLandscape1}}</td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'">
-      <a href="" [routerLink]="'/cr-task'">
-        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-      </a>
-      <i class="fa fa-trash" aria-hidden="true"></i>
-    </td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'">{{value.categoryId}}</td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'">{{value.supportId}}</td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'">{{value.supportId}}</td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'">{{value.supportId}}</td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'">{{value.supportId}}</td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'" class="text-success">Progress</td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'">{{value.createdBy}}</td>
-    <td *ngIf="value.sysLandscape1 === 'Testing'">
-      <img src="assets\image\download1.png" alt="" class="table-photo" />
-    </td>
-  </tr>
-</tbody>
-[
-    {
-        "sysLandscapeId": 1,
-        "supportId": 1,
-        "categoryId": 1,
-        "classificationId": 1,
-        "sysLandscape1": "Development                                       ",
-        "priorityNum": 1,
-        "isActive": true,
-        "createdBy": "120678    ",
-        "createdDt": "2024-01-01T00:00:00",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "category": null,
-        "classification": null,
-        "support": null
-    },
-    {
-        "sysLandscapeId": 2,
-        "supportId": 1,
-        "categoryId": 1,
-        "classificationId": 1,
-        "sysLandscape1": "Testing                                           ",
-        "priorityNum": 2,
-        "isActive": true,
-        "createdBy": "120678    ",
-        "createdDt": "2024-01-01T00:00:00",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "category": null,
-        "classification": null,
-        "support": null
-    },
-    {
-        "sysLandscapeId": 3,
-        "supportId": 1,
-        "categoryId": 1,
-        "classificationId": 1,
-        "sysLandscape1": "Validation                                        ",
-        "priorityNum": 3,
-        "isActive": true,
-        "createdBy": "120678    ",
-        "createdDt": "2024-01-01T00:00:00",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "category": null,
-        "classification": null,
-        "support": null
-    },
-    {
-        "sysLandscapeId": 4,
-        "supportId": 1,
-        "categoryId": 1,
-        "classificationId": 1,
-        "sysLandscape1": "Production                                        ",
-        "priorityNum": 4,
-        "isActive": true,
-        "createdBy": "120678    ",
-        "createdDt": "2024-01-01T00:00:00",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "category": null,
-        "classification": null,
-        "support": null
-    },
-    {
-        "sysLandscapeId": 5,
-        "supportId": 1,
-        "categoryId": 1,
-        "classificationId": 2,
-        "sysLandscape1": "Development                                       ",
-        "priorityNum": 1,
-        "isActive": true,
-        "createdBy": "120678    ",
-        "createdDt": "2024-01-01T00:00:00",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "category": null,
-        "classification": null,
-        "support": null
-    },
-    {
-        "sysLandscapeId": 6,
-        "supportId": 1,
-        "categoryId": 1,
-        "classificationId": 2,
-        "sysLandscape1": "Validation                                        ",
-        "priorityNum": 2,
-        "isActive": true,
-        "createdBy": "120678    ",
-        "createdDt": "2024-01-01T00:00:00",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "category": null,
-        "classification": null,
-        "support": null
-    },
-    {
-        "sysLandscapeId": 7,
-        "supportId": 1,
-        "categoryId": 1,
-        "classificationId": 2,
-        "sysLandscape1": "Production                                        ",
-        "priorityNum": 3,
-        "isActive": true,
-        "createdBy": "120678    ",
-        "createdDt": "2024-01-01T00:00:00",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "category": null,
-        "classification": null,
-        "support": null
-    }
-]
+<!-- Iterate over unique sysLandscape1 values -->
+<ng-container *ngFor="let sysLandscape of data.map(value => value.sysLandscape1.trim()).filter((value, index, self) => self.indexOf(value) === index)">
+  <!-- Filter data for the current sysLandscape1 value -->
+  <ng-container *ngIf="data.filter(value => value.sysLandscape1.trim() === sysLandscape).length > 0">
+    <!-- Display table heading for the current sysLandscape1 value -->
+    <h2>{{sysLandscape}}</h2>
+    <!-- Display table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Category ID</th>
+          <th>Support ID</th>
+          <th>Support ID</th>
+          <th>Support ID</th>
+          <th>Support ID</th>
+          <th class="text-success">Progress</th>
+          <th>Created By</th>
+          <th>Image</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Iterate over data for the current sysLandscape1 value -->
+        <tr class="tr-body" *ngFor="let value of data.filter(value => value.sysLandscape1.trim() === sysLandscape)">
+          <td>{{value.categoryId}}</td>
+          <td>{{value.supportId}}</td>
+          <td>{{value.supportId}}</td>
+          <td>{{value.supportId}}</td>
+          <td>{{value.supportId}}</td>
+          <td class="text-success">Progress</td>
+          <td>{{value.createdBy}}</td>
+          <td>
+            <img src="assets\image\download1.png" alt="" class="table-photo" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-container>
+</ng-container>
