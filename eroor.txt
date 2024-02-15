@@ -1,0 +1,27 @@
+ <tbody>
+   
+   
+     <tr class="tr-body" *ngFor="let value of data">
+       <td>
+         <a href="" [routerLink]="'/cr-task'">
+           <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+         </a>
+         <i class="fa fa-trash" aria-hidden="true"></i>
+       </td>
+       <td>{{value.categoryId}}</td>
+       <td>{{value.supportId}}</td>
+       <td>{{value.supportId}}</td>
+       <td>{{value.supportId}}</td>
+       <td>{{value.supportId}}</td>
+       <td class="text-success">Progress</td>
+       <td>{{value.createdBy}}</td>
+       <td>
+         <img src="assets\image\download1.png" alt="" class="table-photo" />
+       </td>
+      </tr>
+   
+  </tbody>
+
+
+
+i want the {{value.sysLandscape1=="Testing"}} means the rows only show
