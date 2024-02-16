@@ -9,3 +9,8 @@
     src/app/change-request/execute/execute.component.ts:6:15:
       6 │   templateUrl: './execute.component.html',
         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+get filteredItems(): any[] {
+    return this.items.filter(item => item.sysLandscape1.trim() === this.selectedCategory.trim());
+  }
