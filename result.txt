@@ -1,23 +1,30 @@
-<Select class="" name="category" [(ngModel)]="selectedCategory">
-  <option>Development</option>
-  <option>Quality</option>
-  <option>Validation</option>
-  <option>Production</option>
-</Select>
+import { HttpClient } from '@angular/common/http';
 
-<!-- Assuming your items are stored in a variable called 'items' -->
-<div *ngFor="let item of filteredItems">
-  {{ item.sysLandscape1 }}
-</div>
-
-
-// In your component file
 export class YourComponent {
-  selectedCategory: string; // Variable to store the selected category
-  items: any[] = [...]; // Your array of items
+  data: any = [];
+  items: any[] = [];
+  selectedCategory: string = ''; 
 
-  get filteredItems() {
+  constructor(private http: HttpClient) {
+    this.getData();
+  }
+
+  getData() {
+    const apiUrl = 'https://localhost:7236/api/SystemLandscape';
+    this.http.get(apiUrl).subscribe(
+      (response: any) => {
+        console.log(response);
+        this.data = response;
+        this.filterItems(); // Filter items after fetching data
+      },
+      (error: any) => {
+        console.error('GET request failed', error);
+      }
+    );
+  }
+
+  filterItems() {
     // Filter the items based on the selected category
-    return this.items.filter(item => item.sysLandscape1.trim() === this.selectedCategory.trim());
+    this.items = this.data.filter(item => item.sysLandscape1.trim() === this.selectedCategory.trim());
   }
 }
