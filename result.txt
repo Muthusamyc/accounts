@@ -1,12 +1,43 @@
-X [ERROR] NG4: This expression is not callable because it is a 'get' accessor. Did you mean to use it without '()'?
-  Type 'any[]' has no call signatures. [plugin angular-compiler]
+ilteredData: any;
 
-    src/app/change-request/execute/execute.component.html:940:84:
-      940 │ ...egory" [(ngModel)]="selectedCategory" (change)="filteredItems()">
-          ╵                                                    ~~~~~~~~~~~~~
+  constructor() { }
 
-  Error occurs in the template of component ExecuteComponent.
+  ngOnInit(): void {
+  }
 
-    src/app/change-request/execute/execute.component.ts:6:15:
-      6 │   templateUrl: './execute.component.html',
-        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  filterData(event: any) {
+    const selectedLandscape = event.target.value;
+    if (selectedLandscape) {
+      this.filteredData = this.data.find(row => row.sysLandscape1 === selectedLandscape);
+    } else {
+      this.filteredData = null;
+    }
+  }
+  
+  
+}
+
+The above is ts file and below is html:
+
+<select (change)="filterData($event)">
+  <option selected hidden disabled value="">Select Landscape</option>
+  <option *ngFor="let row of data" [value]="row.sysLandscape1">{{ row.sysLandscape1 }}</option>
+</select>
+
+<div *ngIf="filteredData">
+  <h2>{{ filteredData.sysLandscape1 }}</h2>
+  <table class="table-bordered">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Support</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ filteredData.sysLandscapeId }}</td>
+        <td>{{ filteredData.priorityNum }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
