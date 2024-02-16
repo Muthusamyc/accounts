@@ -1,50 +1,23 @@
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-your-component',
-  templateUrl: './your-component.component.html',
-  styleUrls: ['./your-component.component.css']
-})
-export class YourComponent {
-  selectedCategory: string = 'development'; // Default selected category
-  data: any[] = []; // Your original data array
-  filteredData: any[] = []; // Array to hold filtered results
-
-  constructor() {
-    // Assign your original data array to the filteredData array initially
-    this.filteredData = this.data.filter(item => item.sysLandscape1.trim().toLowerCase() === this.selectedCategory.trim().toLowerCase());
-  }
-
-  // Function to filter data based on selected category
-  filterData() {
-    this.filteredData = this.data.filter(item => item.sysLandscape1.trim().toLowerCase() === this.selectedCategory.trim().toLowerCase());
-  }
-}
-
-
-<Select class="" name="category" [(ngModel)]="selectedCategory" (ngModelChange)="filterData()">
-  <option>Select Category</option>
-  <option value="Development">Development</option>
-  <option value="Testing">Testing</option>
-  <option value="Validation">Validation</option>
-  <option value="Production">Production</option>
+<Select class="" name="category" [(ngModel)]="selectedCategory">
+  <option>Development</option>
+  <option>Quality</option>
+  <option>Validation</option>
+  <option>Production</option>
 </Select>
 
-<!-- Your table -->
-<table class="fl-table">
-  <!-- Table headers -->
-  <thead class="table-head">
-    <!-- Table body -->
-    <tbody>
-      <!-- Iterate over filtered data -->
-      <ng-container *ngFor="let value of filteredData">
-        <tr class="tr-body">
-          <!-- Render table cells -->
-          <td>{{ value.sysLandscapeId }}</td>
-          <td>{{ value.supportId }}</td>
-          <!-- Add more td for other properties -->
-        </tr>
-      </ng-container>
-    </tbody>
-  </thead>
-</table>
+<!-- Assuming your items are stored in a variable called 'items' -->
+<div *ngFor="let item of filteredItems">
+  {{ item.sysLandscape1 }}
+</div>
+
+
+// In your component file
+export class YourComponent {
+  selectedCategory: string; // Variable to store the selected category
+  items: any[] = [...]; // Your array of items
+
+  get filteredItems() {
+    // Filter the items based on the selected category
+    return this.items.filter(item => item.sysLandscape1.trim() === this.selectedCategory.trim());
+  }
+}
