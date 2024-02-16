@@ -109,3 +109,8 @@ getData() {
 }
 
 it not working
+
+ Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/change-request/execute/execute.component.ts:100:34:
+      100 │ ...his.items = this.data.filter(item => item.sysLandscape1.trim()...
