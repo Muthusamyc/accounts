@@ -1,8 +1,37 @@
-ilteredData: any;
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-pages',
+  templateUrl: './pages.component.html',
+  styleUrls: ['./pages.component.scss']
+})
+export class PagesComponent implements OnInit {
+
+  data: any[] = [
+    {
+        "sysLandscapeId": 1,
+        "supportId": 1,
+        "categoryId": 1,
+        "classificationId": 1,
+        "sysLandscape1": "Development"
+    },
+    {
+        "sysLandscapeId": 2,
+        "supportId": 1,
+        "categoryId": 1,
+        "classificationId": 1,
+        "sysLandscape1": "Testing"
+    },
+    // Add more data objects as needed
+  ];
+
+  filteredData: any;
+  uniqueLandscapes: string[];
 
   constructor() { }
 
   ngOnInit(): void {
+    this.uniqueLandscapes = this.getUniqueLandscapes();
   }
 
   filterData(event: any) {
@@ -13,31 +42,16 @@ ilteredData: any;
       this.filteredData = null;
     }
   }
-  
-  
+
+  private getUniqueLandscapes(): string[] {
+    const uniqueValues = new Set<string>();
+    this.data.forEach(row => uniqueValues.add(row.sysLandscape1.trim()));
+    return Array.from(uniqueValues);
+  }
 }
 
-The above is ts file and below is html:
-
+//html code
 <select (change)="filterData($event)">
   <option selected hidden disabled value="">Select Landscape</option>
-  <option *ngFor="let row of data" [value]="row.sysLandscape1">{{ row.sysLandscape1 }}</option>
+  <option *ngFor="let landscape of uniqueLandscapes" [value]="landscape">{{ landscape }}</option>
 </select>
-
-<div *ngIf="filteredData">
-  <h2>{{ filteredData.sysLandscape1 }}</h2>
-  <table class="table-bordered">
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th>Support</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>{{ filteredData.sysLandscapeId }}</td>
-        <td>{{ filteredData.priorityNum }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
