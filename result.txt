@@ -1,16 +1,12 @@
- [ERROR] NG2: Type '() => void' is not assignable to type 'NgIterable<any> | null | undefined'. [plugin angular-compiler]
+X [ERROR] NG4: This expression is not callable because it is a 'get' accessor. Did you mean to use it without '()'?
+  Type 'any[]' has no call signatures. [plugin angular-compiler]
 
-    src/app/change-request/execute/execute.component.html:985:44:
-      985 │ ...         <tr *ngFor="let value of filteredItems" class="tr-body">
-          ╵                                   ~~
+    src/app/change-request/execute/execute.component.html:940:84:
+      940 │ ...egory" [(ngModel)]="selectedCategory" (change)="filteredItems()">
+          ╵                                                    ~~~~~~~~~~~~~
 
   Error occurs in the template of component ExecuteComponent.
 
     src/app/change-request/execute/execute.component.ts:6:15:
       6 │   templateUrl: './execute.component.html',
         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-get filteredItems(): any[] {
-    return this.items.filter(item => item.sysLandscape1.trim() === this.selectedCategory.trim());
-  }
