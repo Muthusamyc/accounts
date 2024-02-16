@@ -1,71 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+ [ERROR] NG2: Type '() => void' is not assignable to type 'NgIterable<any> | null | undefined'. [plugin angular-compiler]
 
-export class YourComponent {
-  data: any = [];
-  items: any[] = [];
-  selectedCategory: string = ''; 
+    src/app/change-request/execute/execute.component.html:985:44:
+      985 │ ...         <tr *ngFor="let value of filteredItems" class="tr-body">
+          ╵                                   ~~
 
-  constructor(private http: HttpClient) {
-    this.getData();
-  }
+  Error occurs in the template of component ExecuteComponent.
 
-  getData() {
-    const apiUrl = 'https://localhost:7236/api/SystemLandscape';
-    this.http.get(apiUrl).subscribe(
-      (response: any) => {
-        console.log(response);
-        this.data = response;
-        this.filterItems(); // Filter items after fetching data
-      },
-      (error: any) => {
-        console.error('GET request failed', error);
-      }
-    );
-  }
-
-  filterItems() {
-    // Filter the items based on the selected category
-    this.items = this.data.filter(item => item.sysLandscape1.trim() === this.selectedCategory.trim());
-  }
-}
-
-<table class="fl-table">
-  <thead class="table-head">
-    <tr class="border-bottom">
-      <th>Actions</th>
-      <th>Health</th>
-      <th>Task #</th>
-      <th>Tasks</th>
-      <th>Planned Start Date</th>
-      <th>Planned End Date</th>
-      <th>Status</th>
-      <th>Assigned To</th>
-      <th>Forwarded To</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Iterate over filteredItems and display each item in a table row -->
-    <tr *ngFor="let value of filteredItems" class="tr-body">
-      <td>
-        <a href="" [routerLink]="'/cr-task'">
-          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        </a>
-        <i class="fa fa-trash" aria-hidden="true"></i>
-      </td>
-      <td>
-        <i class="fa fa-circle" style="font-size: medium; color: red"></i>
-      </td>
-      <td>{{ value.supportId }}</td>
-      <td>{{ value.support }}</td>
-      <td>{{ value.supportId }}</td>
-      <td>{{ value.supportId }}</td>
-      <td>{{ value.supportId }}</td>
-      <td class="text-success">Progress</td>
-      <td>{{ value.createdBy }}</td>
-      <td>
-        <img src="assets\image\download1.png" alt="" class="table-photo" />
-      </td>
-    </tr>
-  </tbody>
-</table>
-
+    src/app/change-request/execute/execute.component.ts:6:15:
+      6 │   templateUrl: './execute.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~
