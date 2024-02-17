@@ -1,4 +1,4 @@
- <select (change)="filterData($event)">
+   <select (change)="filterData($event)">
    <option selected hidden disabled value="">Select Landscape</option>
    <option *ngFor="let row of data" [value]="row.sysLandscape1">{{ row.sysLandscape1 }}</option>
  </select>
@@ -117,3 +117,43 @@
      this.filteredData = null;
    }
  }
+
+
+
+
+<table *ngIf="filteredData && filteredData.length > 0" class="fl-table">
+  <thead class="table-head">
+    <tr class="border-bottom">
+      <th>Actions</th>
+      <th>Health</th>
+      <th>Task #</th>
+      <th>Tasks</th>
+      <th>Planned Start Date</th>
+      <th>Planned End Date</th>
+      <th>Status</th>
+      <th>Assigned To</th>
+      <th>Forwarded To</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of filteredData" class="tr-body">
+      <td>
+        <a href="" [routerLink]="'/cr-task'">
+          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+        <i class="fa fa-trash" aria-hidden="true"></i>
+      </td>
+      <td>
+        <i class="fa fa-circle" style="font-size: medium; color: red"></i>
+      </td>
+      <td>{{ item.taskNumber }}</td>
+      <td>{{ item.tasks }}</td>
+      <td>{{ item.plannedStartDate }}</td>
+      <td>{{ item.plannedEndDate }}</td>
+      <td>{{ item.status }}</td>
+      <td>{{ item.assignedTo }}</td>
+      <td>{{ item.forwardedTo }}</td>
+    </tr>
+  </tbody>
+</table>
+
