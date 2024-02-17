@@ -1,32 +1,147 @@
-value: any[] = [];
-  filteredData: any[] = [];
+import { Component, OnInit } from '@angular/core';
 
-  constructor(private http: HttpClient) { }
-
-  ngOnInit(): void {
-    this.getvalue();
-  }
-
-  getvalue() {
-    const apiUrl = 'https://localhost:7236/api/Crexecute/GetExecute';
-    const requestBody = {};
-
-    this.http.get(apiUrl, requestBody).subscribe(
-      (response: any) => {
-        console.log(response);
-        this.value = response;
-      },
-      (error: any) => {
-        console.error('GET request failed', error);
-      }
-    );
-  }
-
-  filterData(event: any) {
-    const selectedLandscape = event.target.value;
-    if (selectedLandscape) {
-      this.filteredData = this.value.filter((row: any) => row.sysLandscape === selectedLandscape);
-    } else {
-      this.filteredData = [];
+@Component({
+  selector: 'app-pages',
+  templateUrl: './pages.component.html',
+  styleUrls: ['./pages.component.scss']
+})
+export class PagesComponent implements OnInit {
+  data: any[]=[
+    {
+        "itcrexecId": 2,
+        "itcrid": 1,
+        "sysLandscape": 1,
+        "executionStepName": "jjd       ",
+        "executionStepDesc": "Testing",
+        "assignedTo": null,
+        "startDt": null,
+        "endDt": null,
+        "attachments": null,
+        "status": null,
+        "forwardedTo": null,
+        "forwardedDt": null,
+        "pickedDt": null,
+        "actualStartDt": null,
+        "actualEndDt": null,
+        "createdBy": null,
+        "createdDt": "2024-02-12T11:44:46.38",
+        "modifiedBy": null,
+        "modifiedDt": "2024-02-12T16:47:57.81",
+        "itcr": null
+    },
+    {
+        "itcrexecId": 7,
+        "itcrid": 1,
+        "sysLandscape": 2,
+        "executionStepName": "mmm       ",
+        "executionStepDesc": null,
+        "assignedTo": null,
+        "startDt": null,
+        "endDt": null,
+        "attachments": null,
+        "status": null,
+        "forwardedTo": null,
+        "forwardedDt": null,
+        "pickedDt": null,
+        "actualStartDt": null,
+        "actualEndDt": null,
+        "createdBy": null,
+        "createdDt": "2024-02-12T11:09:38.623",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "itcr": null
+    },
+    {
+        "itcrexecId": 32,
+        "itcrid": 1,
+        "sysLandscape": 1,
+        "executionStepName": "qqq       ",
+        "executionStepDesc": "Error",
+        "assignedTo": null,
+        "startDt": null,
+        "endDt": null,
+        "attachments": null,
+        "status": null,
+        "forwardedTo": null,
+        "forwardedDt": null,
+        "pickedDt": null,
+        "actualStartDt": null,
+        "actualEndDt": null,
+        "createdBy": null,
+        "createdDt": "2024-02-12T15:33:46.98",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "itcr": null
+    },
+    {
+        "itcrexecId": 66,
+        "itcrid": 44,
+        "sysLandscape": 3,
+        "executionStepName": "44        ",
+        "executionStepDesc": null,
+        "assignedTo": null,
+        "startDt": null,
+        "endDt": null,
+        "attachments": null,
+        "status": null,
+        "forwardedTo": null,
+        "forwardedDt": null,
+        "pickedDt": null,
+        "actualStartDt": null,
+        "actualEndDt": null,
+        "createdBy": null,
+        "createdDt": "2024-02-12T15:25:35.943",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "itcr": null
     }
+]
+filteredData: any[] = [];
+landscapeOptions: number[] = [];
+
+constructor() { }
+
+ngOnInit(): void {
+  // Extract unique sysLandscape values from data
+  this.landscapeOptions = this.data.map(item => item.sysLandscape)
+                                   .filter((value, index, self) => self.indexOf(value) === index);
+}
+
+filterData(event: any) {
+  const selectedLandscape = event.target.value;
+  if (selectedLandscape) {
+    this.filteredData = this.data.filter((row: any) => row.sysLandscape == selectedLandscape);
+  } else {
+    this.filteredData = this.data;
   }
+}
+
+  
+  
+}
+
+The above is my ts and below is my html:
+
+<div>
+  <select (change)="filterData($event)">
+    <option selected hidden disabled value="">Select Landscape</option>
+    <option *ngFor="let landscape of landscapeOptions" [value]="landscape">{{ landscape }}</option>
+  </select>
+
+  <table *ngIf="filteredData.length > 0" class="fl-table table-bordered">
+    <thead class="table-head">
+      <tr class="border-bottom">
+        <th>ITC Rid</th>
+        <th>Execution StepName</th>
+        <th>Sys Landscape</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of filteredData" class="tr-body">
+        <td>{{ row.itcrid }}</td>
+        <td>{{ row.executionStepName }}</td>
+        <td>{{ row.sysLandscape }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
