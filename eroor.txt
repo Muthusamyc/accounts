@@ -1,53 +1,32 @@
-filteredData: any[] = [];
+value: any[] = [];
+  filteredData: any[] = [];
 
-filterData(event: any) {
-  const selectedLandscape = event.target.value;
-  if (selectedLandscape) {
-    this.filteredData = this.value.filter((row: any) => row.sysLandscape === selectedLandscape);
-  } else {
-    this.filteredData = [];
+  constructor(private http: HttpClient) { }
+
+  ngOnInit(): void {
+    this.getvalue();
   }
-}
 
+  getvalue() {
+    const apiUrl = 'https://localhost:7236/api/Crexecute/GetExecute';
+    const requestBody = {};
 
-<select (change)="filterData($event)">
-  <option selected hidden disabled value="">Select Landscape</option>
-  <option [value]="1">Development</option>
-  <option [value]="2">Testing</option>
-</select>
+    this.http.get(apiUrl, requestBody).subscribe(
+      (response: any) => {
+        console.log(response);
+        this.value = response;
+      },
+      (error: any) => {
+        console.error('GET request failed', error);
+      }
+    );
+  }
 
-<table *ngIf="filteredData.length > 0" class="fl-table">
-  <thead class="table-head">
-    <tr class="border-bottom">
-      <th>Actions</th>
-      <th>Health</th>
-      <th>Task #</th>
-      <th>Tasks</th>
-      <th>Planned Start Date</th>
-      <th>Planned End Date</th>
-      <th>Status</th>
-      <th>Assigned To</th>
-      <th>Forwarded To</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of filteredData" class="tr-body">
-      <td>
-        <a href="" [routerLink]="'/cr-task'">
-          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        </a>
-        <i class="fa fa-trash" aria-hidden="true"></i>
-      </td>
-      <td>
-        <i class="fa fa-circle" style="font-size: medium; color: red"></i>
-      </td>
-      <td>{{ item.taskNumber }}</td>
-      <td>{{ item.tasks }}</td>
-      <td>{{ item.plannedStartDate }}</td>
-      <td>{{ item.plannedEndDate }}</td>
-      <td>{{ item.status }}</td>
-      <td>{{ item.assignedTo }}</td>
-      <td>{{ item.forwardedTo }}</td>
-    </tr>
-  </tbody>
-</table>
+  filterData(event: any) {
+    const selectedLandscape = event.target.value;
+    if (selectedLandscape) {
+      this.filteredData = this.value.filter((row: any) => row.sysLandscape === selectedLandscape);
+    } else {
+      this.filteredData = [];
+    }
+  }
