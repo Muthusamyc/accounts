@@ -1,116 +1,22 @@
-<Select class="" name="category" [(ngModel)]="selectedCategory">
-  <option>Development</option>
-  <option>Quality</option>
-  <option>Validation</option>
-  <option>Production</option>
-</Select>
-<div class="tab-content" id="nav-tabContent">
-  <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-    <div class="execute_container_implement">
-      <div>
-        <h1 class="h1tag">Development Implementation Plan</h1>
-        <br />
-        <table>
-          <tr>
-            <td><label>Manual</label></td>
-            <td><input type="radio" id="manual" name="execute" value="self" ngModel></td>
-            <td><label>Predefined Task</label></td>
-            <td><input type="radio" id="manual" name="execute" value="self" ngModel></td>
-            <td><label>Choose Task from Category :</label></td>
-            <td class="option_implment">
-              <Select class="" name="category">
-                <option>Select Category</option>
-                <option>Server</option>
-                <option>Network</option>
-              </Select>
-            </td>
-            <td><button class="implement-button">Load Task</button></td>
-          </tr>
-        </table>
-        <table class="fl-table">
-          <thead class="table-head">
-            <tr class="border-bottom">
-              <th>Actions</th>
-              <th>Health</th>
-              <th>Task #</th>
-              <th>Tasks</th>
-              <th>Planned Start Date</th>
-              <th>Planned End Date</th>
-              <th>Status</th>
-              <th>Assigned To</th>
-              <th>Forwarded To</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Iterate over data for the current sysLandscape1 value -->
-            <ng-container *ngFor="let value of filteredItems">
-              <tr class="tr-body" >
-                <td>
-                  <a href="" [routerLink]="'/cr-task'">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                  </a>
-                  <i class="fa fa-trash" aria-hidden="true"></i>
-                </td>
-                <td>
-                  <i class="fa fa-circle" style="font-size: medium; color: red"></i>
-                </td>
-                <td>{{value.supportId}}</td>
-                <td>{{value.support}}</td>
-                <td>{{value.supportId}}</td>
-                <td>{{value.supportId}}</td>
-                <td>{{value.supportId}}</td>
-                <td class="text-success">Progress</td>
-                <td>{{value.createdBy}}</td>
-                <td>
-                  <img src="assets\image\download1.png" alt="" class="table-photo" />
-                </td>
-              </tr>
-            </ng-container>
-           
-          </tbody>
-        </table>
+<select (change)="filterData($event)">
+  <option selected hidden disabled value="">Select Landscape</option>
+  <option *ngFor="let row of data" [value]="row.sysLandscape1">{{ row.sysLandscape1 }}</option>
+</select>
 
-      </div>
-
-      <br />
-      <button class="implement-button" [routerLink]="'/cr-task'">
-        <i class="fa fa-plus"></i>Add New Task
-      </button>
-    </div>
-  </div>
+<div *ngIf="filteredData">
+  <h2>{{ filteredData.sysLandscape1 }}</h2>
+  <table class="table-bordered">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Support</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ filteredData.sysLandscapeId }}</td>
+        <td>{{ filteredData.priorityNum }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
-
-data: any = '';
-type: any = '';
-items: any[] = this.data;
-selectedCategory: string = ''; 
-get filteredItems() {
-  // Filter the items based on the selected category
-  return this.items.filter(item => item.sysLandscape1.trim() === this.selectedCategory.trim());
-}
-getData() {
-
-    const apiUrl = 'https://localhost:7236/api/SystemLandscape';
-    const requestBody = {
-      
-    }
-
-    this.http.get(apiUrl, requestBody).subscribe(
-      (response: any) => {
-        console.log(response);
-        this.data = response;
-        
-        console.log(this.type);
-      },
-      (error: any) => {
-        console.error('POST request failed', error);
-      });
-  
-}
-
-it not working
-
- Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
-
-    src/app/change-request/execute/execute.component.ts:100:34:
-      100 │ ...his.items = this.data.filter(item => item.sysLandscape1.trim()...
