@@ -1,159 +1,1430 @@
-   <select (change)="filterData($event)">
-   <option selected hidden disabled value="">Select Landscape</option>
-   <option *ngFor="let row of data" [value]="row.sysLandscape1">{{ row.sysLandscape1 }}</option>
- </select>
- <div class="tab-content" id="nav-tabContent">
-   <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-     <div class="execute_container_implement">
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { debug } from 'console';
 
-       <div *ngIf="dropdata">
-         <h1 class="h1tag">{{ filteredData.sysLandscape1}} Implementation Plan</h1>
-         <br />
-         <table>
-           <tr>
-             <td><label>Manual</label></td>
-             <td><input type="radio" id="manual" name="execute" value="self" ngModel></td>
-             <td><label>Predefined Task</label></td>
-             <td><input type="radio" id="manual" name="execute" value="self" ngModel></td>
-             <td><label>Choose Task from Category :</label></td>
-             <td class="option_implment">
-               <Select class="" name="category">
-                 <option>Select Category</option>
-                 <option>Server</option>
-                 <option>Network</option>
-               </Select>
-             </td>
-             <td><button class="implement-button">Load Task</button></td>
-           </tr>
-         </table>
-         <table class="fl-table">
-           <thead class="table-head">
-             <tr class="border-bottom">
-               <th>Actions</th>
-               <th>Health</th>
-               <th>Task #</th>
-               <th>Tasks</th>
-               <th>Planned Start Date</th>
-               <th>Planned End Date</th>
-               <th>Status</th>
-               <th>Assigned To</th>
-               <th>Forwarded To</th>
-             </tr>
-           </thead>
-           <tbody>
-             <!-- Iterate over filteredItems and display each item in a table row -->
-             <tr class="tr-body">
-               <td>
-                 <a href="" [routerLink]="'/cr-task'">
-                   <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                 </a>
-                 <i class="fa fa-trash" aria-hidden="true"></i>
-               </td>
-               <td>
-                 <i class="fa fa-circle" style="font-size: medium; color: red"></i>
-               </td>
-               <td>{{ filteredData.sysLandscape1 }}</td>
-               <td>{{ filteredData.priorityNum }}</td>
-               <td>{{ filteredData.priorityNum }}</td>
-               <td></td>
-               <td>
-                 <img src="assets\image\download1.png" alt="" class="table-photo" />
-               </td>
-             </tr>
-           </tbody>
-         </table>
-       </div>
+@Component({
+  selector: 'app-execute',
+  templateUrl: './execute.component.html',
+  styleUrls: ['./execute.component.css']
+})
+export class ExecuteComponent {
+  showInitiator: boolean = false;
+  showRiskQ: boolean = false;
+  tabs: any[] = [];
+  numberOfTabs: number = 1;
+  plantData: any[] = [];
+  status: any = '';
+  approver: any = '';
+  appdate: any = '';
+  attach: any = '';
+  remark: any = '';
+  comment: any = '';
 
-       <br />
-       <button class="implement-button" [routerLink]="'/cr-task'">
-         <i class="fa fa-plus"></i>Add New Task
-       </button>
-     </div>
-   </div>
- </div>
- getData() {
-     const apiUrl = 'https://localhost:7236/api/SystemLandscape';
-     const requestBody = {
-       
-     }
+  constructor(private http: HttpClient) {}
 
-     this.http.get(apiUrl, requestBody).subscribe(
-       (response: any) => {
-         console.log(response);
-         this.data = response;
-         
-         console.log(this.type);
-       },
-       (error: any) => {
-         console.error('POST request failed', error);
-       });
-   
- }
- value: any[] = [];
- getvalue() {
-   const apiUrl = 'https://localhost:7236/api/Crexecute/GetExecute';
-   const requestBody = {
+  toggleInitiatorFields() {
+    this.showInitiator = !this.showInitiator;
+  }
 
-   }
+  toggleField() {
+    this.showRiskQ = !this.showRiskQ;
+  }
 
-   this.http.get(apiUrl, requestBody).subscribe(
-     (response: any) => {
-       console.log(response);
-       this.value = response;
+  toggleCollapsible(content: HTMLDivElement): void {
+    content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+  }
 
-       console.log(this.value);
-     },
-     (error: any) => {
-       console.error('POST request failed', error);
-     });
+  addMore() {
+    this.plantData.push({
+      selectPlant: '',
+      controlNumber: '',
+      controlDate: '',
+      attachment: null
+    });
+  }
 
- }
- filterData(event: any) {
-   debugger
-   const selectedLandscape = event.target.value;
-   if (selectedLandscape) {
-     this.filteredData = this.value.find((row: any) => row.sysLandscape === selectedLandscape);
-   } else {
-     this.filteredData = null;
-   }
- }
+  toggleInitiatorField(index: number) {
+    this.tabs[index].showInitiator = !this.tabs[index].showInitiator;
+  }
+
+  removeTab() {
+    if (this.tabs.length > 0) {
+      this.tabs.pop();
+    }
+  }
+
+  update(index: number) {
+    // Implement the update logic here
+  }
+
+  delete(index: number) {
+    this.plantData.splice(index, 1);
+  }
+
+  handleFileInput(event: any, index: number) {
+    const file = event.target.files[0];
+    this.plantData[index].attachment = file;
+  }
+  uniqueLandscapes: string[]=[];
+  ngOnInit(): void{
+    
+    this.getvalue();
+  };
+  type: any = '';
+  data: any = [];
+  items: any[] = [];
+  selectedCategory: string = '';
+  filteredData: any;
+
+  
+  value: any[] = [];
+  getvalue() {
+    const apiUrl = 'https://localhost:7236/api/Crexecute/GetExecute';
+    const requestBody = {
+
+    }
+
+    this.http.get(apiUrl, requestBody).subscribe(
+      (response: any) => {
+        console.log(response);
+        this.data = response;
+
+        console.log(this.value);
+      },
+      (error: any) => {
+        console.error('POST request failed', error);
+      });
+
+  }
+  filterData(event: any) {
+    debugger
+    const selectedLandscape = event.target.value;
+    if (selectedLandscape) {
+      this.filteredData = this.data.find((row: any) => row.sysLandscape === selectedLandscape);
+    } else {
+      this.filteredData = null;
+    }
+  }
+  
+}
 
 
+//html page
+
+<app-side-bar></app-side-bar>
+<app-header></app-header>
+<!-- error -->
+<!-- <ul class="breadcrumb-top">
+  <li><a href="#">Home</a></li>
+  <li class="deskpoint" [routerLink]="'/helpdesk'">Change Request</li>
+</ul> -->
+<app-common></app-common>
+<div class="container-home">
+  <br />
+  <br />
+  <div class="tab-implement">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button"
+                role="tab" aria-controls="home" aria-selected="true">
+          RFC
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button"
+                role="tab" aria-controls="profile" aria-selected="false">
+          Approval
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+                role="tab" aria-controls="contact" aria-selected="false">
+          Execute
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                role="tab" aria-controls="history" aria-selected="false">
+          History
+        </button>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <!-- Tab One -->
+      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <!-- <app-new-change-request></app-new-change-request> -->
+        <!-- remove content  -->
+        <div class="execute_container_field_line">
+          <h3>Change Initiation</h3>
+          <!-- bootstrap -->
+          <div class="border-rfc-heading">
+            <div class="row mt-3">
+              <div class="col">
+                <label>CR #</label>
+                <input type="text" placeholder="ML20202401CR0001" readonly />
+              </div>
+              <div class="col">
+                <label>Change Owner</label>
+                <input type="text" placeholder="John" readonly />
+              </div>
+              <div class="col">
+                <label>Initiator</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col">
+                <label style="display: inline;
+        margin-left: -110px "><input style="margin-right: -42%;" type="checkbox">Same Change Owner</label>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col">
+                <label>RFC Date</label>
+                <input type="date" placeholder="" />
+              </div>
+              <div class="col">
+                <label>Plant</label>
+                <select>
+                  <option value="" disabled selected>Select Plant</option>
+                  <option>ML01</option>
+                  <option>ML02</option>
+                  <option>ML03</option>
+                  <option>ML04</option>
+                  <option>ML05</option>
+                  <option>ML06</option>
+                  <option>ML07</option>
+                  <option>ML08</option>
+                </select>
+              </div>
+              <div class="col">
+                <label>Reference</label>
+                <select>
+                  <option value="" disabled selected>Select Reference</option>
+                  <option>Project</option>
+                  <option>Task</option>
+                </select>
+              </div>
+              <div class="col">
+                <label>Reference Type</label>
+                <input type="text" placeholder="" />
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col">
+                <label>Classifications/Change type</label>
+                <select aria-placeholder="select">
+                  <option value="" disabled selected>
+                    Select Classifications
+                  </option>
+                  <option></option>
+                  <option>Major</option>
+                  <option>Standard</option>
+                  <option>Minor</option>
+                  <option>Emergency</option>
+                </select>
+              </div>
+              <div class="col">
+                <label>Category</label>
+                <select>
+                  <option value="" disabled selected>Select Category</option>
+                  <option>Servers</option>
+                  <option>Network</option>
+                  <option>Security</option>
+                  <option>Inhouse Development</option>
+                  <option>SAP</option>
+                  <option>Software</option>
+                  <option>Desktop/Laptop</option>
+                  <option>Printers</option>
+                </select>
+              </div>
+              <div class="col">
+                <label>Category Type</label>
+                <select>
+                  <option value="" disabled selected>
+                    Select Category Type
+                  </option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                </select>
+              </div>
+              <div class="col">
+                <label>Nature of Change</label>
+                <select>
+                  <option value="" disabled selected>
+                    Select Nature of Change
+                  </option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                </select>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col">
+                <label>Impact</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col">
+                <label>Urgency</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col">
+                <label>Risk</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col">
+                <label>Priority</label>
+                <input type="text" placeholder="" />
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-3">
+                <label>Change Requested By</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col-3">
+                <label>Change Requested On</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col-3">
+                <label>Change Triggered By</label>
+                <select>
+                  <option value="" disabled selected>
+                    Select Change Triggered By
+                  </option>
+                  <option></option>
+                  <option>Compliance</option>
+                  <option>Commercial</option>
+                  <option>Statutory</option>
+                  <option>Legal</option>
+                  <option>SAP</option>
+                  <option>Business Requirements</option>
+                  <option>Efficiency/Productivity</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System landscape start-->
+        <div class="execute_container_field_line">
+          <h3>System landscape</h3>
+          <div class="row row_landscape">
+            <div class="col"><input type="checkbox"></div>
+            <div class="col system_landscape">Development</div>
+            <div class="col"><input type="checkbox"></div>
+            <div class="col system_landscape">Quality</div>
+            <div class="col"><input type="checkbox"></div>
+            <div class="col system_landscape">Validation</div>
+            <div class="col"><input type="checkbox"></div>
+            <div class="col system_landscape">Production</div>
+            <div class="col"><input type="checkbox"></div>
+            <div class="col system_landscape">Live</div>
+          </div>
+        </div>
+        <!-- System landscape end-->
+        <!-- System landscape -->
+        <!-- <div class="container-field-line">
+          <h3>System landscape</h3>
+          <div class="card">
+            <div class="card-body">
+              <button type="button" class="landscape_button" (click)="toggleCollapsible(content)">
+                System landscape
+              </button>
+              <div class="content landscape_content" #content>
+                <div class="row landscape_row">
+                  <div class="col-sm">
+                    <label>Development</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+                <div class="row landscape_row">
+                  <div class="col-sm">
+                    <label>Quality</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+                <div class="row landscape_row">
+                  <div class="col-sm">
+                    <label>Production</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+                <div class="row landscape_row">
+                  <div class="col-sm">
+                    <label>Validation</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+                <div class="row landscape_row">
+                  <div class="col-sm">
+                    <label>Live</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <!-- System landscape radio btn -->
+
+        <div class="execute_container_field_1">
+          <h3>Change Overview</h3>
+          <div class="border-rfc-heading">
+            <div>
+              <label>Change Description</label>
+              <textarea class="textarea-implement" cols="160" rows="4" id="area1"></textarea>
+            </div>
+            <div>
+              <label>Reason For Change</label>
+              <textarea class="textarea-implement" cols="160" rows="4" id="area2"></textarea>
+            </div>
+            <div>
+              <label>Alternate Consideration</label>
+              <textarea class="textarea-implement" cols="160" rows="4" id="area3"></textarea>
+            </div>
+            <div>
+              <label>Impact of not doing change</label>
+
+              <textarea class="textarea-implement" cols="160" rows="4" id="area4"></textarea>
+            </div>
+            <div>
+              <label>Benefits of doing change</label>
+
+              <textarea class="textarea-implement" cols="160" rows="4" id="area5"></textarea>
+            </div>
+            <div>
+              <label>Buisness Impact if Change is implemented</label>
+
+              <textarea class="textarea-implement" cols="160" rows="4" id="area6"></textarea>
+            </div>
+            <div>
+              <label>Roll Back Plan</label>
+
+              <textarea class="textarea-implement" cols="160" rows="4" id="area7"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estimate and effort start -->
+        <div class="execute_container_field_line">
+          <h3>Estimate and effort</h3>
+          <div class="border-rfc-heading">
+            <div class="row">
+              <div class="col">
+                <label>Approx Cost</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col">
+                <label>Currency </label>
+                <input type="text" placeholder="INR" />
+              </div>
+              <div class="col">
+                <label>Estimated Effort </label>
+                <input type="text" placeholder="1" />
+              </div>
+              <div class="col">
+                <label>Effort Day(s)/Hour(s) </label>
+                <input type="text" placeholder="Days" />
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col">
+                <label>Expected Date of Completion</label>
+                <input type="date" placeholder="1" />
+              </div>
+              <div class="col">
+              </div>
+              <div class="col">
+              </div>
+              <div class="col">
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col">
+                <label>Is Downtime Required </label>
+                <!-- <input id="Checkbox1" style="margin-top: -6%; margin-left: 46%;" class="checkbox-margin" name="Checkbox1" type="checkbox" (change)="toggleField()" /> -->
+              </div>
+              <div class="col">
+                <input id="Checkbox1" class="checkbox-margin" name="Checkbox1" type="checkbox" (change)="toggleField()" />
+              </div>
+              <div class="col"></div>
+              <div class="col"></div>
+              <div class="col"></div>
+            </div>
+            <div class="row mt-5">
+              <div class="col" *ngIf="showRiskQ">
+                <label>From Date</label>
+                <input type="date" placeholder="" />
+              </div>
+              <div class="col" *ngIf="showRiskQ">
+                <label>End Date</label>
+                <input type="date" placeholder="" />
+              </div>
+              <div class="col" *ngIf="showRiskQ">
+              </div>
+              <div class="col" *ngIf="showRiskQ">
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col" *ngIf="showRiskQ">
+                <label>Impacted Location</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col" *ngIf="showRiskQ">
+                <label>Impacted Department</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col" *ngIf="showRiskQ">
+                <label>Impacted Function</label>
+                <input type="text" placeholder="" />
+              </div>
+              <div class="col" *ngIf="showRiskQ">
+              </div>
+            </div>
+            <div class="row downtime_checklist" *ngIf="showRiskQ">
+              <h3>CheckList</h3>
+              <div class="content-checklist">
+                <div class="container">
+                  <div class="row">
+                    <div class="col">
+                      <div class="row">
+                        <h5 class="checklist_no fonts">Sl.no</h5>
+                      </div>
+                      <div class="row fonts">
+                        1
+                      </div>
+                      <div class="row fonts">
+                        2
+                      </div>
+                      <div class="row fonts">
+                        3
+                      </div>
+                    </div>
+                    <div class="col checklist_task">
+                      <div class="row fonts">
+                        <h5>Tasks</h5>
+                      </div>
+                      <div class="row fonts">
+                        Do you have access
+                      </div>
+                      <div class="row fonts">
+                        Does Changes completed?
+                      </div>
+                      <div class="row fonts">
+                        When the Request Recived?
+                      </div>
+                    </div>
+                    <div class="col">
+                    </div>
+                    <div class="col">
+                    </div>
+                    <div class="col">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estimate and effort end -->
+        <!-- <div class="container-field-line">
+          <h3>Effort & Estimate</h3>
+          <div class="border-inline border-rfc-heading">
+            <div>
+              <label>Approx Cost</label>
+              <input type="text" placeholder="" />
+            </div>
+            <div>
+              <label>Currency </label>
+              <input type="text" placeholder="INR" />
+            </div>
+            <div>
+              <label>Estimated Effort </label>
+              <input type="text" placeholder="1" />
+            </div>
+            <div>
+              <label>Effort Day(s)/Hour(s) </label>
+              <input type="text" placeholder="Days" />
+            </div>
+            <div>
+              <label>Expected Date of Completion</label>
+              <input type="date" placeholder="1" />
+            </div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+            <div>
+              <label>Is Downtime Required </label>
+            </div>
+            <div>
+              <input id="Checkbox1" style="margin-top: -6%; margin-left: -58%;" class="checkbox-margin" name="Checkbox1"
+                type="checkbox" (change)="toggleField()" />
+            </div>
+            <div class="card downtime_card" *ngIf="showRiskQ">
+              <div class="card-body row">
+                <div *ngIf="showRiskQ" class="col-sm">
+                  <label>Start Date</label>
+                  <input type="date" placeholder="" />
+                </div>
+                <div *ngIf="showRiskQ" class="col-sm">
+                  <label>End Date</label>
+                  <input type="date" placeholder="" />
+                </div>
+                <div *ngIf="showRiskQ" class="col-sm">
+                  <label>Impacted Location</label>
+                  <input type="text" placeholder="" />
+                </div>
+                <div *ngIf="showRiskQ" class="col-sm">
+                  <label>Impacted Department</label>
+                  <input type="text" placeholder="" />
+                </div>
+                <div *ngIf="showRiskQ" class="col-sm">
+                  <label>Impacted Function</label>
+                  <input type="text" placeholder="" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <!-- test border -->
+        <!-- <div class="container-field-line">
+          <h3>Schedule</h3>
+          <div class="border-inline border-rfc-heading">
+            <div class="container-line">
+              <label>Is GxP Classification Available</label>
+            </div>
+            <div>
+              <input id="Checkbox1" class="g_p_checkbox" name="Checkbox1" type="checkbox"
+                (change)="toggleInitiatorField()" />
+            </div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+            <div *ngIf="showInitiator">
+              <label>Select Plant</label>
+              <select>
+                <option>Select Plant</option>
+                <option>ML24</option>
+                <option>ML00</option>
+              </select>
+            </div>
+            <div *ngIf="showInitiator">
+              <label>Control #</label>
+              <input type="text" placeholder="" />
+            </div>
+            <div *ngIf="showInitiator">
+              <label>Contol # Date</label>
+              <input type="text" placeholder="" />
+            </div>
+            <div *ngIf="showInitiator">
+              <label>Attachment</label>
+              <input type="file" placeholder="" />
+            </div>
+
+            <div *ngIf="showInitiator">
+              <button class="btn-sub" onclick="addMore()">Add More</button>
+            </div>
+          </div>
+          <div class="submit_change">
+            <button class="btn-sub" type="submit">Submit</button>
+            <button class="btn-sub" type="submit">Clear</button>
+          </div>
+        </div> -->
+        <!-- end remove conten -->
+        <!-- G*p classification -->
+        <!-- <div class="container-field-line-gp">
+          <h3>GxP Classification</h3>
+          <div class="border-inline border-rfc-heading">
+            <div class="container-line">
+              <label>Is GxP Classification Available</label>
+            </div>
+            <div>
+              <input id="Checkbox1" class="g_p_checkbox" name="Checkbox1" type="checkbox" (change)="toggleInitiatorFields()" />
+            </div>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+            <div *ngIf="showInitiator">
+              <label>Select Plant</label>
+              <button type="button" class="landscape_button" (click)="toggleCollapsible(content)">Select-Plant</button>
+              <div class="content landscape_content" #content>
+                <div class="row landscape_row">
+                  <div class="col-sm landscape_data">
+                    <label>ML 01</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+                <div class="row landscape_row">
+                  <div class="col-sm landscape_data">
+                    <label>ML 02</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+                <div class="row landscape_row">
+                  <div class="col-sm landscape_data">
+                    <label>ML 03</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+                <div class="row landscape_row">
+                  <div class="col-sm landscape_data">
+                    <label>ML 04</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+                <div class="row landscape_row">
+                  <div class="col-sm landscape_data">
+                    <label>ML 05</label>
+                  </div>
+                  <div class="col-sm">
+                    <input type="checkbox" class="landscape_input">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="showInitiator">
+              <label>Control #</label>
+              <input type="text" placeholder="" />
+            </div>
+            <div *ngIf="showInitiator">
+              <label>Contol # Date</label>
+              <input type="date" placeholder="" />
+            </div>
+            <div *ngIf="showInitiator">
+              <label>Attachment</label>
+              <input type="file" placeholder="" />
+            </div>
+
+            <div *ngFor="let tab of tabs; let i = index" class="border-inline border-rfc-heading">
+              <div class="border-inline border-rfc-heading">
+                <div *ngIf="showInitiator">
+                  <label>Select Plant</label>
+                  <button type="button" class="landscape_button">Select-Plant</button>
+                  <div class="content landscape_content" #content>
+                    <div class="row landscape_row">
+                      <div class="col-sm landscape_data">
+                        <label>ML 01</label>
+                      </div>
+                      <div class="col-sm">
+                        <input type="checkbox" class="landscape_input">
+                      </div>
+                    </div>
+                    <div class="row landscape_row">
+                      <div class="col-sm landscape_data">
+                        <label>ML 02</label>
+                      </div>
+                      <div class="col-sm">
+                        <input type="checkbox" class="landscape_input">
+                      </div>
+                    </div>
+                    <div class="row landscape_row">
+                      <div class="col-sm landscape_data">
+                        <label>ML 03</label>
+                      </div>
+                      <div class="col-sm">
+                        <input type="checkbox" class="landscape_input">
+                      </div>
+                    </div>
+                    <div class="row landscape_row">
+                      <div class="col-sm landscape_data">
+                        <label>ML 04</label>
+                      </div>
+                      <div class="col-sm">
+                        <input type="checkbox" class="landscape_input">
+                      </div>
+                    </div>
+                    <div class="row landscape_row">
+                      <div class="col-sm landscape_data">
+                        <label>ML 05</label>
+                      </div>
+                      <div class="col-sm">
+                        <input type="checkbox" class="landscape_input">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="showInitiator">
+                  <label>Control #</label>
+                  <input type="text" placeholder="" />
+                </div>
+                <div *ngIf="showInitiator">
+                  <label>Contol # Date</label>
+                  <input type="date" placeholder="" />
+                </div>
+                <div *ngIf="showInitiator">
+                  <label>Attachment</label>
+                  <input type="file" placeholder="" />
+                </div>
+              </div>
+              <div>
+                <input id="Checkbox{{ tab.id }}" class="g_p_checkbox" name="Checkbox{{ tab.id }}" type="file"
+                  (change)="toggleInitiatorField(i)" />
+              </div>
+            </div>
+
+          </div>
+          <div class="row" *ngIf="showInitiator">
+            <div (click)="addMore()" class="col">
+              <button class="addmore_button"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;Add More</button>
+            </div>
+            <div class="col" (click)="removeTab()">
+              <button class="remove_button"><i class="fa fa-minus" aria-hidden="true"></i>&nbsp;Remove</button>
+            </div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+          </div>
+          <div class="submit_change">
+            <button class="btn-sub" type="submit">Submit</button>
+            <button class="btn-sub" type="submit">Clear</button>
+          </div>
+        </div> -->
+        <!-- G*P clasification start -->
+        <div class="container-field-line-gp">
+          <h3>GxP Classification</h3>
+          <div class="border-inline border-rfc-heading">
+            <div class="container-line">
+              <label>Is GxP Classification Available</label>
+              <!-- your-component.component.html -->
+
+              <div class="row g_p_classification">
+                <!-- Headers -->
+                <div class="col">Select-Plant</div>
+                <div class="col">Control #</div>
+                <div class="col">Control # Date</div>
+                <div class="col">Attachment</div>
+                <div class="col">Update</div>
+                <div class="col">Delete</div>
+              </div>
+
+              <!-- Data Rows -->
+              <div class="row g_p_classification" *ngFor="let data of plantData; let i = index">
+                <div class="col">
+                  <!-- <input type="text" class="g_p_input" ngModel="data.selectPlant" placeholder="Select-Plant"> -->
+                  <select name="plants" id="plants" class="styled-select">
+                    <option value="" disabled selected>Select-Plants</option>
+                    <option value="ML01">ML 01</option>
+                    <option value="ML01">ML 02</option>
+                    <option value="ML01">ML 03</option>
+                    <option value="ML01">ML 04</option>
+                    <option value="ML01">ML 05</option>
+                    <option value="ML01">ML 06</option>
+                    <option value="ML01">ML 07</option>
+                    <option value="ML01">ML 08</option>
+                    <option value="ML01">ML 09</option>
+                    <option value="ML01">ML 10</option>
+                    <option value="ML01">ML 11</option>
+                    <option value="ML01">ML 12</option>
+                    <option value="ML01">ML 13</option>
+                    <option value="ML01">ML 14</option>
+                    <option value="ML01">ML 15</option>
+                    <option value="ML01">ML 16</option>
+                    <option value="ML01">ML 17</option>
+                    <option value="ML01">ML 18</option>
+                    <option value="ML01">ML 19</option>
+                    <option value="ML01">ML 20</option>
+                    <option value="ML01">ML 21</option>
+                    <option value="ML01">ML 22</option>
+                    <option value="ML01">ML 23</option>
+                    <option value="ML01">ML 24</option>
+                  </select>
+                </div>
+                <div class="col"><input type="text" class="g_p_input" ngModel="data.controlNumber"></div>
+                <div class="col"><input type="date" class="g_p_input" ngModel="data.controlDate"></div>
+                <div class="col"><input type="file" class="g_p_input" (change)="handleFileInput($event, i)"></div>
+                <div class="col"><i class="fa fa-edit" (click)="update(i)"></i></div>
+                <div class="col"><i class="fa fa-trash-o" (click)="delete(i)"></i></div>
+              </div>
+
+              <!-- Add More Button -->
+              <div>
+                <button class="addmore_button" (click)="addMore()">
+                  <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;Add More
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="submit_change">
+          <button class="btn-sub" type="submit">Submit</button>
+          <button class="btn-sub" type="submit">Clear</button>
+        </div>
+        <!-- G*P classification end -->
+      </div>
+      <!-- Tab Two -->
+      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <app-approve></app-approve>
+        <br />
+      </div>
+      <!-- Tab Three -->
+      <!--<app-changetab></app-changetab>-->
+      <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+        <div class="container nav nav-tabs" id="nav-tab" role="tablist">
+          <ul class="breadcrumb" style="margin-top: 0%">
+            <li class="breadcrumb__item breadcrumb__item-firstChild" id="nav-home-tab" data-bs-toggle="tab"
+                data-bs-target="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">
+              <span class="breadcrumb__inner">
+                <span class="breadcrumb__title active">Implementation</span>
+              </span>
+            </li>
+            <li class="breadcrumb__item" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                role="tab" aria-controls="nav-profile" aria-selected="false">
+              <span class="breadcrumb__inner">
+                <span class="breadcrumb__title">Release</span>
+              </span>
+            </li>
+            <li class="breadcrumb__item" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact"
+                role="tab" aria-controls="nav-contact" aria-selected="false">
+              <span class="breadcrumb__inner">
+                <span class="breadcrumb__title">Closure</span>
+              </span>
+            </li>
+          </ul>
+          <select (change)="filterData($event)">
+            <option selected hidden disabled value="">Select Landscape</option>
+            <option [value]="1">Development</option>
+            <option [value]="2">Testing</option>
+
+          </select>
+          <table *ngIf="filteredData && filteredData.length > 0" class="fl-table">
+            <thead class="table-head">
+              <tr class="border-bottom">
+                <th>Actions</th>
+                <th>Health</th>
+                <th>Task #</th>
+                <th>Tasks</th>
+                <th>Planned Start Date</th>
+                <th>Planned End Date</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+                <th>Forwarded To</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredData" class="tr-body">
+                <td>
+                  <a href="" [routerLink]="'/cr-task'">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                  </a>
+                  <i class="fa fa-trash" aria-hidden="true"></i>
+                </td>
+                <td>
+                  <i class="fa fa-circle" style="font-size: medium; color: red"></i>
+                </td>
+                <td>{{ item.taskNumber }}</td>
+                <td>{{ item.tasks }}</td>
+                <td>{{ item.plannedStartDate }}</td>
+                <td>{{ item.plannedEndDate }}</td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.assignedTo }}</td>
+                <td>{{ item.forwardedTo }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <div class="table-wrapper" style="overflow-x: auto">
+              <table class="fl-table">
+                <thead class="table-head">
+                  <tr class="border-bottom">
+                    <th>Actions</th>
+                    <th>Health</th>
+                    <th>Task #</th>
+                    <th>Tasks</th>
+                    <th>Planned Start Date</th>
+                    <th>Planned End Date</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Forwarded To</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <br />
+              <div class="container-field-implement">
+                <div>
+                  <label label-approve>Comments</label>
+                  <textarea class="textarea-implement"></textarea>
+                </div>
+                <div>
+                  <!-- Classification -->
+                  <label class="label-approve">Attach Document</label>
+                  <input class="input-approve" type="File" placeholder="" />
+                </div>
+              </div>
+              <div class="btn-sub-reset">
+                <button [routerLink]="'/executive'" class="btn-sub" type="submit">
+                  Approve
+                </button>
+                <button class="btn-sub" type="submit">Reject</button>
+                <button class="btn-sub" type="submit">
+                  Seek Clarification
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Closure Starts here -->
+          <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+            <div class="container nav nav-tabs closure" id="nav-tab" role="tablist">
+              <nav class="breadcrumbs">
+                <a class="breadcrumbs__item is-active" id="nav-closuredes-tab" data-bs-toggle="tab"
+                   data-bs-target="#nav-closuredes" role="tab" aria-controls="nav-closuredes"
+                   aria-selected="true">
+                  Closure
+                  Description
+                </a>
+                <a class="breadcrumbs__item" id="nav-closureappr-tab" data-bs-toggle="tab"
+                   data-bs-target="#nav-closureappr" role="tab" aria-controls="nav-closureappr"
+                   aria-selected="false">Approval</a>
+                <a class="breadcrumbs__item" id="nav-closurefeed-tab" data-bs-toggle="tab"
+                   data-bs-target="#nav-closurefeed" role="tab" aria-controls="nav-closurefeed"
+                   aria-selected="false">Feedback</a>
+              </nav>
+              <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-closuredes" role="tabpanel"
+                     aria-labelledby="nav-closuredes-tab">
+                  <div class="execute_container_implement">
+                    <h3>Closure</h3>
+                    <div class="row">
+                      <div class="col">
+                        <label>Status</label>
+                        <select class="select_closure">
+                          <option disabled selected>Select Status</option>
+                          <option>Completed Successfully</option>
+                          <option>Completed partially</option>
+                          <option>Not Successfull</option>
+                          <option>Not Implemented</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label label-approve>Closure Comments</label>
+                      <textarea class="textarea-implement"></textarea>
+                    </div>
+                    <div>
+                      <label class="label-approve">Upload to Knowledge Base </label>
+                      <input class="input-approve" type="File" placeholder="CR-KBCR_001" />
+                    </div>
+                    <div>
+                      <label label-approve>Lessons learnt</label>
+                      <textarea class="textarea-implement"></textarea>
+                    </div>
+                    <button class="implement-button">
+                      <i class="fa fa-plus"></i>Add item
+                    </button>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="nav-closureappr" role="tabpanel" aria-labelledby="nav-closureappr-tab">
+                  <div class="execute_container_implement">
+                    <h3>Approval</h3>
+                    <div class="container-field-approve">
+                      RFC initiate Approved
+                      <div class="border-rfc-heading">
+                        <div class="row">
+                          <div class="col">
+                            <label>Plant</label>
+                            <select>
+                              <option value="" disabled selected>Select Plant</option>
+                              <option>ML01</option>
+                              <option>ML02</option>
+                              <option>ML03</option>
+                              <option>ML04</option>
+                              <option>ML05</option>
+                              <option>ML06</option>
+                              <option>ML07</option>
+                              <option>ML08</option>
+                            </select>
+                          </div>
+                          <div class="col">
+                            <label>Category</label>
+                            <select>
+                              <option value="" disabled selected>Select Category</option>
+                              <option>Servers</option>
+                              <option>Network</option>
+                              <option>Security</option>
+                              <option>Inhouse Development</option>
+                              <option>SAP</option>
+                              <option>Software</option>
+                              <option>Desktop/Laptop</option>
+                              <option>Printers</option>
+                            </select>
+                          </div>
+                          <div class="col">
+                            <label>Status</label>
+                            <input type="text" placeholder="" />
+                          </div>
+                          <div class="col">
+                            <label>Approver Title</label>
+                            <input type="text" placeholder="" />
+                          </div>
+                        </div>
+                        <div class="row mt-3">
+                          <div class="col">
+                            <label>Approver Name</label>
+                            <input type="text" placeholder="" />
+                          </div>
+                          <div class="col">
+                            <label>Date</label>
+                            <input type="date" />
+                          </div>
+                          <div class="col">
+                            <label>Remark</label>
+                            <input type="text" />
+                          </div>
+                          <div class="col"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="container-field-approve">
+                      Release Approval
+                      <div class="border-rfc-heading">
+                        <div class="row">
+                          <div class="col">
+                            <label>Plant</label>
+                            <select>
+                              <option value="" disabled selected>Select Plant</option>
+                              <option>ML01</option>
+                              <option>ML02</option>
+                              <option>ML03</option>
+                              <option>ML04</option>
+                              <option>ML05</option>
+                              <option>ML06</option>
+                              <option>ML07</option>
+                              <option>ML08</option>
+                            </select>
+                          </div>
+                          <div class="col">
+                            <label>Category</label>
+                            <select>
+                              <option value="" disabled selected>Select Category</option>
+                              <option>Servers</option>
+                              <option>Network</option>
+                              <option>Security</option>
+                              <option>Inhouse Development</option>
+                              <option>SAP</option>
+                              <option>Software</option>
+                              <option>Desktop/Laptop</option>
+                              <option>Printers</option>
+                            </select>
+                          </div>
+                          <div class="col">
+                            <label>Status</label>
+                            <input type="text" placeholder="" />
+                          </div>
+                          <div class="col">
+                            <label>Approver Title</label>
+                            <input type="text" placeholder="" />
+                          </div>
+                        </div>
+                        <div class="row mt-3">
+                          <div class="col">
+                            <label>Approver Name</label>
+                            <input type="text" placeholder="" />
+                          </div>
+                          <div class="col">
+                            <label>Date</label>
+                            <input type="date" />
+                          </div>
+                          <div class="col">
+                            <label>Remark</label>
+                            <input type="text" />
+                          </div>
+                          <div class="col"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div class="container-field-implement">
+                        <div>
+                          <label label-approve>Comments</label>
+                          <textarea class="textarea-implement"></textarea>
+                        </div>
+                        <div>
+                          <!-- Classification -->
+                          <label class="label-approve">Attach Document</label>
+                          <input class="input-approve" type="File" placeholder="" />
+                        </div>
+                      </div>
+                      <div class="btn-sub-reset">
+                        <button [routerLink]="'/executive'" class="btn-sub-approve" type="submit">
+                          Approve
+                        </button>
+                        <button class="btn-sub-reject" type="submit">Reject</button>
+                        <button class="btn-sub" type="submit">Seek Clarification</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="nav-closurefeed" role="tabpanel" aria-labelledby="nav-closurefeed-tab">
+                  <div class="execute_container_implement">
+                    <h3>Feedback</h3>
+                    <div>
+                      <label>Change Description</label>
+                      <textarea class="textarea-implement" cols="160" rows="4" id="area1"></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- closure ends here  -->
+        </div>
+        </div>
+      </div>
+      <!-- tab four -->
+      <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+        <div class="execute_container_field_line">
+          <h3>History</h3>
+          <div class="scroll-box">
+            <p class="history-date">Today</p>
+            <div class="container-light">
+              <img src="assets/image/download3.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Joseph[ID]</h4>
+              <br />
+              <p>Change request recived</p>
+              <span class="time-right">11:00am</span>
+              <!-- <span class="time-right">11:00</span> -->
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download2.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Elisha[ID]</h4>
+              <br />
+              <p>Forwarded to John</p>
+              <span class="time-right">11:00am</span>
+              <p></p>
+            </div>
+
+            <div class="container-light">
+              <img src="assets/image/download3.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Joseph[ID]</h4>
+              <br />
+              <p>Request approved</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download2.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Elisha[ID]</h4>
+              <br />
+              <p>Change completed</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <p class="history-date">Yesterday</p>
+            <div class="container-light">
+              <img src="assets/image/download.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Martin[ID]</h4>
+              <br />
+              <p>Request recived</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download2.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Elisha[ID]</h4>
+              <br />
+              <p>Executed</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download3.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Joseph[ID]</h4>
+              <br />
+              <p>Completed Tasks</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Martin[ID]</h4>
+              <br />
+              <p>Project Aproved</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <p class="history-date">10/01/2024</p>
+            <div class="container-light">
+              <img src="assets/image/download3.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Joseph[ID]</h4>
+              <br />
+              <p>Project Status Updated</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download2.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Elisha[ID]</h4>
+              <br />
+              <p>Service Request Recived</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Martin[ID]</h4>
+              <br />
+              <p>Service Completed</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download2.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Elisha[ID]</h4>
+              <br />
+              <p>Assets Request Recived</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <p class="history-date">09/01/2024</p>
+            <div class="container-light">
+              <img src="assets/image/download3.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Joseph[ID]</h4>
+              <br />
+              <p>Change Request Completed</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download2.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Elisha[ID]</h4>
+              <br />
+              <p>Issues Recived</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download3.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Joseph[ID]</h4>
+              <br />
+              <p>Issues Cleared</p>
+              <span class="time-right">11:00am</span>
+            </div>
+            <div class="container-light">
+              <img src="assets/image/download2.png" alt="Avatar" style="height: 50px; width: 50px" />
+              <h4 style="color: rgb(83, 83, 83)">Elisha[ID]</h4>
+              <br />
+              <p>Report Checked</p>
+              <span class="time-right">11:00am</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
-<table *ngIf="filteredData && filteredData.length > 0" class="fl-table">
-  <thead class="table-head">
-    <tr class="border-bottom">
-      <th>Actions</th>
-      <th>Health</th>
-      <th>Task #</th>
-      <th>Tasks</th>
-      <th>Planned Start Date</th>
-      <th>Planned End Date</th>
-      <th>Status</th>
-      <th>Assigned To</th>
-      <th>Forwarded To</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of filteredData" class="tr-body">
-      <td>
-        <a href="" [routerLink]="'/cr-task'">
-          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        </a>
-        <i class="fa fa-trash" aria-hidden="true"></i>
-      </td>
-      <td>
-        <i class="fa fa-circle" style="font-size: medium; color: red"></i>
-      </td>
-      <td>{{ item.taskNumber }}</td>
-      <td>{{ item.tasks }}</td>
-      <td>{{ item.plannedStartDate }}</td>
-      <td>{{ item.plannedEndDate }}</td>
-      <td>{{ item.status }}</td>
-      <td>{{ item.assignedTo }}</td>
-      <td>{{ item.forwardedTo }}</td>
-    </tr>
-  </tbody>
-</table>
+//response
 
+[
+    {
+        "itcrexecId": 2,
+        "itcrid": 1,
+        "sysLandscape": 1,
+        "executionStepName": "jjd       ",
+        "executionStepDesc": "Testing",
+        "assignedTo": null,
+        "startDt": null,
+        "endDt": null,
+        "attachments": null,
+        "status": null,
+        "forwardedTo": null,
+        "forwardedDt": null,
+        "pickedDt": null,
+        "actualStartDt": null,
+        "actualEndDt": null,
+        "createdBy": null,
+        "createdDt": "2024-02-12T11:44:46.38",
+        "modifiedBy": null,
+        "modifiedDt": "2024-02-12T16:47:57.81",
+        "itcr": null
+    },
+    {
+        "itcrexecId": 7,
+        "itcrid": 1,
+        "sysLandscape": 2,
+        "executionStepName": "mmm       ",
+        "executionStepDesc": null,
+        "assignedTo": null,
+        "startDt": null,
+        "endDt": null,
+        "attachments": null,
+        "status": null,
+        "forwardedTo": null,
+        "forwardedDt": null,
+        "pickedDt": null,
+        "actualStartDt": null,
+        "actualEndDt": null,
+        "createdBy": null,
+        "createdDt": "2024-02-12T11:09:38.623",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "itcr": null
+    },
+    {
+        "itcrexecId": 32,
+        "itcrid": 1,
+        "sysLandscape": 1,
+        "executionStepName": "qqq       ",
+        "executionStepDesc": "Error",
+        "assignedTo": null,
+        "startDt": null,
+        "endDt": null,
+        "attachments": null,
+        "status": null,
+        "forwardedTo": null,
+        "forwardedDt": null,
+        "pickedDt": null,
+        "actualStartDt": null,
+        "actualEndDt": null,
+        "createdBy": null,
+        "createdDt": "2024-02-12T15:33:46.98",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "itcr": null
+    },
+    {
+        "itcrexecId": 66,
+        "itcrid": 44,
+        "sysLandscape": 3,
+        "executionStepName": "44        ",
+        "executionStepDesc": null,
+        "assignedTo": null,
+        "startDt": null,
+        "endDt": null,
+        "attachments": null,
+        "status": null,
+        "forwardedTo": null,
+        "forwardedDt": null,
+        "pickedDt": null,
+        "actualStartDt": null,
+        "actualEndDt": null,
+        "createdBy": null,
+        "createdDt": "2024-02-12T15:25:35.943",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "itcr": null
+    }
+]
