@@ -1,4 +1,4 @@
-https://kit.fontawesome.com/a076d05399.js
+https://kit.fontawesome.com/2ee7bde2cf.js
 
 http://localhost:4200/assets/carousel/settings.js
 
