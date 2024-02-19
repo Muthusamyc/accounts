@@ -1,6 +1,6 @@
 https://kit.fontawesome.com/a076d05399.js
 
-
+http://localhost:4200/assets/carousel/settings.js
 
 import { Component, OnInit } from '@angular/core';
 
