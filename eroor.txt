@@ -1,7 +1,10 @@
-https://kit.fontawesome.com/2ee7bde2cf.js
-
-http://localhost:4200/assets/carousel/settings.js
-
+public async Task<List<VwChangeRequest>> Getallchange()
+{
+    var data = await _context.VwChangeRequests.ToListAsync();
+     
+    return data;
+}
+i want data will show for descending in the return time
 import { Component, OnInit } from '@angular/core';
 
 @Component({
