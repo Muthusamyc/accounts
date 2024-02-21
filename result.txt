@@ -1080,3 +1080,10 @@
     "crreleases": []
   }
 ]
+
+public async Task<List<VwChangeRequest>> Getallchange()
+{
+    var data = await _context.VwChangeRequests.OrderByDescending(c => c.Itcrid).ToListAsync();
+
+    return data;
+}
