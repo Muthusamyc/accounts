@@ -1,109 +1,79 @@
- getviewcrdata() {
-   debugger
-   const apiUrls = 'https://localhost:7236/api/ViewChange/GetAllchanges'
-   const requestBody = {
-   }
-   const httpOptions = {
-     headers: new HttpHeaders({
-       'content-Type': 'application/json'
-     })
-   };
-   this.http.get(apiUrls).subscribe(
-     (response: any) => {
-       console.log(response);
-       this.viewchangerequest = response;
-       console.log(this.viewchangerequest)
-     },
-     (error) => {
-       console.error("Post failed", error)
-     }
-   )
- }
-
-<table class="fl-table">
-  <thead class="table-head">
-    <tr class="border-bottom">
-      <th>Select</th>
-      <th>CR Code</th>
-      <th>Requestor</th>
-      <th>Description</th>
-      <th>Status</th>
-      <th>Type</th>
-      <th>Classifications</th>
-      <th>Start Date</th>
-      <!--<th>Attachments</th>-->
-      <th>Update</th>
-      <th>Delete</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="tr-body" *ngFor="let pltdata of viewchangerequest">
-      <td><input type="radio" (change)="selector(pltdata)" name="one" id="one" /></td>
-      <td>{{pltdata.crcode}}</td>
-      <td>{{pltdata.crowner}}</td>
-      <td>{{pltdata.changeDesc}}</td>
-      <td>{{pltdata.status}}</td>
-      <td>{{pltdata.categoryName}}</td>
-      <td>{{pltdata.classificationName}}</td>
-      <td>{{pltdata.crdate | date:'shortDate' }}</td>
-      <!--<td><i class="fa fa-download" aria-hidden="true"></i></td>-->
-      <td>
-        <a href="" routerLink="/updatecr/{{pltdata.itcrid}}/edit" >
-          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        </a>
-      </td>
-      <td>
-        <a href=""><i class="fa fa-trash" aria-hidden="true"></i></a>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-
-
-getviewcrdata() {
-  debugger
-  const apiUrls = 'https://localhost:7236/api/ViewChange/GetAllchanges';
-  const requestBody = {}; // You can include request body if needed
-  const httpOptions = {
-    headers: new HttpHeaders({
-      'content-Type': 'application/json'
-    })
-  };
-  
-  this.http.get(apiUrls).subscribe(
-    (response: any) => {
-      console.log(response);
-      // Parse and sort the response before assigning it to viewchangerequest
-      this.viewchangerequest = this.parseAndSortResponse(response);
-      console.log(this.viewchangerequest);
+[
+    {
+        "itcategoryId": 1,
+        "supportId": 1,
+        "categoryName": "Network",
+        "isActive": true,
+        "createdBy": "120678    ",
+        "createdDt": "2024-01-31T00:00:00",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "riskPlans": [],
+        "slas": [],
+        "support": null,
+        "sysLandscapes": []
     },
-    (error) => {
-      console.error("Get failed", error);
+    {
+        "itcategoryId": 2,
+        "supportId": 1,
+        "categoryName": "Process",
+        "isActive": true,
+        "createdBy": "120678    ",
+        "createdDt": "2024-01-31T00:00:00",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "riskPlans": [],
+        "slas": [],
+        "support": null,
+        "sysLandscapes": []
     }
-  );
-}
+]
+<div class="col">
+  <label>Category</label><br />
+  <select class="input-change">
+    <option value="1" disabled selected>Select-category</option>
+    <option *ngFor="let value of categorydata " value="{{value.itcategoryId}}">{{value.categoryName}}</option>
+    
+  </select>
+</div>
 
-parseAndSortResponse(response: any): any[] {
-  // Parse the response if needed
-  // For example, if response is an array of objects and you want to sort it by a specific property
-  let parsedResponse = response.map((item: any) => {
-    // Perform parsing logic here if needed
-    return item;
-  });
-
-  // Sort the parsed response array
-  parsedResponse.sort((a: any, b: any) => {
-    // Sort logic here
-    // For example, sorting by a property called 'propertyName'
-    if (a.propertyName < b.propertyName) {
-      return -1;
-    }
-    if (a.propertyName > b.propertyName) {
-      return 1;
-    }
-    return 0;
-  });
-
-  return parsedResponse;
-}
+<div class="table-wrapper">
+  <table class="fl-table">
+    <thead class="table-head">
+      <tr class="border-bottom">
+        <th>Select</th>
+        <th>CR Code</th>
+        <th>Requestor</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Classifications</th>
+        <th>Start Date</th>
+        <!--<th>Attachments</th>-->
+        <th>Update</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="tr-body" *ngFor="let pltdata of viewchangerequest">
+        <td><input type="radio" (change)="selector(pltdata)" name="one" id="one" /></td>
+        <td>{{pltdata.crcode}}</td>
+        <td>{{pltdata.crowner}}</td>
+        <td>{{pltdata.changeDesc}}</td>
+        <td>{{pltdata.status}}</td>
+        <td>{{pltdata.categoryName}}</td>
+        <td>{{pltdata.classificationName}}</td>
+        <td>{{pltdata.crdate | date:'shortDate' }}</td>
+        <!--<td><i class="fa fa-download" aria-hidden="true"></i></td>-->
+        <td>
+          <a href="" routerLink="/updatecr/{{pltdata.itcrid}}/edit" >
+            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+          </a>
+        </td>
+        <td>
+          <a href=""><i class="fa fa-trash" aria-hidden="true"></i></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
