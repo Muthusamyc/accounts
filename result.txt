@@ -20,6 +20,46 @@
    )
  }
 
+<table class="fl-table">
+  <thead class="table-head">
+    <tr class="border-bottom">
+      <th>Select</th>
+      <th>CR Code</th>
+      <th>Requestor</th>
+      <th>Description</th>
+      <th>Status</th>
+      <th>Type</th>
+      <th>Classifications</th>
+      <th>Start Date</th>
+      <!--<th>Attachments</th>-->
+      <th>Update</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="tr-body" *ngFor="let pltdata of viewchangerequest">
+      <td><input type="radio" (change)="selector(pltdata)" name="one" id="one" /></td>
+      <td>{{pltdata.crcode}}</td>
+      <td>{{pltdata.crowner}}</td>
+      <td>{{pltdata.changeDesc}}</td>
+      <td>{{pltdata.status}}</td>
+      <td>{{pltdata.categoryName}}</td>
+      <td>{{pltdata.classificationName}}</td>
+      <td>{{pltdata.crdate | date:'shortDate' }}</td>
+      <!--<td><i class="fa fa-download" aria-hidden="true"></i></td>-->
+      <td>
+        <a href="" routerLink="/updatecr/{{pltdata.itcrid}}/edit" >
+          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+      </td>
+      <td>
+        <a href=""><i class="fa fa-trash" aria-hidden="true"></i></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
 
 getviewcrdata() {
   debugger
