@@ -1,154 +1,82 @@
-public async Task<List<VwChangeRequest>> Getallchange()
-{
-    var data = await _context.VwChangeRequests.ToListAsync();
-     
-    return data;
-}
-i want data will show for descending in the return time
-import { Component, OnInit } from '@angular/core';
-
-@Component({
-  selector: 'app-pages',
-  templateUrl: './pages.component.html',
-  styleUrls: ['./pages.component.scss']
-})
-export class PagesComponent implements OnInit {
-  data: any[]=[
+[
     {
-        "itcrexecId": 2,
-        "itcrid": 1,
-        "sysLandscape": 1,
-        "executionStepName": "jjd       ",
-        "executionStepDesc": "Testing",
-        "assignedTo": null,
-        "startDt": null,
-        "endDt": null,
-        "attachments": null,
-        "status": null,
-        "forwardedTo": null,
-        "forwardedDt": null,
-        "pickedDt": null,
-        "actualStartDt": null,
-        "actualEndDt": null,
-        "createdBy": null,
-        "createdDt": "2024-02-12T11:44:46.38",
-        "modifiedBy": null,
-        "modifiedDt": "2024-02-12T16:47:57.81",
-        "itcr": null
-    },
-    {
-        "itcrexecId": 7,
-        "itcrid": 1,
-        "sysLandscape": 2,
-        "executionStepName": "mmm       ",
-        "executionStepDesc": null,
-        "assignedTo": null,
-        "startDt": null,
-        "endDt": null,
-        "attachments": null,
-        "status": null,
-        "forwardedTo": null,
-        "forwardedDt": null,
-        "pickedDt": null,
-        "actualStartDt": null,
-        "actualEndDt": null,
-        "createdBy": null,
-        "createdDt": "2024-02-12T11:09:38.623",
+        "itcrid": 97,
+        "crcode": "ML18/2024/12",
+        "supportId": 1,
+        "classifcationId": 1,
+        "categoryId": 1,
+        "crowner": "120678                                            ",
+        "crdate": "2024-02-21T15:23:53.273",
+        "crrequestedBy": "sssss     ",
+        "crinitiatedFor": "sssss     ",
+        "status": "New       ",
+        "referenceId": 1,
+        "referenceTyp": "sssss",
+        "categoryTypeId": 3,
+        "natureOfChange": "1         ",
+        "priorityType": "Very-High ",
+        "plantId": 2,
+        "gxpclassification": true,
+        "changeControlNo": "4         ",
+        "changeControlDt": "2024-02-21",
+        "changeControlAttach": true,
+        "changeDesc": "new data",
+        "reasonForChange": "new change",
+        "alternateConsidetation": "wwwwwwwwwww",
+        "impactNotDoing": "wwwwwwwwwwwwwww",
+        "triggeredBy": "Commercial",
+        "benefits": "wwwwwwwwwwwww",
+        "estimatedCost": 344444,
+        "estimatedCostCurr": "inr",
+        "estimatedEffort": 4,
+        "estimatedEffortUnit": "6days     ",
+        "estimatedDateCompletion": "2024-02-02",
+        "rollbackPlan": "wwwwwwwwwwwwwwwww",
+        "backoutPlan": "wwwwwwwwwwwwwwww",
+        "downTimeRequired": true,
+        "downTimeFromDate": "2024-02-10T09:21:40.357",
+        "downTimeToDate": "2024-02-10T09:21:40.357",
+        "approvedBy": null,
+        "approvedDt": null,
+        "isSubmitted": false,
+        "isApproved": false,
+        "isImplemented": false,
+        "isReleased": false,
+        "closureRemarks": null,
+        "closedBy": null,
+        "closedDt": null,
+        "feedback": null,
+        "createdBy": "string    ",
+        "createdDt": "2024-02-21T15:23:53.273",
         "modifiedBy": null,
         "modifiedDt": null,
-        "itcr": null
-    },
-    {
-        "itcrexecId": 32,
-        "itcrid": 1,
-        "sysLandscape": 1,
-        "executionStepName": "qqq       ",
-        "executionStepDesc": "Error",
-        "assignedTo": null,
-        "startDt": null,
-        "endDt": null,
-        "attachments": null,
-        "status": null,
-        "forwardedTo": null,
-        "forwardedDt": null,
-        "pickedDt": null,
-        "actualStartDt": null,
-        "actualEndDt": null,
-        "createdBy": null,
-        "createdDt": "2024-02-12T15:33:46.98",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "itcr": null
-    },
-    {
-        "itcrexecId": 66,
-        "itcrid": 44,
-        "sysLandscape": 3,
-        "executionStepName": "44        ",
-        "executionStepDesc": null,
-        "assignedTo": null,
-        "startDt": null,
-        "endDt": null,
-        "attachments": null,
-        "status": null,
-        "forwardedTo": null,
-        "forwardedDt": null,
-        "pickedDt": null,
-        "actualStartDt": null,
-        "actualEndDt": null,
-        "createdBy": null,
-        "createdDt": "2024-02-12T15:25:35.943",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "itcr": null
+        "crexecutionPlans": [],
+        "crlessons": [],
+        "crreleases": []
     }
 ]
-filteredData: any[] = [];
-landscapeOptions: number[] = [];
 
-constructor() { }
-
-ngOnInit(): void {
-  // Extract unique sysLandscape values from data
-  this.landscapeOptions = this.data.map(item => item.sysLandscape)
-                                   .filter((value, index, self) => self.indexOf(value) === index);
-}
-
-filterData(event: any) {
-  const selectedLandscape = event.target.value;
-  if (selectedLandscape) {
-    this.filteredData = this.data.filter((row: any) => row.sysLandscape == selectedLandscape);
-  } else {
-    this.filteredData = this.data;
-  }
-}
-
-  
-  
-}
-
-The above is my ts and below is my html:
-
-<div>
-  <select (change)="filterData($event)">
-    <option selected hidden disabled value="">Select Landscape</option>
-    <option *ngFor="let landscape of landscapeOptions" [value]="landscape">{{ landscape }}</option>
+<div class="col">
+  <label>Change Requested On</label>
+  <input [(ngModel)]="updatevalue[0].crdate" type="date" placeholder="" />
+</div>
+<div class="col">
+  <label>Priority</label>
+  <select [(ngModel)]="updatevalue[0].priorityType">
+    <option value="" disabled selected>Select-Priority</option>
+    <option>Very-High  </option>
+    <option>High  </option>
+    <option>Medium  </option>
+    <option>Low  </option>
+    <option>Very-Low  </option>
   </select>
-
-  <table *ngIf="filteredData.length > 0" class="fl-table table-bordered">
-    <thead class="table-head">
-      <tr class="border-bottom">
-        <th>ITC Rid</th>
-        <th>Execution StepName</th>
-        <th>Sys Landscape</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let row of filteredData" class="tr-body">
-        <td>{{ row.itcrid }}</td>
-        <td>{{ row.executionStepName }}</td>
-        <td>{{ row.sysLandscape }}</td>
-      </tr>
-    </tbody>
-  </table>
+</div>
+<div class="col">
+  <label>Nature of Change</label>
+  <select [(ngModel)]="updatevalue[0].natureOfChange">
+    <option value="" disabled selected>Select Category</option>
+    <option *ngFor="let valueN of Natureofchange " [value]="valueN.natureofChangeId" [attr.selected]="valueN.natureofChangeId.toString() === updatevalue[0].natureOfChange ? true : null">
+      {{valueN.natureofChange1}}
+    </option>
+  </select>
 </div>
