@@ -24,3 +24,12 @@
     </option>
   </select>
 </div>
+
+
+export class YourComponent {
+  // Other component code
+  
+  parseToInt(value: string): number {
+    return parseInt(value, 10); // Parse string to integer with base 10
+  }
+}
