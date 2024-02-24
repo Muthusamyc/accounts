@@ -1,7 +1,18 @@
-NG5002: Parser Error: Got interpolation ({{}}) where expression was expected at column 0 in [{{support}}] in D:/IT_Portal/IT-Portal/IT-Portal.UI/src/app/change-request/new-change-request/new-change-request.component.html@16:42
+ <div class="row mt-3">
+   <div class="col">
+     <label>Priority</label>
+     <select [(ngModel)]="updatevalue[0].priorityType">
+       <option value="" disabled selected>Select-Priority</option>
+       <option value="Very-High">Very-High</option>
+       <option value="High">High</option>
+       <option value="Medium">Medium</option>
+       <option value="Low">Low</option>
+       <option value="Very-Low">Very-Low</option>
+     </select>
+   </div>
 
-
-<div class="col">
-  <label>Change Owner</label>
-  <input type="text" [(ngModel)]="{{support}}"  placeholder="Change Owner" />
-</div>
+  "categoryTypeId": 3,
+    "natureOfChange": 1,
+    "priorityType": "Very-High ",
+    "plantId": 13,
+    "gxpclassification": true,
