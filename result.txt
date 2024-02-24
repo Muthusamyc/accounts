@@ -1,4 +1,10 @@
- <div class="col">
-   <label>Initiator</label>
-   <input type="text" [disabled]="sameinitator!" [(ngModel)]="" placeholder="Initiator" />
- </div>
+        <div class="col">
+          <label>Initiator</label>
+          <input type="text" [disabled]="sameinitator!" [(ngModel)]="" placeholder="Initiator" />
+        </div>
+        <div class="col">
+          <label style="margin-top:10%">Same Change Owner</label>
+          <input [(ngModel)]="sameinitator" style="margin-left: 25%; margin-top: -7%;" type="checkbox" required>
+        </div>
+
+  sameinitator: boolean = false;
