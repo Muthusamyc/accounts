@@ -1,10 +1,7 @@
-        <div class="col">
-          <label>Initiator</label>
-          <input type="text" [disabled]="sameinitator!" [(ngModel)]="" placeholder="Initiator" />
-        </div>
-        <div class="col">
-          <label style="margin-top:10%">Same Change Owner</label>
-          <input [(ngModel)]="sameinitator" style="margin-left: 25%; margin-top: -7%;" type="checkbox" required>
-        </div>
+NG5002: Parser Error: Got interpolation ({{}}) where expression was expected at column 0 in [{{support}}] in D:/IT_Portal/IT-Portal/IT-Portal.UI/src/app/change-request/new-change-request/new-change-request.component.html@16:42
 
-  sameinitator: boolean = false;
+
+<div class="col">
+  <label>Change Owner</label>
+  <input type="text" [(ngModel)]="{{support}}"  placeholder="Change Owner" />
+</div>
