@@ -16,3 +16,6 @@
     "priorityType": "Very-High ",
     "plantId": 13,
     "gxpclassification": true,
+getTrimmedPriority(): string {
+    return this.updatevalue[0].priorityType.trim();
+  }
