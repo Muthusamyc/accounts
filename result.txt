@@ -29,7 +29,22 @@
 export class YourComponent {
   // Other component code
   
-  parseToInt(value: string): number {
-    return parseInt(value, 10); // Parse string to integer with base 10
+ 
+@Injectable({
+  providedIn: 'root'
+})
+export class PasscrdataService {
+  private crrequestDataSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  public crdata:Observable<any> = this.crrequestDataSubject.asObservable();
+
+  constructor() { }
+
+  changerequestdata(data:any): void{
+    this.crrequestDataSubject.next(data);
   }
+  supporter: any;
+  getsupportteam() {
+    this.supporter = 'Ramesh';
+  }
+
 }
