@@ -1,53 +1,62 @@
-  <nav class="breadcrumbs">
-    <div class="" id="nav-tab" role="tablist">
-      <a class="active breadcrumbs__item is-active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Approver 1</a>
-    </div>
-  </nav>
-  <div class="tab-content" id="nav-tabContent">
-    <!--tab one-->
-    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-      <div>
-        <div class="container-field-approve">
-          RFC initiate Approved
-          <div class="border-rfc-heading">
+<nav class="breadcrumbs">
+  <div class="" id="nav-tab" role="tablist">
+    <a class="active breadcrumbs__item is-active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Approver 1</a>
+  </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+  <!--tab one-->
+  <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+    <div>
+      <div class="container-field-approve">
+        RFC initiate Approved
+        <div class="border-rfc-heading">
 
-            <label>Approver Name</label>
-            <input type="text" placeholder="" [(ngModel)]="approver" />
+          <label>Approver Name</label>
+          <input type="text" placeholder="" [(ngModel)]="approver" />
 
-            <div class="row mt-3">
-              <div class="col">
-                <label>Date</label>
-                <input type="date" [(ngModel)]="appdate" />
-              </div>
-              <div class="col">
-                <label>Remark</label>
-                <input type="text" [(ngModel)]="remark" />
-              </div>
-              <div class="col"></div>
+          <div class="row mt-3">
+            <div class="col">
+              <label>Date</label>
+              <input type="date" [(ngModel)]="appdate" />
             </div>
+            <div class="col">
+              <label>Remark</label>
+              <input type="text" [(ngModel)]="remark" />
+            </div>
+            <div class="col"></div>
           </div>
         </div>
-        <div>
-          <div class="container-field-implement">
-            <div>
-              <label label-approve>Comments</label>
-              <textarea class="textarea-implement" [(ngModel)]="comment"></textarea>
-            </div>
-            <div>
-              <!-- Classification -->
-              <label class="label-approve">Attach Document</label>
-              <input class="input-approve" type="File" placeholder="" [(ngModel)]="attach" />
-            </div>
+      </div>
+      <div>
+        <div class="container-field-implement">
+          <div>
+            <label label-approve>Comments</label>
+            <textarea class="textarea-implement" [(ngModel)]="comment"></textarea>
           </div>
-          <div class="btn-sub-reset">
-            <button class="btn-sub-approve" (click)="getData()">
-              Approve
-            </button>
-            <button class="btn-sub-reject" type="submit" (click)="rejectbutton()">Reject</button>
-            <button class="btn-sub" type="submit">Seek Clarification</button>
+          <div>
+            <!-- Classification -->
+            <label class="label-approve">Attach Document</label>
+            <input class="input-approve" type="File" placeholder="" [(ngModel)]="attach" />
           </div>
+        </div>
+        <div class="btn-sub-reset">
+          <button class="btn-sub-approve" (click)="getData()">
+            Approve
+          </button>
+          <button class="btn-sub-reject" type="submit" (click)="rejectbutton()">Reject</button>
+          <button class="btn-sub" type="submit">Seek Clarification</button>
         </div>
       </div>
     </div>
   </div>
+</div>
 
+<script>
+  // Loop to replicate the code based on the value of 2
+  for (let i = 0; i < 2; i++) {
+    // Duplicate the content
+    const tabContent = document.querySelector('.tab-content');
+    const clone = tabContent.cloneNode(true);
+    tabContent.parentNode.appendChild(clone);
+  }
+</script>
