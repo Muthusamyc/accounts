@@ -1,29 +1,15 @@
-selector(row:any) {
-  this.selectradio = row;
-  console.log(this.selectradio)
-}
 gotoapprove(tabId: string) {
-  this.router.navigate(['/executive/{{this.selectradio.itcrid}}/edit'], { fragment: tabId });
-  setTimeout(() => {
-    const tabButton = document.getElementById(tabId + '-tab');
-    if (tabButton) {
-      tabButton.click();
-    }
-  });
-  this.approvepage();
-}
-
-{
-    "itcrid": 112,
-    "crcode": "ML25/2024/27",
-    "crowner": "Ramesh",
-    "changeDesc": "Reason For Change",
-    "categoryName": "Process",
-    "classificationName": "Normal",
-    "crdate": "2024-02-12T00:00:00",
-    "status": "Submited  ",
-    "estimatedCost": 1000,
-    "estimatedCostCurr": "INR",
-    "estimatedDateCompletion": "2024-02-09",
-    "approvedBy": null
+  if (this.selectradio && this.selectradio.itcrid) {
+    const itcrid = this.selectradio.itcrid;
+    this.router.navigate([`/executive/${itcrid}/edit`], { fragment: tabId });
+    setTimeout(() => {
+      const tabButton = document.getElementById(tabId + '-tab');
+      if (tabButton) {
+        tabButton.click();
+      }
+    });
+    this.approvepage();
+  } else {
+    console.error("No itcrid found in selectradio.");
+  }
 }
