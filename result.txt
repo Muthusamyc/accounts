@@ -1,16 +1,15 @@
 <nav class="breadcrumbs">
   <div class="" id="nav-tab" role="tablist">
-    <a class="active breadcrumbs__item is-active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Approver 1</a>
+    <a *ngFor="let value of [1, 2]" class="active breadcrumbs__item is-active" id="nav-home-tab{{value}}" data-bs-toggle="tab" data-bs-target="#nav-home{{value}}" role="tab" aria-controls="nav-home" aria-selected="{{value === 1 ? 'true' : 'false'}}">Approver {{value}}</a>
   </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
   <!--tab one-->
-  <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+  <div *ngFor="let value of [1, 2]" class="tab-pane fade show{{value === 1 ? ' active' : ''}}" id="nav-home{{value}}" role="tabpanel" aria-labelledby="nav-home-tab{{value}}">
     <div>
       <div class="container-field-approve">
         RFC initiate Approved
         <div class="border-rfc-heading">
-
           <label>Approver Name</label>
           <input type="text" placeholder="" [(ngModel)]="approver" />
 
@@ -50,13 +49,3 @@
     </div>
   </div>
 </div>
-
-<script>
-  // Loop to replicate the code based on the value of 2
-  for (let i = 0; i < 2; i++) {
-    // Duplicate the content
-    const tabContent = document.querySelector('.tab-content');
-    const clone = tabContent.cloneNode(true);
-    tabContent.parentNode.appendChild(clone);
-  }
-</script>
