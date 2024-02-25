@@ -1,21 +1,14 @@
- <div class="row mt-3">
-   <div class="col">
-     <label>Priority</label>
-     <select [(ngModel)]="updatevalue[0].priorityType">
-       <option value="" disabled selected>Select-Priority</option>
-       <option value="Very-High">Very-High</option>
-       <option value="High">High</option>
-       <option value="Medium">Medium</option>
-       <option value="Low">Low</option>
-       <option value="Very-Low">Very-Low</option>
-     </select>
-   </div>
-
-  "categoryTypeId": 3,
-    "natureOfChange": 1,
-    "priorityType": "Very-High ",
-    "plantId": 13,
-    "gxpclassification": true,
-getTrimmedPriority(): string {
-    return this.updatevalue[0].priorityType.trim();
-  }
+selector(row:any) {
+  this.selectradio = row;
+  console.log(this.selectradio)
+}
+gotoapprove(tabId: string) {
+  this.router.navigate(['/executive/{{this.selectradio.itcrid}}/edit'], { fragment: tabId });
+  setTimeout(() => {
+    const tabButton = document.getElementById(tabId + '-tab');
+    if (tabButton) {
+      tabButton.click();
+    }
+  });
+  this.approvepage();
+}
