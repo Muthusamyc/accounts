@@ -1,3 +1,6 @@
+NG4: Expected 0 arguments, but got 1.
+src/app/change-request/approve/approve.component.html:39:59
+
 <nav class="breadcrumbs">
   <div class="" id="nav-tab" role="tablist">
     <a class="active breadcrumbs__item is-active" id="nav-home-tab{{i}}" *ngFor="let i of counter(data)" data-bs-toggle="tab" [attr.data-bs-target]="'#nav-home' + i" role="tab" aria-controls="nav-home" aria-selected="true">Approver {{i}}</a>
