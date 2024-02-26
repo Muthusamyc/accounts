@@ -1,3 +1,6 @@
+
+NG8002: Can't bind to 'aria-labelledby' since it isn't a known property of 'div'.
+src/app/change-request/approve/approve.component.html:9:66
 <nav class="breadcrumbs">
   <div class="" id="nav-tab" role="tablist">
     <a class="active breadcrumbs__item is-active" id="nav-home-tab{{i}}" *ngFor="let approver of approvervalue; let i = index" data-bs-toggle="tab" [attr.data-bs-target]="'#nav-home' + i" role="tab" aria-controls="nav-home" aria-selected="true">Approver {{i}}</a>
