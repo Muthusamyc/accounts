@@ -1,6 +1,4 @@
 
-NG8002: Can't bind to 'aria-labelledby' since it isn't a known property of 'div'.
-src/app/change-request/approve/approve.component.html:9:66
 <nav class="breadcrumbs">
   <div class="" id="nav-tab" role="tablist">
     <a class="active breadcrumbs__item is-active" id="nav-home-tab{{i}}" *ngFor="let approver of approvervalue; let i = index" data-bs-toggle="tab" [attr.data-bs-target]="'#nav-home' + i" role="tab" aria-controls="nav-home" aria-selected="true">Approver {{i}}</a>
@@ -20,3 +18,53 @@ src/app/change-request/approve/approve.component.html:9:66
     </div>
   </ng-container>
 </div>
+
+
+  data: any; // Or any value you want
+  approvers: any[] = [];
+
+/*  constructor() {
+    this.initializeApprovers();
+  }*/
+
+  initializeApprovers() {
+    for (let i = 0; i < this.data; i++) {
+      this.approvers.push({
+        name: '',
+        date: '',
+        remark: '',
+        comment: '',
+        attach: ''
+      });
+    }
+  }
+
+  counter(i: number) {
+    return new Array(i);
+  }
+
+  getData(event: any) {
+    const index = event.target.getAttribute('data-index');
+    // Implement your logic to handle approval data
+    console.log('Approve data for index', index);
+  }
+
+  rejectbutton(event: any) {
+    const index = event.target.getAttribute('data-index');
+    // Implement your logic to handle rejection
+    console.log('Reject data for index', index);
+  }
+
+
+[
+    {
+        "itApproverID": "1",
+        "approver1": "1",
+        "approver1Name": "SupportTeam 1 Engineer",
+        "approver2": "1",
+        "approver2Name": "SupportTeam 1 Engineer",
+        "approver3": "1",
+        "approver3Name": "SupportTeam 1 Engineer",
+        "approverCount": "0"
+    }
+]
