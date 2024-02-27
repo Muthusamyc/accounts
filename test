@@ -8,3 +8,12 @@ text-info = Implementation
 text-warning = Pending
 release_text = Released
 text-success = Closure
+
+
+<td ng-class="{
+  'text-primary': pltdata.status === 'New' || pltdata.status === 'Initiated' || pltdata.status === 'Submitted',
+  'text-success': pltdata.status === 'Approved' || pltdata.status === 'Closure',
+  'text-info': pltdata.status === 'Implementation',
+  'text-warning': pltdata.status === 'Pending',
+  'release_text': pltdata.status === 'Released'
+}">{{pltdata.status}}</td>
