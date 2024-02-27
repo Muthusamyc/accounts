@@ -9,29 +9,14 @@ text-warning = Pending
 release_text = Released
 text-success = Closure
 
-<style>
-  .text-primary {
-    color: blue; /* Or any primary color */
-  }
-  .text-success {
-    color: green;
-  }
-  .text-info {
-    color: cyan; /* Or any info color */
-  }
-  .text-warning {
-    color: orange; /* Or any warning color */
-  }
-  .release_text {
-    color: gray; /* Or any release color */
-  }
-</style>
-<td ng-class="{
-  'text-primary': pltdata.status === 'New' || pltdata.status === 'Initiated' || pltdata.status === 'Submitted',
-  'text-success': pltdata.status === 'Approved' || pltdata.status === 'Closure',
-  'text-info': pltdata.status === 'Implementation',
-  'text-warning': pltdata.status === 'Pending',
-  'release_text': pltdata.status === 'Released'
+<td ng-style="{
+  'color': pltdata.status === 'New' || pltdata.status === 'Initiated' || pltdata.status === 'Submitted' ? 'blue' :
+           pltdata.status === 'Approved' || pltdata.status === 'Closure' ? 'green' :
+           pltdata.status === 'Implementation' ? 'cyan' :
+           pltdata.status === 'Pending' ? 'orange' :
+           pltdata.status === 'Released' ? 'gray' :
+           ''
 }">
-  {{pltdata.status}}
+  {{ pltdata.status }}
 </td>
+
