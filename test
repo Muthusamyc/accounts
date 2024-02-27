@@ -34,4 +34,14 @@ getStatusColor(status: string): any {
   }
 
 
+<td [ngSwitch]="pltdata.status">
+  <span *ngSwitchCase="'New'"> <span style="color: blue;">{{ pltdata.status }}</span></span>
+  <span *ngSwitchCase="'Initiated'"> <span style="color: blue;">{{ pltdata.status }}</span></span>
+  <span *ngSwitchCase="'Submitted'"> <span style="color: blue;">{{ pltdata.status }}</span></span>
+  <span *ngSwitchCase="'Approved'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+  <span *ngSwitchCase="'Closure'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+  <span *ngSwitchCase="'Implementation'"> <span style="color: cyan;">{{ pltdata.status }}</span></span>
+  <span *ngSwitchCase="'Pending'"> <span style="color: orange;">{{ pltdata.status }}</span></span>
+  <span *ngSwitchCase="'Released'"> <span style="color: gray;">{{ pltdata.status }}</span></span>
+</td>
 
