@@ -16,4 +16,6 @@ text-success = Closure
   'text-info': pltdata.status === 'Implementation',
   'text-warning': pltdata.status === 'Pending',
   'release_text': pltdata.status === 'Released'
-}">{{pltdata.status}}</td>
+}">
+  {{pltdata.status}}
+</td>
