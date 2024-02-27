@@ -2,3 +2,15 @@
   <label>RFC Date</label>
   <input type="date" [(ngModel)]="getdata()" required />
 </div>
+getdata(): string {
+  // Get today's date
+  const today = new Date();
+
+  // Format the date as YYYY-MM-DD
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, '0');
+  const day = today.getDate().toString().padStart(2, '0');
+
+  // Return the formatted date
+  return `${year}-${month}-${day}`;
+}
