@@ -1,1 +1,10 @@
 <td ng-if="pltdata.status == Approved" >{{pltdata.status}}</td>
+
+
+text-primary = New/Intiated
+text-primary = Submitted
+text-success = Approved
+text-info = Implementation
+text-warning = Pending
+release_text = Released
+text-success = Closure
