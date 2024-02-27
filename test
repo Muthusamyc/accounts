@@ -19,3 +19,18 @@ export class YourComponent {
   <label>RFC Date</label>
   <input type="date" [value]="today" required />
 </div>
+<div class="col">
+  <label>RFC Date</label>
+  <input type="date" id="rfcDate" required />
+</div>
+
+<script>
+  // Get today's date
+  var today = new Date();
+  
+  // Format the date as YYYY-MM-DD
+  var formattedDate = today.toISOString().slice(0,10);
+  
+  // Set the input field value to today's date
+  document.getElementById("rfcDate").value = formattedDate;
+</script>
