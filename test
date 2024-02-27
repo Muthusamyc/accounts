@@ -8,13 +8,13 @@ text-info = Implementation
 text-warning = Pending
 release_text = Released
 text-success = Closure
-<td style="color: 
-    {{ pltdata.status === 'New' || pltdata.status === 'Initiated' || pltdata.status === 'Submitted' ? 'blue' :
-       pltdata.status === 'Approved' || pltdata.status === 'Closure' ? 'green' :
-       pltdata.status === 'Implementation' ? 'cyan' :
-       pltdata.status === 'Pending' ? 'orange' :
-       pltdata.status === 'Released' ? 'gray' :
-       'black' }}">
-  {{ pltdata.status }}
+<td>
+  <span>{{ pltdata.status }}</span>
+  <span ng-if="pltdata.status === 'New' || pltdata.status === 'Initiated' || pltdata.status === 'Submitted'" style="color: blue;">Blue</span>
+  <span ng-if="pltdata.status === 'Approved' || pltdata.status === 'Closure'" style="color: green;">Green</span>
+  <span ng-if="pltdata.status === 'Implementation'" style="color: cyan;">Cyan</span>
+  <span ng-if="pltdata.status === 'Pending'" style="color: orange;">Orange</span>
+  <span ng-if="pltdata.status === 'Released'" style="color: gray;">Gray</span>
 </td>
+
 
