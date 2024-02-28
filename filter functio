@@ -1,9 +1,23 @@
-  SelectAll() {
-    if (Object.keys(this.selectedStatus))
-    alert("all length" + Object.keys(this.selectedStatus));
-    Object.keys(this.selectedStatus).forEach(this.SelectAll);
-  
-  };
+<div class="access-checkbox">
+   <input class="cr_filter_checkbox" type="checkbox" (change)="selectAll($event)"><label class="cr_filter_label text-success">All</label>
+   <!-- Other checkboxes -->
+</div>
+
+selectedStatus: any = {}; // Initialize selectedStatus object
+
+selectAll(event: any) {
+    const isChecked = event.target.checked;
+    const checkboxes = document.querySelectorAll('.cr_filter_checkbox');
+
+    checkboxes.forEach((checkbox: any) => {
+        checkbox.checked = isChecked;
+        const label = checkbox.nextElementSibling;
+        const labelText = label.textContent.trim();
+        this.selectedStatus[labelText] = isChecked; // Update selectedStatus object
+    });
+
+    console.log("selectedStatus:", this.selectedStatus); // Log selectedStatus for verification
+}
 
 
 
