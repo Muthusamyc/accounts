@@ -1,19 +1,19 @@
-<!-- Add ngModel to bind checkbox values -->
-<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus" value="New/Intiated">
-<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus" value="Submitted">
+<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus.NewInitiated" value="New/Initiated">
+<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus.Submitted" value="Submitted">
 <!-- Add a click event to trigger the filter -->
 <button class="btn btn-rounded filter_button" (click)="filterData()">Filter</button>
-// Define an array to store selected status values
-selectedStatus: string[] = [];
-
-// Function to filter data based on selected status
+selectedStatus: { [key: string]: boolean } = {
+  'New/Initiated': false,
+  'Submitted': false,
+  // Add other status values here
+};
 filterData() {
-  // Filter the viewchangerequest array based on selectedStatus array
-  this.viewchangerequestFiltered = this.viewchangerequest.filter(item => this.selectedStatus.includes(item.status));
+  // Get the keys of selectedStatus where the value is true
+  const selectedStatusKeys = Object.keys(this.selectedStatus).filter(key => this.selectedStatus[key]);
+
+  // Filter the viewchangerequest array based on selectedStatus keys
+  this.viewchangerequestFiltered = this.viewchangerequest.filter(item => selectedStatusKeys.includes(item.status));
 }
-<tr class="tr-body" *ngFor="let pltdata of viewchangerequestFiltered">
-  <!-- Display table data as before -->
-</tr>
 
 
 
