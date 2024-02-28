@@ -1,8 +1,13 @@
-<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus['NewInitiated']" value="New/Initiated">
-<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus['Submitted']" value="Submitted">
-<!-- Add a click event to trigger the filter -->
-<button class="btn btn-rounded filter_button" (click)="filterData()">Filter</button>
+filterData() {
+  // Get the keys of selectedStatus where the value is true
+  const selectedStatusKeys = Object.keys(this.selectedStatus).filter(key => this.selectedStatus[key]);
 
+  // Filter the viewchangerequest array based on selectedStatus keys and trimmed status
+  this.viewchangerequestFiltered = this.viewchangerequest.filter(item => {
+    const trimmedStatus = item.status.trim();
+    return selectedStatusKeys.includes(trimmedStatus);
+  });
+}
 
 
 
