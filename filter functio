@@ -1,14 +1,24 @@
-filterData() {
-  // Get the keys of selectedStatus where the value is true
-  const selectedStatusKeys = Object.keys(this.selectedStatus).filter(key => this.selectedStatus[key]);
+  selectedStatus: { [key: string]: boolean } = {
+    'New': false,
+    'Submit': false,
+    'Approved': false,
+    'Rejected': false,
+    'Implement': false,
+    'Pending': false,
+    'Release': false,
+    'Closure': false,
 
-  // Filter the viewchangerequest array based on selectedStatus keys and trimmed status
-  this.viewchangerequestFiltered = this.viewchangerequest.filter(item => {
-    const trimmedStatus = item.status.trim();
-    return selectedStatusKeys.includes(trimmedStatus);
-  });
-}
+    // Add other status values here
+  };
+  filterData() {
+    debugger
+    const selectedStatusKeys = Object.keys(this.selectedStatus).filter(key => this.selectedStatus[key]);
 
+    this.viewchangerequestFiltered = this.viewchangerequest.filter(item => {
+      const trimmedStatus = item.status.trim();
+      return selectedStatusKeys.includes(trimmedStatus);
+    });
+  }
 
 
 
