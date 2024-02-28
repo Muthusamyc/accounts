@@ -1,15 +1,7 @@
- src/app/change-request/change-request.component.ts:10:15:
-      10 │   templateUrl: './change-request.component.html',
-         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-X [ERROR] NG1: Property 'NewInitiated' comes from an index signature, so it must be accessed with ['NewInitiated']. [plugin angular-compiler]
-
-    src/app/change-request/change-request.component.html:71:86:
-      71 │ ...ngModel)]="selectedStatus.NewInitiated" value="New/Initiated"><...
-
-
-
+<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus['NewInitiated']" value="New/Initiated">
+<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus['Submitted']" value="Submitted">
+<!-- Add a click event to trigger the filter -->
+<button class="btn btn-rounded filter_button" (click)="filterData()">Filter</button>
 
 
 
