@@ -1,4 +1,7 @@
- <div class="access-checkbox">
+
+ngOnInit
+
+<div class="access-checkbox">
 
    <input class="cr_filter_checkbox" type="checkbox" (change)="selectAll($event)" selected><label class="cr_filter_label text-success">All</label>
    <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox"  [(ngModel)]="selectedStatus['New']" value="New"><label class="cr_filter_label text-primary">New/Intiated</label>
