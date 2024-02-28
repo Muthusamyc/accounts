@@ -1,19 +1,12 @@
-<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus.NewInitiated" value="New/Initiated">
-<input class="cr_filter_checkbox" type="checkbox" [(ngModel)]="selectedStatus.Submitted" value="Submitted">
-<!-- Add a click event to trigger the filter -->
-<button class="btn btn-rounded filter_button" (click)="filterData()">Filter</button>
-selectedStatus: { [key: string]: boolean } = {
-  'New/Initiated': false,
-  'Submitted': false,
-  // Add other status values here
-};
-filterData() {
-  // Get the keys of selectedStatus where the value is true
-  const selectedStatusKeys = Object.keys(this.selectedStatus).filter(key => this.selectedStatus[key]);
+ src/app/change-request/change-request.component.ts:10:15:
+      10 │   templateUrl: './change-request.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  // Filter the viewchangerequest array based on selectedStatus keys
-  this.viewchangerequestFiltered = this.viewchangerequest.filter(item => selectedStatusKeys.includes(item.status));
-}
+
+X [ERROR] NG1: Property 'NewInitiated' comes from an index signature, so it must be accessed with ['NewInitiated']. [plugin angular-compiler]
+
+    src/app/change-request/change-request.component.html:71:86:
+      71 │ ...ngModel)]="selectedStatus.NewInitiated" value="New/Initiated"><...
 
 
 
