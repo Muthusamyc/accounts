@@ -1,18 +1,30 @@
+selectedStatus: { [key: string]: boolean } = {
+    'New': false,
+    'Submit': false,
+    'Approved': false,
+    'Rejected': false,
+    'Implement': false,
+    'Pending': false,
+    'Release': false,
+    'Closure': false,
+    'All': false, // Add 'All' with initial value as false
+};
+
 filterData() {
     debugger
-    const selectedStatusKeys = Object.keys(this.selectedStatus).filter(key => this.selectedStatus[key]);
+    const selectedStatusKeys = Object.keys(this.selectedStatus);
 
-    if (selectedStatusKeys.length === 0) {
-        // If no statuses are selected, show all data
+    if (this.selectedStatus['All']) {
+        // If 'All' is selected, show all data
         this.viewchangerequestFiltered = this.viewchangerequest;
     } else {
+        const filteredKeys = selectedStatusKeys.filter(key => this.selectedStatus[key]);
         this.viewchangerequestFiltered = this.viewchangerequest.filter(item => {
             const trimmedStatus = item.status.trim();
-            return selectedStatusKeys.includes(trimmedStatus);
+            return filteredKeys.includes(trimmedStatus);
         });
     }
 }
-
 
 
 
