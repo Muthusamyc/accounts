@@ -1,4 +1,39 @@
-ngOnInit(): void {
+import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PasscrdataService } from './passcrdata.service';
+import { environment } from '/IT_Portal/IT-Portal/IT-Portal.UI/src/environments/environment';
+
+@Component({
+  selector: 'app-change-request',
+  templateUrl: './change-request.component.html',
+  styleUrl: './change-request.component.css',
+})
+export class ChangeRequestComponent implements OnInit {
+
+  selecttable: any;
+  viewchangerequest: any[] = [];
+  plantcode: any[] = [];
+  classifications: any[] = [];
+  categorydata: any[] = [];
+  selectedStatus: { [key: string]: boolean } = {
+    'All': false,
+    'New': false,
+    'Submitted': false,
+    'Approved': false,
+    'Rejected': false,
+    'Implement': false,
+    'Pending': false,
+    'Release': false,
+    'Completed': false,
+  };
+  isVisible = true;
+  viewchangerequestFiltered: any; // Array to hold filtered data
+
+  constructor(private http: HttpClient, private routeservice: PasscrdataService, private router: Router, private route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
     this.loadData();
   }
 
@@ -11,3 +46,19 @@ ngOnInit(): void {
     this.getcategory();
     this.filterData();
   }
+
+  // Method to parse and sort response
+  private parseAndSortResponse(response: any): any[] {
+    // Your existing logic here...
+  }
+
+  getviewcrdata() {
+    // Your existing logic here...
+  }
+
+  filterData() {
+    // Your existing filtering logic here...
+  }
+
+  // Other methods like getplant, getclassification, etc.
+}
