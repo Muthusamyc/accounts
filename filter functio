@@ -1,100 +1,80 @@
-
-ngOnInit
-
-<div class="access-checkbox">
-
-   <input class="cr_filter_checkbox" type="checkbox" (change)="selectAll($event)" selected><label class="cr_filter_label text-success">All</label>
-   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox"  [(ngModel)]="selectedStatus['New']" value="New"><label class="cr_filter_label text-primary">New/Intiated</label>
-   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Submitted']" value="Submitted"><label class="cr_filter_label text-primary">Submitted</label>
-   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Approved']" value="Approved"><label class="cr_filter_label text-success">Approved</label>
-   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Rejected']" value="Rejected"><label class="cr_filter_label text-danger">Rejected</label>
-   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Implement']" value="Implement"><label class="cr_filter_label text-info">Implementation</label>
-   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Pending']" value="Pending"><label class="cr_filter_label text-warning">Pending</label>
-   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Release']" value="Release"><label class="cr_filter_label release_text">Released</label>
-   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Completed']" value="Completed"><label class="cr_filter_label text-success">Closure</label>
+ <div class="access-checkbox">
+   <input class="cr_filter_checkbox" type="checkbox" (change)="selectAll($event)"   ><label class="cr_filter_label text-success">All</label>
+   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['New']" value="New" (change)="filterData()"><label class="cr_filter_label text-primary">New/Intiated</label>
+   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Submitted']" value="Submitted" (change)="filterData()" ><label class="cr_filter_label text-primary">Submitted</label>
+   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Approved']" value="Approved" (change)="filterData()"><label class="cr_filter_label text-success">Approved</label>
+   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Rejected']" value="Rejected" (change)="filterData()"><label class="cr_filter_label text-danger">Rejected</label>
+   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Implement']" value="Implement" (change)="filterData()"><label class="cr_filter_label text-info">Implementation</label>
+   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Pending']" value="Pending" (change)="filterData()" ><label class="cr_filter_label text-warning">Pending</label>
+   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Release']" value="Release" (change)="filterData()"><label class="cr_filter_label release_text">Released</label>
+   <input class="cr_filter_checkbox" id="ChkStatus" type="checkbox" [(ngModel)]="selectedStatus['Completed']" value="Completed" (change)="filterData()"><label class="cr_filter_label text-success">Closure</label>
    <button class="btn btn-rounded filter_button" (click)="filterData()">Filter</button>
  </div>
+<table class="fl-table">
+  <thead class="table-head">
+    <tr class="border-bottom">
+      <th>Select</th>
+      <th>CR Code</th>
+      <th>Requestor</th>
+      <th>Description</th>
+      <th>Stage</th>
+      <th>Status</th>
+      <th>Type</th>
+      <th>Classifications</th>
+      <th>Start Date</th>
+      <!--<th>Attachments</th>-->
+      <th>Update</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="tr-body" *ngFor="let pltdata of viewchangerequestFiltered">
+      <td><input type="radio" (change)="selector(pltdata)" name="one" id="one" /></td>
+      <td>{{pltdata.crcode}}</td>
+      <td>{{pltdata.crowner}}</td>
+      <td>{{pltdata.changeDesc}}</td>
+      <td>{{pltdata.stage}}</td>
+      <td [ngSwitch]="pltdata.status.trim()">
+        <span *ngSwitchCase="'New'"> <span style="color: #3c8dbc;">{{ pltdata.status }}</span></span>
+        <span *ngSwitchCase="'Rejected'"> <span style="color: Red;">{{ pltdata.status }}</span></span>
+        <span *ngSwitchCase="'Submitted'"> <span style="color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
+        <span *ngSwitchCase="'Approved'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+        <span *ngSwitchCase="'Completed'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+        <span *ngSwitchCase="'Implement'"> <span style="color: cyan;">{{ pltdata.status }}</span></span>
+        <span *ngSwitchCase="'Pending'"> <span style="color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
+        <span *ngSwitchCase="'Release'"> <span style="color: rgb(154, 235, 73);">{{ pltdata.status }}</span></span>
+      </td>
 
- <table class="fl-table">
-   <thead class="table-head">
-     <tr class="border-bottom">
-       <th>Select</th>
-       <th>CR Code</th>
-       <th>Requestor</th>
-       <th>Description</th>
-       <th>Stage</th>
-       <th>Status</th>
-       <th>Type</th>
-       <th>Classifications</th>
-       <th>Start Date</th>
-       <!--<th>Attachments</th>-->
-       <th>Update</th>
-       <th>Delete</th>
-     </tr>
-   </thead>
-   <tbody>
-     <tr class="tr-body" *ngFor="let pltdata of viewchangerequestFiltered">
-       <td><input type="radio" (change)="selector(pltdata)" name="one" id="one" /></td>
-       <td>{{pltdata.crcode}}</td>
-       <td>{{pltdata.crowner}}</td>
-       <td>{{pltdata.changeDesc}}</td>
-       <td>{{pltdata.stage}}</td>
-       <td [ngSwitch]="pltdata.status.trim()">
-         <span *ngSwitchCase="'New'"> <span style="color: #3c8dbc;">{{ pltdata.status }}</span></span>
-         <span *ngSwitchCase="'Rejected'"> <span style="color: Red;">{{ pltdata.status }}</span></span>
-         <span *ngSwitchCase="'Submitted'"> <span style="color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
-         <span *ngSwitchCase="'Approved'"> <span style="color: green;">{{ pltdata.status }}</span></span>
-         <span *ngSwitchCase="'Completed'"> <span style="color: green;">{{ pltdata.status }}</span></span>
-         <span *ngSwitchCase="'Implement'"> <span style="color: cyan;">{{ pltdata.status }}</span></span>
-         <span *ngSwitchCase="'Pending'"> <span style="color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
-         <span *ngSwitchCase="'Release'"> <span style="color: rgb(154, 235, 73);">{{ pltdata.status }}</span></span>
-       </td>
+      <td>{{pltdata.categoryName}}</td>
+      <td>{{pltdata.classificationName}}</td>
+      <td>{{pltdata.crdate | date:'shortDate' }}</td>
+      <!--<td><i class="fa fa-download" aria-hidden="true"></i></td>-->
+      <td>
+        <a href="" (click)="updatepage()" routerLink="/executive/{{pltdata.itcrid}}/edit">
+          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+      </td>
+      <td>
+        <a href=""><i class="fa fa-trash" aria-hidden="true"></i></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-       <td>{{pltdata.categoryName}}</td>
-       <td>{{pltdata.classificationName}}</td>
-       <td>{{pltdata.crdate | date:'shortDate' }}</td>
-       <!--<td><i class="fa fa-download" aria-hidden="true"></i></td>-->
-       <td>
-         <a href="" (click)="updatepage()" routerLink="/executive/{{pltdata.itcrid}}/edit">
-           <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-         </a>
-       </td>
-       <td>
-         <a href=""><i class="fa fa-trash" aria-hidden="true"></i></a>
-       </td>
-     </tr>
-   </tbody>
- </table>
+filterData() {
+  debugger
+  const selectedStatusKeys = Object.keys(this.selectedStatus);
 
-
-  selectAll(event: any) {
-    const isChecked = event.target.checked;
-    const checkboxes = document.querySelectorAll('.cr_filter_checkbox');
-
-    checkboxes.forEach((checkbox: any) => {
-      checkbox.checked = isChecked;
-      const label = checkbox.nextElementSibling;
-      const labelText = label.textContent.trim();
-      this.selectedStatus[labelText] = isChecked; 
+  if (this.selectedStatus['All']) {
+    this.viewchangerequestFiltered = this.viewchangerequest;
+  } else {
+    const filteredKeys = selectedStatusKeys.filter(key => this.selectedStatus[key]);
+    this.viewchangerequestFiltered = this.viewchangerequest.filter(item => {
+      const trimmedStatus = item.status.trim();
+      return filteredKeys.includes(trimmedStatus);
     });
-
-    console.log("selectedStatus:", this.selectedStatus); 
-  };
-  filterData() {
-    debugger
-    const selectedStatusKeys = Object.keys(this.selectedStatus);
-
-    if (this.selectedStatus['All']) {
-      this.viewchangerequestFiltered = this.viewchangerequest;
-    } else {
-      const filteredKeys = selectedStatusKeys.filter(key => this.selectedStatus[key]);
-      this.viewchangerequestFiltered = this.viewchangerequest.filter(item => {
-        const trimmedStatus = item.status.trim();
-        return filteredKeys.includes(trimmedStatus);
-      });
-    }
   }
-
+}
 
 
 
