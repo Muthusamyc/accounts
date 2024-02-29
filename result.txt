@@ -1,5 +1,47 @@
-constructor(private http: HttpClient,private route:ActivatedRoute,private routeservice: PasscrdataService) {
-  this.routeservice.crdata.subscribe(data => {
-    this.crid = data.report.value;
-    this.statusis = this.crid.status; 
-  })
+ GetApprover() {
+   const apiUrl = this.apiurl + '/GetApproval/GetApprover';
+   const requestBody = {
+     "level": 1,
+     "stage": "N",
+     "crid": this.itcrid,
+   }
+   const httpOptions = {
+     headers: new HttpHeaders({
+       'Content-Type': 'application/json'
+     })
+   };
+
+   this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+     (response: any) => {
+
+       this.approvervalue = response;
+
+       if (this.approvervalue.approver1 == '') {
+         this.approvervalue[0][1] = this.approvervalue.approver1Name
+       }
+
+       console.log("Approver", this.approvervalue, this.approverCount)
+     },
+     (error: any) => {
+       console.error('POST request failed', error);
+     });
+ }
+
+
+[
+  {
+    "itApproverID": "1",
+    "approver1": "1",
+    "approver1Name": "SupportTeam 1 Engineer",
+    "approver2": "1",
+    "approver2Name": "SupportTeam 1 Engineer",
+    "approver3": "1",
+    "approver3Name": "SupportTeam 1 Engineer",
+    "approverCount": "2"
+  }
+]
+
+<select [(ngModel)]="approver" >
+ 
+  <option  value="{{approve.itApproverID}}">{{approve.approver1Name}}</option>
+</select>
