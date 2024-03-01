@@ -41,7 +41,145 @@
   }
 ]
 
-<select [(ngModel)]="approver" >
- 
-  <option  value="{{approve.itApproverID}}">{{approve.approver1Name}}</option>
-</select>
+  <nav class="breadcrumbs">
+    <div class="" id="nav-tab" role="tablist">
+      <a class="active breadcrumbs__item is-active" id="nav-home-tab{{i}}" *ngFor="let i of counter(data)" data-bs-toggle="tab" [attr.data-bs-target]="'#nav-home' + i" role="tab" aria-controls="nav-home" aria-selected="true">Approver  {{i}}</a>
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent">
+    <!--tab one-->
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+      <div>
+        <div class="container-field-approve">
+          RFC initiate Approved
+          <div class="border-rfc-heading">
+
+            <label>Approver Name</label>
+            <select [(ngModel)]="approver">
+              <option value="">{{supportapp}}</option>
+              <option>{{supportapp1}}</option>
+              <option>{{supportapp2}}</option>
+              <option>{{supportapp3}}</option>
+              <!-- <option  value="{{approve.itApproverID}}">{{approve.approver1Name}}</option>-->
+            </select>
+
+            <div class="row mt-3">
+              <div class="col">
+                <label>Date</label>
+                <input type="date" [(ngModel)]="today" />
+              </div>
+              <div class="">
+                <label>Remark</label>
+                <textarea class="textarea-implement" [(ngModel)]="remark"></textarea>
+              </div>
+              <div class="col"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="container-field-implement">
+            <div>
+              <label label-approve>Comments</label>
+              <textarea class="textarea-implement" [(ngModel)]="comment"></textarea>
+            </div>
+            <div>
+              <!-- Classification -->
+              <label class="label-approve">Attach Document</label>
+              <input class="input-approve" type="File" placeholder="" [(ngModel)]="attach" />
+            </div>
+          </div>
+          <div class="btn-sub-reset">
+            <button class="btn-sub-approve" (click)="getData()">
+              Approve
+            </button>
+            <button class="btn-sub-reject" type="submit" (click)="rejectbutton()">Reject</button>
+            <button class="btn-sub" type="submit" [routerLink]="'/change-request'">Seek Clarification</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  getData() {
+     debugger
+     if (this.approver == "") {
+      this.errorMessage = 'Enter Approver';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const selectElement = document.querySelector<HTMLSelectElement>('select[ngModel="approver"]');
+      if (selectElement) {
+        selectElement.focus();
+      }
+    }
+     else if (this.today == "") {
+      this.errorMessage = 'Select Date';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+       const inputElement = document.querySelector<HTMLInputElement>('input[ngModel="today"]');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+    else if (this.remark == "") {
+      this.errorMessage = 'Enter Remark';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const inputElement = document.querySelector<HTMLInputElement>('input[ngModel="remark"]');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+    else if (this.comment == "") {
+      this.errorMessage = 'Enter Comment';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const inputElement = document.querySelector<HTMLInputElement>('input[ngModel="comment"]');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+    /*else if (this.attach == "") {
+      this.errorMessage = 'Attach file';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const inputElement = document.querySelector<HTMLInputElement>('input[ngModel="attach"]');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }*/
+     else {
+  
+       this.successMessage = 'Approve Successfully!';
+  
+       const apiUrl = this.apiurl + '/CRapprove/Approve';
+       const requestBody = {
+  
+        "Flag": "I",
+        "CRApproverID": 1,
+        "PlantID": 70,
+        "SupportID": 4,
+        "CRID": this.crid.itcrid,
+        "Stage": "Test",
+        "ApproverID": this.approver,
+        "ApprovedDt": this.today,
+        "Remarks": this.remark,
+        "Status": "Approved Level1",
+        "Attachment": this.attach,
+        "CreatedBy": "Joe",
+        "CreatedDt": "2024-02-06T09:52:33.431Z",
+        "ModifiedBy": "Admin",
+        "ModifiedDt": "2024-02-06T09:52:33.431Z"
+      }
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      };
+  
+      this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+        (response: any) => {
+          console.log(response);
+        },
+        (error: any) => {
+          console.error('POST request failed', error);
+        });
+      this.router.navigate(['/change-request']);
+    }
+    }
+  
