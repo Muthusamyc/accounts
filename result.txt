@@ -1,40 +1,32 @@
-NG5002: Opening tag "a" not terminated.
-src/app/change-request/approve/approve.component.html:21:6
-
-
-
 <nav class="breadcrumbs">
   <div class="" id="nav-tab" role="tablist">
     <a class="active breadcrumbs__item is-active" 
        id="nav-home-tab{{i}}" 
-       *ngFor="let approver of approvers; let i = index" <!-- Here I assume you have an array of approvers called approvers -->
+       *ngFor="let approver of approvers; let i = index" <!-- Here is the issue -->
        (click)="activateTab(i)" 
        [class.active]="activeTab === i" 
        role="tab" 
        [attr.aria-controls]="'nav-home' + i" 
        aria-selected="true">
-       Approver  {{i + 1}} <!-- Adjusted to start from 1 -->
+       Approver  {{i + 1}}
     </a>
   </div>
 </nav>
-<div class="tab-content" id="nav-tabContent">
-  <!--tab one-->
-  <div *ngFor="let approver of approvers; let i = index" <!-- Same loop as above -->
-       class="tab-pane fade" 
-       [class.show]="activeTab === i" 
-       id="nav-home{{i}}" 
-       role="tabpanel" 
-       [attr.aria-labelledby]="'nav-home-tab' + i">
-    <!-- Tab content here -->
+
+
+
+<nav class="breadcrumbs">
+  <div class="" id="nav-tab" role="tablist">
+    <!-- Here is the corrected comment -->
+    <a class="active breadcrumbs__item is-active" 
+       id="nav-home-tab{{i}}" 
+       *ngFor="let approver of approvers; let i = index" 
+       (click)="activateTab(i)" 
+       [class.active]="activeTab === i" 
+       role="tab" 
+       [attr.aria-controls]="'nav-home' + i" 
+       aria-selected="true">
+       Approver  {{i + 1}}
+    </a>
   </div>
-</div>
-
-
-
- activeTab: number = 0; // Default to the first tab being active
-  approvers: any[] = []; // Assuming you have an array of approvers
-
-  // Function to activate a tab
-  activateTab(tabNumber: number) {
-    this.activeTab = tabNumber;
-  }
+</nav>
