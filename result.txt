@@ -2,19 +2,34 @@
   <div class="" id="nav-tab" role="tablist">
     <a class="active breadcrumbs__item is-active" 
        id="nav-home-tab{{i}}" 
-       *ngFor="let i of counter(data)" 
+       *ngFor="let approver of approvers; let i = index" <!-- Here I assume you have an array of approvers called approvers -->
        (click)="activateTab(i)" 
        [class.active]="activeTab === i" 
        role="tab" 
        [attr.aria-controls]="'nav-home' + i" 
        aria-selected="true">
-       Approver  {{i}}
+       Approver  {{i + 1}} <!-- Adjusted to start from 1 -->
     </a>
   </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
   <!--tab one-->
-  <div *ngFor="let i of counter(data)" class="tab-pane fade" [class.show]="activeTab === i" id="nav-home{{i}}" role="tabpanel" [attr.aria-labelledby]="'nav-home-tab' + i">
+  <div *ngFor="let approver of approvers; let i = index" <!-- Same loop as above -->
+       class="tab-pane fade" 
+       [class.show]="activeTab === i" 
+       id="nav-home{{i}}" 
+       role="tabpanel" 
+       [attr.aria-labelledby]="'nav-home-tab' + i">
     <!-- Tab content here -->
   </div>
 </div>
+
+
+
+ activeTab: number = 0; // Default to the first tab being active
+  approvers: any[] = []; // Assuming you have an array of approvers
+
+  // Function to activate a tab
+  activateTab(tabNumber: number) {
+    this.activeTab = tabNumber;
+  }
