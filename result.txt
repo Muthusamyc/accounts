@@ -1,20 +1,61 @@
-<!-- Select Option -->
-<select [(ngModel)]="approverValues[j]">
-  <option value="">{{supportapp}}</option>
-  <option>{{supportapp1}}</option>
-  <option>{{supportapp2}}</option>
-  <option>{{supportapp3}}</option>
-</select>
+<div>
+  <nav class="breadcrumbs">
+    <div class="" id="nav-tab" role="tablist">
+      <a class="active breadcrumbs__item " id="nav-home-tab{{j}}" *ngFor="let i of counter(data);let j = index " data-bs-toggle="tab" [attr.data-bs-target]="'#nav-home' + j+1" role="tab" aria-controls="nav-home" aria-selected="true">Approver{{j}}</a>
+    </div>
+  </nav>
+  <div class="tab-content" id="nav-tabContent{{j}}" *ngFor="let i of counter(data);let j = index ">
+    <!--tab one-->
+    
+    <div *ngIf="selectedTab === j" class="tab-pane fade show active"  id="nav-home" role="tabpanel" aria-labelledby="'nav-home-tab' + j">
+      <div>
+        <div class="container-field-approve">
+          RFC initiate Approved
+          <div class="border-rfc-heading">
 
-<!-- Textarea -->
-<textarea class="textarea-implement" [(ngModel)]="remarkValues[j]"></textarea>
+            <label>Approver Name</label>
+            <select [(ngModel)]="approver">
+              <option value="">{{supportapp}}</option>
+              <option>{{supportapp1}}</option>
+              <option>{{supportapp2}}</option>
+              <option>{{supportapp3}}</option>
+              <!-- <option  value="{{approve.itApproverID}}">{{approve.approver1Name}}</option>-->
+            </select>
 
-
-approverValues: string[] = [];
-remarkValues: string[] = [];
-
-// Inside your component constructor or ngOnInit
-for (let i = 0; i < numberOfTabs; i++) {
-  this.approverValues.push('');
-  this.remarkValues.push('');
-}
+            <div class="row mt-3">
+              <div class="col">
+                <label>Date</label>
+                <input type="date" [(ngModel)]="today" />
+              </div>
+              <div class="">
+                <label>Remark</label>
+                <textarea class="textarea-implement" [(ngModel)]="remark"></textarea>
+              </div>
+              <div class="col"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="container-field-implement">
+            <div>
+              <label label-approve>Comments</label>
+              <textarea class="textarea-implement" [(ngModel)]="comment"></textarea>
+            </div>
+            <div>
+              <!-- Classification -->
+              <label class="label-approve">Attach Document</label>
+              <input class="input-approve" type="File" placeholder="" [(ngModel)]="attach" />
+            </div>
+          </div>
+          <div class="btn-sub-reset">
+            <button class="btn-sub-approve" (click)="getData(['Approval level'+selectedTab])">
+              Approve
+            </button>
+            <button class="btn-sub-reject" type="submit" (click)="rejectbutton()">Reject</button>
+            <button class="btn-sub" type="submit" [routerLink]="'/change-request'">Seek Clarification</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
