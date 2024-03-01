@@ -14,7 +14,7 @@
 </nav>
 <div class="tab-content" id="nav-tabContent">
   <!--tab one-->
-  <div *ngFor="let i of counter(data)" class="tab-pane fade" [class.show]="activeTab === i" id="nav-home{{i}}" role="tabpanel">
+  <div *ngFor="let i of counter(data)" class="tab-pane fade" [class.show]="activeTab === i" id="nav-home{{i}}" role="tabpanel" [attr.aria-labelledby]="'nav-home-tab' + i">
     <!-- Tab content here -->
   </div>
 </div>
