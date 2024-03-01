@@ -1,1 +1,20 @@
-Unsupported expression in a two-way binding
+<!-- Select Option -->
+<select [(ngModel)]="approverValues[j]">
+  <option value="">{{supportapp}}</option>
+  <option>{{supportapp1}}</option>
+  <option>{{supportapp2}}</option>
+  <option>{{supportapp3}}</option>
+</select>
+
+<!-- Textarea -->
+<textarea class="textarea-implement" [(ngModel)]="remarkValues[j]"></textarea>
+
+
+approverValues: string[] = [];
+remarkValues: string[] = [];
+
+// Inside your component constructor or ngOnInit
+for (let i = 0; i < numberOfTabs; i++) {
+  this.approverValues.push('');
+  this.remarkValues.push('');
+}
