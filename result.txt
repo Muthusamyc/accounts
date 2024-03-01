@@ -1,131 +1,354 @@
-<nav class="breadcrumbs">
-   <div class="" id="nav-tab" role="tablist">
-     <a class="active breadcrumbs__item " id="nav-home-tab{{j+1}}" *ngFor="let i of counter(data);let j = index " data-bs-toggle="tab" [attr.data-bs-target]="'#nav-home' + j+1" role="tab" aria-controls="nav-home" aria-selected="true" (click)="showTab(j)">Approver{{j+1}}</a>
-   </div>
- </nav>
- <div class="tab-content" id="nav-tabContent{{j+1}}" *ngFor="let i of counter(data);let j = index ">
-   <!--tab one-->
-   <div *ngIf="selectedTab === j" class="tab-pane fade show active"  id="nav-home" role="tabpanel" aria-labelledby="'nav-home-tab' + j+1">
-     <div>
-       <div class="container-field-approve">
-         RFC initiate Approved
-         <div class="border-rfc-heading">
+<div>
+  <div class="container-field-approve">
+    RFC initiate Approved
+    <div class="border-rfc-heading">
 
-           <label>Approver Name</label>
-           <select [(ngModel)]="approver">
-             <option value="">{{supportapp}}</option>
-             <option>{{supportapp1}}</option>
-             <option>{{supportapp2}}</option>
-             <option>{{supportapp3}}</option>
-             <!-- <option  value="{{approve.itApproverID}}">{{approve.approver1Name}}</option>-->
-           </select>
+      <label>Approver Name</label>
+      <select [(ngModel)]="'approver' j+1">
+        <option value="">{{supportapp}}</option>
+        <option>{{supportapp1}}</option>
+        <option>{{supportapp2}}</option>
+        <option>{{supportapp3}}</option>
+        <!-- <option  value="{{approve.itApproverID}}">{{approve.approver1Name}}</option>-->
+      </select>
 
-           <div class="row mt-3">
-             <div class="col">
-               <label>Date</label>
-               <input type="date" [(ngModel)]="today" />
-             </div>
-             <div class="">
-               <label>Remark</label>
-               <textarea class="textarea-implement" [(ngModel)]="remark"></textarea>
-             </div>
-             <div class="col"></div>
-           </div>
-         </div>
-       </div>
-       <div>
-         <div class="container-field-implement">
-           <div>
-             <label label-approve>Comments</label>
-             <textarea class="textarea-implement" [(ngModel)]="comment"></textarea>
-           </div>
-           <div>
-             <!-- Classification -->
-             <label class="label-approve">Attach Document</label>
-             <input class="input-approve" type="File" placeholder="" [(ngModel)]="attach" />
-           </div>
-         </div>
-         <div class="btn-sub-reset">
-           <button class="btn-sub-approve" (click)="getData()">
-             Approve
-           </button>
-           <button class="btn-sub-reject" type="submit" (click)="rejectbutton()">Reject</button>
-           <button class="btn-sub" type="submit" [routerLink]="'/change-request'">Seek Clarification</button>
-         </div>
-       </div>
-     </div>
-   </div>
- </div>
+      <div class="row mt-3">
+        <div class="col">
+          <label>Date</label>
+          <input type="date" [(ngModel)]="today" />
+        </div>
+        <div class="">
+          <label>Remark</label>
+          <textarea class="textarea-implement" [(ngModel)]="remark"></textarea>
+        </div>
+        <div class="col"></div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="container-field-implement">
+      <div>
+        <label label-approve>Comments</label>
+        <textarea class="textarea-implement" [(ngModel)]="comment"></textarea>
+      </div>
+      <div>
+        <!-- Classification -->
+        <label class="label-approve">Attach Document</label>
+        <input class="input-approve" type="File" placeholder="" [(ngModel)]="attach" />
+      </div>
+    </div>
+    <div class="btn-sub-reset">
+      <button class="btn-sub-approve" (click)="getData()">
+        Approve
+      </button>
+      <button class="btn-sub-reject" type="submit" (click)="rejectbutton()">Reject</button>
+      <button class="btn-sub" type="submit" [routerLink]="'/change-request'">Seek Clarification</button>
+    </div>
+  </div>
+</div>
 
-// Inside your component class
-selectedTab: number = 0;
+import { Component } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import { json } from 'express';
+import { PasscrdataService } from '../passcrdata.service';
+import { environment } from '/IT_Portal/IT-Portal/IT-Portal.UI/src/environments/environment';
 
-// Method to show the selected tab
-showTab(index: number) {
-  this.selectedTab = index;
+@Component({
+  selector: 'app-approve',
+  templateUrl: './approve.component.html',
+  styleUrl: './approve.component.css'
+})
+export class ApproveComponent {
+  showInitiator: boolean = false;
+  showRiskQ: boolean = false;
+  tabs: any[] = [];
+  numberOfTabs: number = 1;
+  plantData: any[] = [];
+  status: any = '';
+  approver: any = '';
+  appdate: any = '';
+  attach: any = '';
+  remark: any = '';
+  comment: any = '';
+
+  errorMessage: any = '';
+  successMessage: any = '';
+  Rejected: any = '';
+  selectthevalue: any = '';
+  updatevalue: any;
+  crid: any;
+  today: any;
+  constructor(private http: HttpClient, private routeservice: PasscrdataService, private router: Router, private route: ActivatedRoute) {
+    this.routeservice.crdata.subscribe(data => {
+      this.crid = data.report.value;
+      this.itcrid = this.crid.itcrid;
+    })
+    const currentDate = new Date()
+    this.today = currentDate.toISOString().slice(0, 10);
+    console.log("crid", this.crid);
+
+  }
+  selectedTab: number = 0;
+
+  // Method to show the selected tab
+  showTab(index: number) {
+    this.selectedTab = index;
+  }
+  ngOnInit(): void {
+    this.getidupdate();
+    this.GetApprover();
+  }
+  private apiurl = environment.apiurls;
+
+  toggleInitiatorFields() {
+    this.showInitiator = !this.showInitiator;
+  }
+
+  toggleField() {
+    this.showRiskQ = !this.showRiskQ;
+  }
+
+  toggleCollapsible(content: HTMLDivElement): void {
+    content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+  }
+
+  addMore() {
+    this.plantData.push({
+      selectPlant: '',
+      controlNumber: '',
+      controlDate: '',
+      attachment: null
+    });
+  }
+
+  toggleInitiatorField(index: number) {
+    this.tabs[index].showInitiator = !this.tabs[index].showInitiator;
+  }
+
+  removeTab() {
+    if (this.tabs.length > 0) {
+      this.tabs.pop();
+    }
+  }
+
+  update(index: number) {
+    // Implement the update logic here
+  }
+
+  delete(index: number) {
+    this.plantData.splice(index, 1);
+  }
+
+  handleFileInput(event: any, index: number) {
+    const file = event.target.files[0];
+    this.plantData[index].attachment = file;
+  }
+  itcrid: any;
+  getidupdate() {
+
+    this.itcrid = this.route.snapshot.paramMap.get('id');
+  }
+  approvervalue: any;
+  approverCount: any;
+  supportapp1: any; supportapp2: any; supportapp3: any; supportapp: any;
+
+  GetApprover() {
+    const apiUrl = this.apiurl + '/GetApproval/GetApprover';
+    const requestBody = {
+      "level": 1,
+      "stage": "N",
+      "crid": this.itcrid,
+    }
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+      (response: any) => {
+
+        this.approvervalue = response;
+        this.supportapp = "Select Approver"
+        if (this.approvervalue[0].approver1 != '') {
+          this.supportapp1 =  this.approvervalue[0].approver1Name ; 
+        }
+        if (this.approvervalue[0].approver2 != '') {
+          this.supportapp2 = this.approvervalue[0].approver2Name ;
+        }
+        if (this.approvervalue[0].approver3 != '') {
+          this.supportapp3 = this.approvervalue[0].approver3Name;
+        }
+        
+        console.log("Approver", this.supportapp, this.approverCount)
+      },
+      (error: any) => {
+        console.error('POST request failed', error);
+      });
+  }
+
+  data = 2; // Or any value you want
+  approvers: any[] = [];
+
+
+
+  initializeApprovers() {
+
+   /* this.approverCount = parseInt(this.approver[0].approverCount);
+    for (let i = 0; i < this.approverCount; i++) {
+      this.approvers.push({
+        name: '',
+        date: '',
+        remark: '',
+        comment: '',
+        attach: ''
+      });
+    }*/
+  }
+
+  counter(i: number) {
+    return new Array(i);
+  }
+
+  /*getData(event: any) {
+    const index = event.target.getAttribute('data-index');
+    // Implement your logic to handle approval data
+    console.log('Approve data for index', index);
+  }
+
+  rejectbutton(event: any) {
+    const index = event.target.getAttribute('data-index');
+    // Implement your logic to handle rejection
+    console.log('Reject data for index', index);
+  }*/
+
+  clearErrorMessage() {
+    this.errorMessage = '';
+  }
+  activeTab: number = 1; // Default to the first tab being active
+
+  // Function to activate a tab
+  activateTab(tabNumber: number) {
+    this.activeTab = tabNumber;
+  }
+
+  getData() {
+     debugger
+     if (this.approver == "") {
+      this.errorMessage = 'Enter Approver';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const selectElement = document.querySelector<HTMLSelectElement>('select[ngModel="approver"]');
+      if (selectElement) {
+        selectElement.focus();
+      }
+    }
+     else if (this.today == "") {
+      this.errorMessage = 'Select Date';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+       const inputElement = document.querySelector<HTMLInputElement>('input[ngModel="today"]');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+    else if (this.remark == "") {
+      this.errorMessage = 'Enter Remark';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const inputElement = document.querySelector<HTMLInputElement>('input[ngModel="remark"]');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+    else if (this.comment == "") {
+      this.errorMessage = 'Enter Comment';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const inputElement = document.querySelector<HTMLInputElement>('input[ngModel="comment"]');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+    /*else if (this.attach == "") {
+      this.errorMessage = 'Attach file';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const inputElement = document.querySelector<HTMLInputElement>('input[ngModel="attach"]');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }*/
+     else {
+  
+       this.successMessage = 'Approve Successfully!';
+  
+       const apiUrl = this.apiurl + '/CRapprove/Approve';
+       const requestBody = {
+  
+        "Flag": "I",
+        "CRApproverID": 1,
+        "PlantID": 70,
+        "SupportID": 4,
+        "CRID": this.crid.itcrid,
+        "Stage": "Test",
+        "ApproverID": this.approver,
+        "ApprovedDt": this.today,
+        "Remarks": this.remark,
+        "Status": "Approved Level1",
+        "Attachment": this.attach,
+        "CreatedBy": "Joe",
+        "CreatedDt": "2024-02-06T09:52:33.431Z",
+        "ModifiedBy": "Admin",
+        "ModifiedDt": "2024-02-06T09:52:33.431Z"
+      }
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      };
+  
+      this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+        (response: any) => {
+          console.log(response);
+        },
+        (error: any) => {
+          console.error('POST request failed', error);
+        });
+      this.router.navigate(['/change-request']);
+    }
+    }
+  
+   rejectbutton() {
+      this.Rejected = 'Rejected';
+      
+      const apiUrl = this.apiurl + '/CRapprove/Approve';
+      const requestBody = {
+        "Flag": "I",
+        "CRApproverID": 1,
+        "PlantID": 70,
+        "SupportID": 4,
+        "CRID": this.crid.itcrid,
+        "Stage": "Test",
+        "ApproverID": this.approver,
+        "ApprovedDt": this.appdate,
+        "Remarks": this.remark,
+        "Status": "Reject",
+        "Attachment": this.attach,
+        "CreatedBy": "Joe",
+        "CreatedDt": "2024-02-06T09:52:33.431Z",
+        "ModifiedBy": "Admin",
+        "ModifiedDt": "2024-02-06T09:52:33.431Z"
+      }
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      };
+  
+      this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+        (response: any) => {
+          console.log(response);
+        },
+        (error: any) => {
+          console.error('POST request failed', error);
+        });
+      this.router.navigate(['/change-request']);
+    }
 }
-
-
-
-
-
-
-
-<nav class="breadcrumbs">
-   <div class="" id="nav-tab" role="tablist">
-     <a class="active breadcrumbs__item " id="nav-home-tab{{j+1}}" *ngFor="let i of counter(data);let j = index " data-bs-toggle="tab" [attr.data-bs-target]="'#nav-home' + j+1" role="tab" aria-controls="nav-home" aria-selected="true">Approver{{j+1}}</a>
-   </div>
- </nav>
- <div class="tab-content" id="nav-tabContent{{j+1}}" *ngFor="let i of counter(data);let j = index ">
-   <!--tab one-->
-   <div class="tab-pane fade show active"  id="nav-home" role="tabpanel" aria-labelledby="'nav-home-tab' + j+1">
-     <div>
-       <div class="container-field-approve">
-         RFC initiate Approved
-         <div class="border-rfc-heading">
-
-           <label>Approver Name</label>
-           <select [(ngModel)]="approver">
-             <option value="">{{supportapp}}</option>
-             <option>{{supportapp1}}</option>
-             <option>{{supportapp2}}</option>
-             <option>{{supportapp3}}</option>
-             <!-- <option  value="{{approve.itApproverID}}">{{approve.approver1Name}}</option>-->
-           </select>
-
-           <div class="row mt-3">
-             <div class="col">
-               <label>Date</label>
-               <input type="date" [(ngModel)]="today" />
-             </div>
-             <div class="">
-               <label>Remark</label>
-               <textarea class="textarea-implement" [(ngModel)]="remark"></textarea>
-             </div>
-             <div class="col"></div>
-           </div>
-         </div>
-       </div>
-       <div>
-         <div class="container-field-implement">
-           <div>
-             <label label-approve>Comments</label>
-             <textarea class="textarea-implement" [(ngModel)]="comment"></textarea>
-           </div>
-           <div>
-             <!-- Classification -->
-             <label class="label-approve">Attach Document</label>
-             <input class="input-approve" type="File" placeholder="" [(ngModel)]="attach" />
-           </div>
-         </div>
-         <div class="btn-sub-reset">
-           <button class="btn-sub-approve" (click)="getData()">
-             Approve
-           </button>
-           <button class="btn-sub-reject" type="submit" (click)="rejectbutton()">Reject</button>
-           <button class="btn-sub" type="submit" [routerLink]="'/change-request'">Seek Clarification</button>
-         </div>
-       </div>
-     </div>
-   </div>
- </div>
