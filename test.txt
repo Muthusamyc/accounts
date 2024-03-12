@@ -1,0 +1,77 @@
+how to login with the value for the username & password in this service
+import { Injectable } from '@angular/core';
+import { InMemoryDbService, RequestInfo } from 'angular-in-memory-web-api';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MockapiserviceService implements InMemoryDbService {
+
+  constructor() { }
+   createDb(){
+       return {
+         user: [
+           {id:1, username:'Muthu',password:'Muthu@123',email:'muthu@gmail.com'}
+         ]
+       }
+    }
+}
+this for login ts
+import { Component } from '@angular/core';
+import { AuthServiceService } from '../auth-service.service';
+import { response } from 'express';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.css'
+})
+export class HomeComponent {
+ selectedOption: string = '';
+
+  onOptionSelected(option: string): void {
+    this.selectedOption = option;
+  }
+  username: string = '';
+  password: string = '';
+
+  constructor(private route:Router,private authservice:AuthServiceService) { }
+
+  login(): void {
+    debugger
+    this.authservice.login(this.username, this.password).subscribe(
+      (response:any) => {
+        this.route.navigate(['/dashboard'])
+        console.log("Muthu2")
+      }
+      
+    );
+    console.log("Muthu")
+  }
+}
+ant this for the authservice
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthServiceService {
+  private apiUrl = 'http://localhost:4200/'
+  constructor(private http: HttpClient) { }
+
+  login(username: string, password: string): Observable<any> {
+    return this.http.post('${this.apiUrl}/login', { username, password });
+  }
+  settoken(username: string, password: string) {
+    localStorage.setItem('username', username);
+    localStorage.setItem('password', password);
+    
+  }
+  logout(): Observable<any> {
+    return this.http.post('${this.apiUrl}/logout', {});
+  }
+}
