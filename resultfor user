@@ -1,0 +1,89 @@
+import { Injectable } from '@angular/core';
+import { InMemoryDbService } from 'angular-in-memory-web-api';
+import { Observable, of } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MockapiserviceService implements InMemoryDbService {
+
+  constructor() { }
+
+  createDb(){
+    return {
+      users: [
+        { id: 1, username: 'Muthu', password: 'Muthu@123', email: 'muthu@gmail.com' }
+      ]
+    };
+  }
+
+  // Method to check user credentials
+  authenticate(username: string, password: string): Observable<any> {
+    const users = this.createDb().users;
+    const user = users.find(u => u.username === username && u.password === password);
+    return of(user); // Return the user if found, otherwise null
+  }
+}
+
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { MockapiserviceService } from './mockapiservice.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthServiceService {
+  private apiUrl = 'http://localhost:4200/';
+
+  constructor(private http: HttpClient, private mockApiService: MockapiserviceService) { }
+
+  login(username: string, password: string): Observable<any> {
+    return this.mockApiService.authenticate(username, password);
+  }
+
+  setToken(username: string, password: string) {
+    localStorage.setItem('username', username);
+    localStorage.setItem('password', password);
+  }
+
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/logout`, {});
+  }
+}
+
+
+import { Component } from '@angular/core';
+import { AuthServiceService } from '../auth-service.service';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent {
+  username: string = '';
+  password: string = '';
+
+  constructor(private router: Router, private authService: AuthServiceService) { }
+
+  login(): void {
+    this.authService.login(this.username, this.password).subscribe(
+      (user: any) => {
+        if (user) {
+          // Authentication successful
+          this.authService.setToken(user.username, user.password);
+          this.router.navigate(['/dashboard']);
+        } else {
+          // Authentication failed
+          console.log("Invalid username or password");
+        }
+      },
+      error => {
+        console.error("An error occurred during login:", error);
+      }
+    );
+  }
+}
