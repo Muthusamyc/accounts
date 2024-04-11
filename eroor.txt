@@ -6,8 +6,7 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
         const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
         const imgWidth = 210;
         const pageHeight = 295;
-        const footerHeight = 10; // Height reserved for footer
-        const imgHeight = ((canvas.height - footerHeight) * imgWidth) / canvas.width; // Adjusted image height
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
         let heightLeft = imgHeight;
         let position = padding;
   
@@ -16,21 +15,30 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
           pdf.setTextColor(0);
           pdf.setFontSize(10);
           pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
-          pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
+        };
+
+        // Function to add footer section with underline
+        const addFooter = (footerText: string) => {
+          const footerY = pageHeight - 15; // Adjust this value to position the footer
+          pdf.setLineWidth(0.5);
+          pdf.line(padding, footerY, imgWidth - padding, footerY); // Add underline
+          pdf.text(footerText, imgWidth / 2, footerY - 2, { align: 'center' }); // Add footer text
         };
   
         // Initial page
         pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
         addPageNumbers(1);
-        heightLeft -= (imgHeight - padding); // Adjust height left after first page
+        addFooter("SOP");
+        heightLeft -= pageHeight;
   
         let pageNumber = 2;
         while (heightLeft >= 0) {
+          position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
           pdf.addPage();
-          position = padding; // Reset position for subsequent pages
-          pdf.addImage(imgData, 'PNG', padding, padding, imgWidth - 2 * padding, imgHeight - padding);
+          pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
           addPageNumbers(pageNumber);
-          heightLeft -= imgHeight;
+          addFooter("SOP");
+          heightLeft -= pageHeight;
           pageNumber++;
         }
   
