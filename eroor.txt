@@ -1,38 +1,41 @@
 generatePDF(htmlContent: string, filename: string, padding: number = 10) {
     const element = document.querySelector('#pdfContent') as HTMLElement;
     if (element) {
-        html2canvas(element).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-            const imgWidth = 210;
-            const pageHeight = 295;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = padding;
-
-            // Function to add footer
-            const addFooter = (pageNumber: number) => {
-                pdf.setTextColor(0);
-                pdf.setFontSize(10);
-                pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
-                pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
-                pdf.line(padding, pageHeight - 10, imgWidth - padding, pageHeight - 10); // Underline for footer top section
-            };
-
-            let pageNumber = 1;
-            while (heightLeft >= 0) {
-                if (pageNumber !== 1) {
-                    pdf.addPage();
-                }
-                pdf.addImage(imgData, 'PNG', padding, padding, imgWidth - 2 * padding, imgHeight - padding);
-                addFooter(pageNumber);
-                heightLeft -= pageHeight;
-                pageNumber++;
-            }
-
-            pdf.save(filename);
-        });
+      html2canvas(element).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210;
+        const pageHeight = 295;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = padding;
+  
+        // Function to add page numbers
+        const addPageNumbers = (pageNumber: number) => {
+          pdf.setTextColor(0);
+          pdf.setFontSize(10);
+          pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
+          pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
+        };
+  
+        // Initial page
+        pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
+        addPageNumbers(1);
+        heightLeft -= pageHeight;
+  
+        let pageNumber = 2;
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
+          addPageNumbers(pageNumber);
+          heightLeft -= pageHeight;
+          pageNumber++;
+        }
+  
+        pdf.save(filename);
+      });
     } else {
-        console.error('Element with id "pdfContent" not found');
+      console.error('Element with id "pdfContent" not found');
     }
-}
+  }
