@@ -19,16 +19,13 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
                 pdf.line(padding, pageHeight - 10, imgWidth - padding, pageHeight - 10); // Underline for footer top section
             };
 
-            // Initial page
-            pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
-            heightLeft -= pageHeight;
-
-            let pageNumber = 2;
+            let pageNumber = 1;
             while (heightLeft >= 0) {
-                position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
-                pdf.addPage();
-                addFooter(pageNumber);
+                if (pageNumber !== 1) {
+                    pdf.addPage();
+                }
                 pdf.addImage(imgData, 'PNG', padding, padding, imgWidth - 2 * padding, imgHeight - padding);
+                addFooter(pageNumber);
                 heightLeft -= pageHeight;
                 pageNumber++;
             }
