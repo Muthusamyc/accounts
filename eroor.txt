@@ -1,3 +1,12 @@
+const addFooterImage = () => {
+    const footerImgWidth = 30; // Adjust image width as needed
+    const footerImgHeight = (canvas.height * footerImgWidth) / canvas.width;
+    const footerImgX = (imgWidth - footerImgWidth) / 2;
+    const footerImgY = pageHeight - footerImgHeight - 20; // Adjust this value to position the image
+    pdf.addImage(imgData, 'PNG', footerImgX, footerImgY, footerImgWidth, footerImgHeight);
+};
+
+
 generatePDF(htmlContent: string, filename: string, padding: number = 10) {
     const element = document.querySelector('#pdfContent') as HTMLElement;
     if (element) {
