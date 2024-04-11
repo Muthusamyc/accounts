@@ -6,7 +6,8 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
         const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
         const imgWidth = 210;
         const pageHeight = 295;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const footerHeight = 10; // Height reserved for footer
+        const imgHeight = ((canvas.height - footerHeight) * imgWidth) / canvas.width; // Adjusted image height
         let heightLeft = imgHeight;
         let position = padding;
   
