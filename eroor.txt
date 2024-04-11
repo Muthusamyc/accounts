@@ -1,70 +1,40 @@
-const addFooterImage = () => {
-    const footerImgWidth = 30; // Adjust image width as needed
-    const footerImgHeight = (canvas.height * footerImgWidth) / canvas.width;
-    const footerImgX = (imgWidth - footerImgWidth) / 2;
-    const footerImgY = pageHeight - footerImgHeight - 20; // Adjust this value to position the image
-    pdf.addImage(imgData, 'PNG', footerImgX, footerImgY, footerImgWidth, footerImgHeight);
-};
-
-
 generatePDF(htmlContent: string, filename: string, padding: number = 10) {
     const element = document.querySelector('#pdfContent') as HTMLElement;
     if (element) {
-      html2canvas(element).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210;
-        const pageHeight = 295;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = padding;
-  
-        // Function to add page numbers
-        const addPageNumbers = (pageNumber: number) => {
-          pdf.setTextColor(0);
-          pdf.setFontSize(10);
-          pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
-        };
+        html2canvas(element).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const pageHeight = 295;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+            let position = padding;
 
-        // Function to add footer section with underline
-        const addFooter = (footerText: string) => {
-          const footerY = pageHeight - 15; // Adjust this value to position the footer
-          pdf.setLineWidth(0.5);
-          pdf.line(padding, footerY, imgWidth - padding, footerY); // Add underline
-          pdf.text(footerText, imgWidth / 2, footerY - 2, { align: 'center' }); // Add footer text
-        };
+            // Function to add footer
+            const addFooter = () => {
+                pdf.setTextColor(0);
+                pdf.setFontSize(10);
+                pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
+                pdf.line(padding, pageHeight - 10, imgWidth - padding, pageHeight - 10); // Underline for footer top section
+            };
 
-        // Function to add image in footer section
-        const addFooterImage = () => {
-          const footerImgWidth = 30; // Adjust image width as needed
-          const footerImgHeight = (canvas.height * footerImgWidth) / canvas.width;
-          const footerImgX = (imgWidth - footerImgWidth) / 2;
-          const footerImgY = pageHeight - footerImgHeight - 20; // Adjust this value to position the image
-          pdf.addImage(imgData, 'PNG', footerImgX, footerImgY, footerImgWidth, footerImgHeight);
-        };
-  
-        // Initial page
-        pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
-        addPageNumbers(1);
-        addFooter("SOP");
-        addFooterImage();
-        heightLeft -= pageHeight;
-  
-        let pageNumber = 2;
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
-          addPageNumbers(pageNumber);
-          addFooter("SOP");
-          addFooterImage();
-          heightLeft -= pageHeight;
-          pageNumber++;
-        }
-  
-        pdf.save(filename);
-      });
+            // Initial page
+            pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
+            heightLeft -= pageHeight;
+
+            let pageNumber = 2;
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
+                addFooter();
+                heightLeft -= pageHeight;
+                pageNumber++;
+            }
+
+            pdf.save(filename);
+        });
     } else {
-      console.error('Element with id "pdfContent" not found');
+        console.error('Element with id "pdfContent" not found');
     }
-  }
+}
