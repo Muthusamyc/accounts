@@ -1,316 +1,49 @@
-import { Component } from '@angular/core';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import html2canvas from 'html2canvas';
-import { Router } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
-import { CommonModule, DatePipe } from '@angular/common';
-import { ReportService } from '../../report.service';
-import { environment } from '../../../../../../../../environments/environment';
-import { DataSharingService } from '../../../../../../../data-sharing.service';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
-import { PdfService } from '../../pdf.service';
-@Component({
-  selector: 'app-wmtrackingreport',
-  templateUrl: './wmtrackingreport.component.html',
-  styleUrls: ['./wmtrackingreport.component.css']
-})
-export class WmtrackingreportComponent {
-  constructor(private router: Router,private pdfService:PdfService, private reportService: ReportService, private route: ActivatedRoute, private http: HttpClient, private dataSharingService: DataSharingService, private datePipe: DatePipe) {
-  const date = this.datePipe.transform(new Date(), 'HH:mm');
-  this.formattedDate = date;
-    this.dataSharingService.UserDispensingData$.subscribe(data => {
-      if (data && data.statusresponse) {
-        this.USER = data.statusresponse.userID || '';
-        this.PLANT = data.statusresponse.plant || '';
-        this.DEVICEIP = data.statusresponse.deviceip || '';
-      }
-    });
-    this.reportService.trfData$.subscribe(data => {
-      this.Reportvalue = data.report.Table;
-      console.log(this.Reportvalue);
-    });
-    const currentDate = new Date()
-    this.today = currentDate.toISOString().slice(0,10);
-    this.getsop();
-    this.getuserfullname();
-    this.getplantname();
-  }
-  commondata: any[] = [];
-  selectedRow: any[] = [];
-  ReportData: any[] = [];
-  Reportvalue: any[] = [];
-  data: any = '';
-  private baseApiUrl = environment.baseApiUrl;
-  USER: string = '';
-  PLANT: string = '';
-  DEVICEIP: string = '';
-  sopcode:any;
-  plantname: any = '';
-  formattedDate: any = '';
-  fullname:any='';
-  sopno:any='';
-  today:any='';
-  back() {
-    this.router.navigate(['/reports_wmtracking'])
-  }
-  getsop(){
-    
-    // if(this.tableData[0].materialtype =="ROH"){
-    //   this.sopcode="SOP21";
-    // }
-    // else{
-    //   this.sopcode="SOP20"
-    // }
-    const apiUrl = this.baseApiUrl + 'api/UserMenu/GetSOPValue'
-    const requestBody = {
-      "deviceIP": this.DEVICEIP,
-      "user": this.USER,
-      "plant": this.PLANT,
-      "code": "SOP04"
-    }
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'content-Type': 'application/json'
-      })
-    };
-  
-    this.http.post(apiUrl, requestBody, httpOptions).subscribe(
-      (response: any) => {
-        this.sopno = response;
-        
-      },
-      (error) => {
-        console.error('POST request failed', error);
-      });
-  }
-  getplantname(){
-    const apiUrl = this.baseApiUrl + 'api/UserMenu/GetSOPValue'
-    const requestBody = {
-      "deviceIP": this.DEVICEIP,
-      "user": this.USER,
-      "plant": this.PLANT,
-      "code": ""
-    }
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'content-Type': 'application/json'
-      })
-    };
-  
-    this.http.post(apiUrl, requestBody, httpOptions).subscribe(
-      (response: any) => {
-        this.plantname = response.message;
-        
-      },
-      (error) => {
-        console.error('POST request failed', error);
-      });
-  }
-  getuserfullname(){
-    
-    
-    const apiUrl = this.baseApiUrl + 'api/UserMenu/GetUserFullName'
-    const requestBody = {
-      "deviceIP": this.DEVICEIP,
-      "user": this.USER,
-      "plant": this.PLANT
-    }
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'content-Type': 'application/json'
-      })
-    };
-  
-    this.http.post(apiUrl, requestBody, httpOptions).subscribe(
-      (response: any) => {
-        this.fullname = response.userFullName;
-        console.log("username",this.fullname)
-      },
-      (error) => {
-        console.error('POST request failed', error);
-      });
-  }
-  // downloadpdf() {
+generatePDF(htmlContent: string, filename: string, padding: number = 10) {
+  const element = document.querySelector('#pdfContent') as HTMLElement;
+  if (element) {
+    html2canvas(element).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = padding;
 
-  //   const element = document.getElementById('exportthis');
-  //   if (element) {
-  //     html2canvas(element).then((canvas) => {
-  //       var data = canvas.toDataURL();
-  //       var docDefinition = {
-  //         content: [{
-  //           image: data,
-  //           width: 500,
+      // Function to add page numbers
+      const addPageNumbers = (pageNumber: number) => {
+        pdf.setTextColor(0);
+        pdf.setFontSize(10);
+        pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
+        pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
+      };
 
-  //         }]
-  //       };
-  //       pdfMake.createPdf(docDefinition).download("WM Tracking Report.pdf");
-  //     });
-  //   } else {
-  //     console.error('Element with id "exportthis" not found.');
-  //   }
-  // }
-  downloadpdf() {
-    const element = document.getElementById('pdfContent') as HTMLElement;
-    if (element) {
-      const htmlContent = element.innerHTML;
-      this.pdfService.generatePDF(htmlContent, 'WMTrackingReport.pdf');
-    } else {
-      console.error('Element with id "pdfContent" not found');
-    }
-  }
-}
-above my ts file and my html file:
-
-<!doctype html>
-<html lang="en">
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-  <title>Hello, world!</title>
-</head>
-<body>
-  <button mat-button class="expectbtn custom-button " (click)="downloadpdf()">Download</button>
-  <button mat-button class="expectbtn custom-button " style=" margin-left: 69%;" (click)="back()">Back</button>
-  <div class="container" id="pdfContent" style="min-height: 400px;">
-    <div class="row">
-      <div class="col-sm-1 p-3 bg-white text-dark col">
-        <img class="img" style="width: 100%; height: 100%;" src="assets/images/microlabs.png">
-      </div>
-      <div class="col-sm-11 p-3 bg-white text-dark col">
-        <h1 class="text">{{plantname}}</h1>
-        <h2 class="font" style="text-align: center;margin-top: 2%;">WM DETAILS REPORT</h2>
-      </div>
-    </div>
-    <div class="row">
-      <div class="widthtable col col-sm-12">
-        <div class="tablecontainer">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Sr No.</th>
-                <th>Mat. Status Label</th>
-                <th>Mat. Code</th>
-                <th>Mat. Desc.</th>
-                <th>SAP Batch No.</th>
-                <th>Weight</th>
-                <th>UOM</th>
-                <th>Location</th>
-                <th>Pallet</th>
-              </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let value of Reportvalue; let i =index">
-                  <td>{{i+1}}</td>
-                  <td>{{value.serial_No}}</td>
-                  <td>{{value.item_Code}}</td>
-                  <td style="white-space: pre-line">{{value.item}}</td>
-                  <td>{{value.arn}}</td>
-                  <td>{{value.weight}}</td>
-                  <td>{{value.uom}}</td>
-                  <td>{{value.location}}</td>
-                  <td>{{value.pallet}}</td>
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-        <div class="row" id="rowwidth">
-          <div class="col-sm-12" >
-            <p><b>PrintedBy:</b>&nbsp;{{USER}}({{fullname}})&nbsp;{{today|date:"dd/MM/yyyy"}}&nbsp;{{formattedDate}} </p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <p id="sop">{{this.sopno.message}}</p>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-</body>
-</html>
-this is my pdf download service file:
-import { Injectable } from '@angular/core';
-import * as jspdf from 'jspdf';
-import html2canvas from 'html2canvas';
-
-@Injectable({
-  providedIn: 'root'
-})
-export class PdfService {
-
-  constructor() { }
-  // generatePDF(htmlContent: string, filename: string, padding: number = 10) {
-  //   const element = document.querySelector('#pdfContent') as HTMLElement;
-  //   if (element) {
-  //     html2canvas(element).then(canvas => {
-  //       const imgData = canvas.toDataURL('image/png');
-  //       const pdf = new jspdf.jsPDF('p', 'mm', 'a4'); // Using jspdf.jsPDF instead of jspdf
-  //       const imgWidth = 210;
-  //       const pageHeight = 295;
-  //       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  //       let heightLeft = imgHeight;
-  //       let position = padding;
-
-  //       pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - 2 * padding);
-  //       heightLeft -= pageHeight;
-
-  //       while (heightLeft >= 0) {
-  //         position = heightLeft - imgHeight + 2 * padding;
-  //         pdf.addPage();
-  //         pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - 2 * padding);
-  //         heightLeft -= pageHeight;
-  //       }
-
-  //       pdf.save(filename);
-  //     });
-  //   } else {
-  //     console.error('Element with id "pdfContent" not found');
-  //   }
-  // }
-  generatePDF(htmlContent: string, filename: string, padding: number = 10) {
-    const element = document.querySelector('#pdfContent') as HTMLElement;
-    if (element) {
-      html2canvas(element).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210;
-        const pageHeight = 295;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = padding;
-  
-        // Function to add page numbers
-        const addPageNumbers = (pageNumber: number) => {
-          pdf.setTextColor(0);
-          pdf.setFontSize(10);
-          pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
-          pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
-        };
-  
-        // Initial page
+      // Function to add header on each page
+      const addHeader = () => {
         pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
-        addPageNumbers(1);
-        heightLeft -= pageHeight;
-  
-        let pageNumber = 2;
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
-          addPageNumbers(pageNumber);
-          heightLeft -= pageHeight;
-          pageNumber++;
-        }
-  
-        pdf.save(filename);
-      });
-    } else {
-      console.error('Element with id "pdfContent" not found');
-    }
-  }
+        pdf.setFontSize(16);
+        pdf.text(this.plantname, imgWidth / 2, position + 25, { align: 'center' });
+        pdf.text("WM DETAILS REPORT", imgWidth / 2, position + 40, { align: 'center' });
+      };
 
+      // Initial page
+      addHeader();
+      addPageNumbers(1);
+      heightLeft -= pageHeight;
+
+      let pageNumber = 2;
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
+        pdf.addPage();
+        addHeader();
+        addPageNumbers(pageNumber);
+        heightLeft -= pageHeight;
+        pageNumber++;
+      }
+
+      pdf.save(filename);
+    });
+  } else {
+    console.error('Element with id "pdfContent" not found');
+  }
 }
