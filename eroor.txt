@@ -11,9 +11,10 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
             let position = padding;
 
             // Function to add footer
-            const addFooter = () => {
+            const addFooter = (pageNumber: number) => {
                 pdf.setTextColor(0);
                 pdf.setFontSize(10);
+                pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
                 pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
                 pdf.line(padding, pageHeight - 10, imgWidth - padding, pageHeight - 10); // Underline for footer top section
             };
@@ -26,8 +27,8 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
             while (heightLeft >= 0) {
                 position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
                 pdf.addPage();
-                pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
-                addFooter();
+                addFooter(pageNumber);
+                pdf.addImage(imgData, 'PNG', padding, padding, imgWidth - 2 * padding, imgHeight - padding);
                 heightLeft -= pageHeight;
                 pageNumber++;
             }
