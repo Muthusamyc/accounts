@@ -24,11 +24,21 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
           pdf.line(padding, footerY, imgWidth - padding, footerY); // Add underline
           pdf.text(footerText, imgWidth / 2, footerY - 2, { align: 'center' }); // Add footer text
         };
+
+        // Function to add image in footer section
+        const addFooterImage = () => {
+          const footerImgWidth = 30; // Adjust image width as needed
+          const footerImgHeight = (canvas.height * footerImgWidth) / canvas.width;
+          const footerImgX = (imgWidth - footerImgWidth) / 2;
+          const footerImgY = pageHeight - footerImgHeight - 20; // Adjust this value to position the image
+          pdf.addImage(imgData, 'PNG', footerImgX, footerImgY, footerImgWidth, footerImgHeight);
+        };
   
         // Initial page
         pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
         addPageNumbers(1);
         addFooter("SOP");
+        addFooterImage();
         heightLeft -= pageHeight;
   
         let pageNumber = 2;
@@ -38,6 +48,7 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
           pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
           addPageNumbers(pageNumber);
           addFooter("SOP");
+          addFooterImage();
           heightLeft -= pageHeight;
           pageNumber++;
         }
