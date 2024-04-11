@@ -22,15 +22,15 @@ generatePDF(htmlContent: string, filename: string, padding: number = 10) {
         // Initial page
         pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
         addPageNumbers(1);
-        heightLeft -= pageHeight;
+        heightLeft -= (imgHeight - padding); // Adjust height left after first page
   
         let pageNumber = 2;
         while (heightLeft >= 0) {
-          position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
+          position = padding; // Reset position for subsequent pages
+          pdf.addImage(imgData, 'PNG', padding, padding, imgWidth - 2 * padding, imgHeight - padding);
           addPageNumbers(pageNumber);
-          heightLeft -= pageHeight;
+          heightLeft -= imgHeight;
           pageNumber++;
         }
   
