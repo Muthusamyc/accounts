@@ -1,82 +1,41 @@
-[
-    {
-        "itcrid": 97,
-        "crcode": "ML18/2024/12",
-        "supportId": 1,
-        "classifcationId": 1,
-        "categoryId": 1,
-        "crowner": "120678                                            ",
-        "crdate": "2024-02-21T15:23:53.273",
-        "crrequestedBy": "sssss     ",
-        "crinitiatedFor": "sssss     ",
-        "status": "New       ",
-        "referenceId": 1,
-        "referenceTyp": "sssss",
-        "categoryTypeId": 3,
-        "natureOfChange": "1         ",
-        "priorityType": "Very-High ",
-        "plantId": 2,
-        "gxpclassification": true,
-        "changeControlNo": "4         ",
-        "changeControlDt": "2024-02-21",
-        "changeControlAttach": true,
-        "changeDesc": "new data",
-        "reasonForChange": "new change",
-        "alternateConsidetation": "wwwwwwwwwww",
-        "impactNotDoing": "wwwwwwwwwwwwwww",
-        "triggeredBy": "Commercial",
-        "benefits": "wwwwwwwwwwwww",
-        "estimatedCost": 344444,
-        "estimatedCostCurr": "inr",
-        "estimatedEffort": 4,
-        "estimatedEffortUnit": "6days     ",
-        "estimatedDateCompletion": "2024-02-02",
-        "rollbackPlan": "wwwwwwwwwwwwwwwww",
-        "backoutPlan": "wwwwwwwwwwwwwwww",
-        "downTimeRequired": true,
-        "downTimeFromDate": "2024-02-10T09:21:40.357",
-        "downTimeToDate": "2024-02-10T09:21:40.357",
-        "approvedBy": null,
-        "approvedDt": null,
-        "isSubmitted": false,
-        "isApproved": false,
-        "isImplemented": false,
-        "isReleased": false,
-        "closureRemarks": null,
-        "closedBy": null,
-        "closedDt": null,
-        "feedback": null,
-        "createdBy": "string    ",
-        "createdDt": "2024-02-21T15:23:53.273",
-        "modifiedBy": null,
-        "modifiedDt": null,
-        "crexecutionPlans": [],
-        "crlessons": [],
-        "crreleases": []
+generatePDF(htmlContent: string, filename: string, padding: number = 10) {
+    const element = document.querySelector('#pdfContent') as HTMLElement;
+    if (element) {
+      html2canvas(element).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210;
+        const pageHeight = 295;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = padding;
+  
+        // Function to add page numbers
+        const addPageNumbers = (pageNumber: number) => {
+          pdf.setTextColor(0);
+          pdf.setFontSize(10);
+          pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
+          pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
+        };
+  
+        // Initial page
+        pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
+        addPageNumbers(1);
+        heightLeft -= pageHeight;
+  
+        let pageNumber = 2;
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
+          addPageNumbers(pageNumber);
+          heightLeft -= pageHeight;
+          pageNumber++;
+        }
+  
+        pdf.save(filename);
+      });
+    } else {
+      console.error('Element with id "pdfContent" not found');
     }
-]
-
-<div class="col">
-  <label>Change Requested On</label>
-  <input [(ngModel)]="updatevalue[0].crdate" type="date" placeholder="" />
-</div>
-<div class="col">
-  <label>Priority</label>
-  <select [(ngModel)]="updatevalue[0].priorityType">
-    <option value="" disabled selected>Select-Priority</option>
-    <option>Very-High  </option>
-    <option>High  </option>
-    <option>Medium  </option>
-    <option>Low  </option>
-    <option>Very-Low  </option>
-  </select>
-</div>
-<div class="col">
-  <label>Nature of Change</label>
-  <select [(ngModel)]="updatevalue[0].natureOfChange">
-    <option value="" disabled selected>Select Category</option>
-    <option *ngFor="let valueN of Natureofchange " [value]="valueN.natureofChangeId" [attr.selected]="valueN.natureofChangeId.toString() === updatevalue[0].natureOfChange ? true : null">
-      {{valueN.natureofChange1}}
-    </option>
-  </select>
-</div>
+  }
