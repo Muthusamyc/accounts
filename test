@@ -8,9 +8,8 @@ makeMultiPage() {
     }
   
     // Reduce font size of the content
-    quotes.style.fontSize = '12px';
-  
-    html2canvas(quotes).then((canvas: HTMLCanvasElement) => {
+   
+    html2canvas(quotes).then((canvas) => {
   
       const pdf = new jsPDF('p', 'pt', 'letter');
   
@@ -49,11 +48,13 @@ makeMultiPage() {
           pdf.addPage('letter');
         }
         pdf.setPage(i + 1);
-        pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width * 0.62), (srcHeight * 0.62));
+        // Adjusting width for 10% on the right side
+        const adjustedWidth = width * 0.5; // 90% of original width
+        pdf.addImage(canvasDataURL, 'PNG', 20, 40, adjustedWidth, (srcHeight * 0.62));
       }
   
       pdf.save('Test.pdf');
     }).catch(error => {
       console.error('html2canvas error:', error);
     });
-  }
+}
