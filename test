@@ -1,66 +1,56 @@
-import { Injectable } from '@angular/core';
-declare var jsPDF: any;
-declare var html2canvas: any;
-
-@Injectable({
-  providedIn: 'root'
-})
-export class PdfService {
-
-  constructor() { }
-
-  makePDF() {
-    const doc = new jsPDF('p', 'pt', 'a4');
-    const specialElementHandlers = {};
-
-    doc.fromHTML(document.getElementById('content'), 15, 15, {
-      'width': 250,
-      'margin': 1,
-      'pagesplit': true,
-      'elementHandlers': specialElementHandlers
-    });
-
-    doc.save('sample-file.pdf');
-  }
-
-  makeMultiPage() {
+makeMultiPage() {
+    debugger
     const quotes = document.getElementById('content');
-
-    html2canvas(quotes, {
-      onrendered: function(canvas) {
-
-        const pdf = new jsPDF('p', 'pt', 'letter');
-
-        for (let i = 0; i <= quotes.clientHeight / 980; i++) {
-          const srcImg = canvas;
-          const sX = 0;
-          const sY = 980 * i;
-          const sWidth = 900;
-          const sHeight = 980;
-          const dX = 0;
-          const dY = 0;
-          const dWidth = 900;
-          const dHeight = 980;
-
-          const onePageCanvas = document.createElement('canvas');
-          onePageCanvas.setAttribute('width', '900');
-          onePageCanvas.setAttribute('height', '980');
-          const ctx = onePageCanvas.getContext('2d');
-          ctx.drawImage(srcImg, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
-
-          const canvasDataURL = onePageCanvas.toDataURL('image/png', 1.0);
-          const width = onePageCanvas.width;
-          const height = onePageCanvas.clientHeight;
-
-          if (i > 0) {
-            pdf.addPage(612, 791);
-          }
-          pdf.setPage(i + 1);
-          pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width * 0.62), (height * 0.62));
-        }
-
-        pdf.save('Test.pdf');
+  
+    if (!quotes) {
+      console.error("Element with ID 'content' not found.");
+      return;
+    }
+  
+    html2canvas(quotes).then((canvas: HTMLCanvasElement) => {
+  
+      const pdf = new jsPDF('p', 'pt', 'letter');
+  
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        console.error("2D context for canvas not supported.");
+        return;
       }
+  
+      const width = canvas.width;
+      const height = canvas.height;
+      const lineHeight = 55; // Adjust this value based on your line height
+      const linesPerPage = 20; // Number of lines per page
+      const maxHeightPerPage = lineHeight * linesPerPage; // Max height per page
+      const totalPages = Math.ceil(height / maxHeightPerPage);
+  
+      for (let i = 0; i < totalPages; i++) {
+        const srcY = i * maxHeightPerPage;
+        const srcHeight = Math.min(maxHeightPerPage, height - srcY);
+  
+        const onePageCanvas = document.createElement('canvas');
+        onePageCanvas.setAttribute('width', width.toString());
+        onePageCanvas.setAttribute('height', srcHeight.toString());
+        const ctxOnePage = onePageCanvas.getContext('2d');
+  
+        if (!ctxOnePage) {
+          console.error("2D context for onePageCanvas not supported.");
+          return;
+        }
+  
+        ctxOnePage.drawImage(canvas, 0, srcY, width, srcHeight, 0, 0, width, srcHeight);
+  
+        const canvasDataURL = onePageCanvas.toDataURL('image/png', 1.0);
+  
+        if (i > 0) {
+          pdf.addPage('letter');
+        }
+        pdf.setPage(i + 1);
+        pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width * 0.62), (srcHeight * 0.62));
+      }
+  
+      pdf.save('Test.pdf');
+    }).catch(error => {
+      console.error('html2canvas error:', error);
     });
   }
-}
