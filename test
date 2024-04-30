@@ -1,3 +1,22 @@
+<tr>
+  <th class="table-primary">SR No.</th>
+  <th class="table-primary">Barcode</th>
+  <th class="table-primary">Material Description</th>
+  <th class="table-primary">Order No</th>
+  <th class="table-primary">Cont No</th>
+  <th class="table-primary">Net WT</th>
+  <th class="table-primary">TR WT</th>
+  <th class="table-primary">GR WT</th>
+  <th class="table-primary">UOM</th>
+  <th class="table-primary">Current Stage</th>
+  <th class="table-primary">Next Stage</th>
+  <th class="table-primary">Status</th>
+
+</tr>
+
+
+
+
 makeMultiPage() {
     debugger
     const quotes = document.getElementById('content');
