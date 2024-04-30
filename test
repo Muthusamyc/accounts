@@ -1,47 +1,66 @@
-<td ng-if="pltdata.status == Approved" >{{pltdata.status}}</td>
+import { Injectable } from '@angular/core';
+declare var jsPDF: any;
+declare var html2canvas: any;
 
+@Injectable({
+  providedIn: 'root'
+})
+export class PdfService {
 
-text-primary = New/Intiated
-text-primary = Submitted
-text-success = Approved
-text-info = Implementation
-text-warning = Pending
-release_text = Released
-text-success = Closure
+  constructor() { }
 
-<td [ngStyle]="getStatusColor(pltdata.status)">
-  {{ pltdata.status }}
-</td>
+  makePDF() {
+    const doc = new jsPDF('p', 'pt', 'a4');
+    const specialElementHandlers = {};
 
-getStatusColor(status: string): any {
-    switch (status) {
-      case 'New':
-      case 'Initiated':
-      case 'Submitted':
-        return { 'color': 'blue' };
-      case 'Approved':
-      case 'Closure':
-        return { 'color': 'green' };
-      case 'Implementation':
-        return { 'color': 'cyan' };
-      case 'Pending':
-        return { 'color': 'orange' };
-      case 'Released':
-        return { 'color': 'gray' };
-      default:
-        return {};
-    }
+    doc.fromHTML(document.getElementById('content'), 15, 15, {
+      'width': 250,
+      'margin': 1,
+      'pagesplit': true,
+      'elementHandlers': specialElementHandlers
+    });
+
+    doc.save('sample-file.pdf');
   }
 
+  makeMultiPage() {
+    const quotes = document.getElementById('content');
 
-<td [ngSwitch]="pltdata.status">
-  <span *ngSwitchCase="'New'"> <span style="color: blue;">{{ pltdata.status }}</span></span>
-  <span *ngSwitchCase="'Initiated'"> <span style="color: blue;">{{ pltdata.status }}</span></span>
-  <span *ngSwitchCase="'Submitted'"> <span style="color: blue;">{{ pltdata.status }}</span></span>
-  <span *ngSwitchCase="'Approved'"> <span style="color: green;">{{ pltdata.status }}</span></span>
-  <span *ngSwitchCase="'Closure'"> <span style="color: green;">{{ pltdata.status }}</span></span>
-  <span *ngSwitchCase="'Implementation'"> <span style="color: cyan;">{{ pltdata.status }}</span></span>
-  <span *ngSwitchCase="'Pending'"> <span style="color: orange;">{{ pltdata.status }}</span></span>
-  <span *ngSwitchCase="'Released'"> <span style="color: gray;">{{ pltdata.status }}</span></span>
-</td>
+    html2canvas(quotes, {
+      onrendered: function(canvas) {
 
+        const pdf = new jsPDF('p', 'pt', 'letter');
+
+        for (let i = 0; i <= quotes.clientHeight / 980; i++) {
+          const srcImg = canvas;
+          const sX = 0;
+          const sY = 980 * i;
+          const sWidth = 900;
+          const sHeight = 980;
+          const dX = 0;
+          const dY = 0;
+          const dWidth = 900;
+          const dHeight = 980;
+
+          const onePageCanvas = document.createElement('canvas');
+          onePageCanvas.setAttribute('width', '900');
+          onePageCanvas.setAttribute('height', '980');
+          const ctx = onePageCanvas.getContext('2d');
+          ctx.drawImage(srcImg, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight);
+
+          const canvasDataURL = onePageCanvas.toDataURL('image/png', 1.0);
+          const width = onePageCanvas.width;
+          const height = onePageCanvas.clientHeight;
+
+          if (i > 0) {
+            pdf.addPage(612, 791);
+          }
+          pdf.setPage(i + 1);
+          pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width * 0.62), (height * 0.62));
+        }
+
+        pdf.save('Test.pdf');
+      }
+    });
+  }
+}
