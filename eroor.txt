@@ -6,14 +6,11 @@ mapedplantdatas() {
 
 filterdonutbyplant() {
   if (this.selectedlocationNames.length > 0) { // Check if there are selected locations
-    if (this.changerequest.length === 0) {
-      this.filterdata = this.changerequest;
-    }
     // Filter the data based on selected location names
     this.filterdata = this.changerequest.filter((item: any) => this.selectedlocationNames.includes(item.plantcode));
     this.changerequest = this.filterdata;
   } else {
-    // If no locations are selected, reset the filter
+    // If no locations are selected, reset the filter to show all data
     this.filterdata = this.changerequest;
   }
   console.log("here is multi donut selected plantid", this.changerequest);
