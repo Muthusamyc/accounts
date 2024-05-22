@@ -1,12 +1,12 @@
 filterdonutbyplant() {
-  if (this.selectedlocationNames.length > 0) {
-    // Filter the selectedPlantIds based on the filtered code values
-    this.selectedPlantIds = this.selectedlocationNames.filter(item =>
-      this.code.some(codeItem => codeItem.plantId === item)
-    );
+  if (this.selectedPlantIds.length > 0) {
+    // Extracting item_ids from selectedPlantIds array
+    const selectedIds = this.selectedPlantIds.map(item => item.item_id);
+    // Filtering this.code based on selectedIds
+    this.code = this.changerequest.filter(item => selectedIds.includes(item.plantId));
   } else {
-    // If no filters applied, reset selectedPlantIds
-    this.selectedPlantIds = [];
+    // If no items are selected, show all items
+    this.code = this.changerequest;
   }
-  console.log("Selected PlantIds:", this.selectedPlantIds);
+  console.log("here is multi donut selected plantid", this.code);
 }
