@@ -1,28 +1,106 @@
-getChangeRequests(): void {
-  const apiUrl = this.apiurl + '/ViewChangeRequest/ViewChangerequest';
-  this.http.get(apiUrl).subscribe(
-    (response: any) => {
-      this.changerequest = response;
-      this.code = [...new Set(response.map((item: any) => item.plantId))];
-      console.log("Plant", this.code)
-    },
-    
-    (error) => {
-      console.error("Request failed", error);
-    }
-  );
-}
-mapedplantdatas() {
-  this.impactedLocation = this.selectedPlantIds.map((item: any) => item.item_id);
-  console.log(this.impactedLocation);
-  this.selectedlocationNames = Array.from(new Set(this.impactedLocation));
-}
 
-filterdonutbyplant() {
-  debugger
-  if (this.selectedlocationNames.length > 0) {
-    this.filterdata = this.code.filter((item: any) => this.selectedlocationNames.includes(item.plantId));
-    this.code = this.filterdata;
-  } 
-  console.log("here is multi donut selected plantid", this.code);
-}
+
+<div class="container-implement">
+  <div class="container-field-line">
+    <div style="width:20%;">
+      <ng-multiselect-dropdown [settings]="dropdownSettings"
+                               [data]="dropdownList"
+                               [(ngModel)]="selectedPlantIds"
+                               (ngModelChange)="mapedplantdatas()">
+      </ng-multiselect-dropdown>
+      <button class="button-overlay" (click)="filterdonutbyplant()">Filter</button>
+    </div>
+    
+    <div class="row" align="right">
+      
+      <div class="col export_pdf">
+        <button (click)="exportToPDF()" class="excel_button"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;&nbsp;Pdf</button> &nbsp;&nbsp;
+        <button (click)="exportexcel()" class="excel_button"><i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;&nbsp; Excel</button>
+      </div>
+    </div>
+
+    <h3 style="text-align:center;">View Change Request Summary - Plant Wise</h3><br />
+    <div class="border-rfc-heading">
+      <div class="table-wrapper" style="overflow-x: auto;">
+        <table id="excel-table" class="fl-table">
+          <thead class="table-head">
+            <tr class="border-bottom">
+              <th>Status</th>
+              <th *ngFor="let plantId of code">{{ plantId }}</th>
+              <th>Total</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Open</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigateToOtherComponent(plantId)" class="cursor">{{ getopenCount('Open', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalopen('Open') }}</td>
+            </tr>
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Completed</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigatecompleted(plantId)" class="cursor">{{ getStatusCount('Completed', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalCount('Completed') }}</td>
+            </tr>
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Draft</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigatedraft(plantId)" class="cursor">{{ getStatusCount('Draft', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalCount('Draft') }}</td>
+            </tr>
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Pending</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigatePending(plantId)" class="cursor">{{ getStatusCount('Pending', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalCount('Pending') }}</td>
+            </tr>
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Approved</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigateApproval(plantId)" class="cursor">{{ getStatusCount('Approved', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalCount('Approved') }}</td>
+            </tr>
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Implemented</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigateImplemented(plantId)" class="cursor">{{ getStatusCount('Implemented', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalCount('Implemented') }}</td>
+            </tr>
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Released</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigateReleased(plantId)" class="cursor">{{ getStatusCount('Released', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalCount('Released') }}</td>
+            </tr>
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Rejected</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigateRejected(plantId)" class="cursor">{{ getStatusCount('Rejected', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalCount('Rejected') }}</td>
+            </tr>
+            <tr class="tr-body">
+              <td style="color:Black;font-weight:500;">Closure</td>
+              <ng-container *ngFor="let plantId of code">
+                <td (click)="navigateClosure(plantId)" class="cursor">{{ getStatusCount('Closure', plantId) }}</td>
+              </ng-container>
+              <td>{{ getTotalCount('Closure') }}</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
