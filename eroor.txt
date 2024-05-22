@@ -1,49 +1,26 @@
-generatePDF(htmlContent: string, filename: string, padding: number = 10) {
-  const element = document.querySelector('#pdfContent') as HTMLElement;
-  if (element) {
-    html2canvas(element).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = padding;
-
-      // Function to add page numbers
-      const addPageNumbers = (pageNumber: number) => {
-        pdf.setTextColor(0);
-        pdf.setFontSize(10);
-        pdf.text(`Page ${pageNumber}`, imgWidth / 2, pageHeight - 5, { align: 'center' });
-        pdf.text("SOP", imgWidth - padding - 15, pageHeight - 2);
-      };
-
-      // Function to add header on each page
-      const addHeader = () => {
-        pdf.addImage(imgData, 'PNG', padding, position, imgWidth - 2 * padding, imgHeight - padding);
-        pdf.setFontSize(16);
-        pdf.text(this.plantname, imgWidth / 2, position + 25, { align: 'center' });
-        pdf.text("WM DETAILS REPORT", imgWidth / 2, position + 40, { align: 'center' });
-      };
-
-      // Initial page
-      addHeader();
-      addPageNumbers(1);
-      heightLeft -= pageHeight;
-
-      let pageNumber = 2;
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight + padding; // Adjust position for subsequent pages
-        pdf.addPage();
-        addHeader();
-        addPageNumbers(pageNumber);
-        heightLeft -= pageHeight;
-        pageNumber++;
-      }
-
-      pdf.save(filename);
-    });
-  } else {
-    console.error('Element with id "pdfContent" not found');
+  mapedplantdatas() {
+    this.impactedLocation = this.selectedPlantIds.map((item: any) => item.item_id);
+    console.log(this.impactedLocation)
+    this.selectedlocationNames = Array.from(new Set(this.impactedLocation));
   }
-}
+
+  filterdonutbyplant() {
+    if (this.selectedlocationNames != '') {
+      if (this.changerequest.length == 0) {
+        this.filterdata = this.changerequest
+      }
+      this.filterdata = this.changerequest.filter((item: any) => item.plantcode === this.selectedlocationNames);
+      this.changerequest = this.filterdata;
+    }
+    console.log("here is multi donut selected plantid", this.changerequest)
+  }
+above my ts and below my html
+  <ng-multiselect-dropdown [settings]="dropdownSettings"
+                           [data]="dropdownList"
+                           [(ngModel)]="selectedPlantIds"
+                           (ngModelChange)="mapedplantdatas()">
+  </ng-multiselect-dropdown>
+</div>
+<button class="button-overlay" (click)="filterdonutbyplant()">Filter</button>
+
+this filter function frist time working second time is not working
