@@ -1,106 +1,166 @@
+import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { Component, ViewChild, ElementRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PasscrdataService } from '../../passcrdata.service';
+import { environment } from '/IT_Portal/IT-Portal/IT-Portal.UI/src/environments/environment'
+import * as jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+
+interface DropdownItem {
+  item_id: number;
+  item_text: string;
+}
+
+@Component({
+  selector: 'app-view-summary',
+  templateUrl: './view-summary.component.html',
+  styleUrl: './view-summary.component.css'
+})
+export class ViewSummaryComponent {
+  showInitiator: boolean = false;
+  showRiskQ: boolean = false;
+  supportid: any;
+  supportname: any;
+  today: any;
+  crid: any = '';
+  constructor(private http: HttpClient, private routeservice: PasscrdataService, private route: ActivatedRoute, private router: Router) {
+    this.getChangeRequests();
+  }
+  private apiurl = environment.apiurls;
+
+  ngOnInit(): void {
+    /*  this.getsummaryreport();*/
+    this.filterdonutbyplant();
+    this.getChangeRequests();
+    this.fetchDropdownData();
+
+  }
+ 
+  dropdownList: DropdownItem[] = [];
+  dropdownSettings = {
+    idField: 'item_id',
+    textField: 'item_text',
+  };
+
+  fetchDropdownData(): void {
+    const apiUrl = this.apiurl + '/Plantid'; // Replace with your API endpoint
+    this.http.get<any[]>(apiUrl).subscribe(
+      (data) => {
+        this.dropdownList = data.map(item => ({
+          item_id: item.id,
+          item_text: item.code // Assuming your API response has 'id' and 'name' fields
+        }));
+      },
+      (error) => {
+        console.error('Error fetching dropdown data:', error);
+      }
+    );
+  }
+
+  selectedlocationNames: any='';
+  impactedLocation: any = '';
+  selectedlocation: any = '';
+  selectedPlantIds: any[] = [];
+  filterdata: any[] = [];
+  
+  exportToPDF() {
+    const doc = new jsPDF.default();
+    (doc as any).autoTable({ html: '#excel-table' });
+    doc.save('SummaryReport.pdf');
+  }
+
+  fileName = 'SummaryReport.xlsx';
+  exportexcel(): void {
+    let element = document.getElementById('excel-table');
+    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, this.fileName);
+
+  }
 
 
-<div class="container-implement">
-  <div class="container-field-line">
-    <div style="width:20%;">
-      <ng-multiselect-dropdown [settings]="dropdownSettings"
-                               [data]="dropdownList"
-                               [(ngModel)]="selectedPlantIds"
-                               (ngModelChange)="mapedplantdatas()">
-      </ng-multiselect-dropdown>
-      <button class="button-overlay" (click)="filterdonutbyplant()">Filter</button>
-    </div>
-    
-    <div class="row" align="right">
+  code: any[] = [];
+  changerequest: any[] = [];
+  statusList: string[] = ['Open', 'Completed', 'Draft', 'Pending', 'Approved', 'Implemented', 'Released', 'Closure', 'Rejected'];
+  getChangeRequests(): void {
+    const apiUrl = this.apiurl + '/ViewChangeRequest/ViewChangerequest';
+    this.http.get(apiUrl).subscribe(
+      (response: any) => {
+        this.changerequest = response;
+        this.code = [...new Set(response.map((item: any) => item.plantId))];
+        console.log("Plant", this.code)
+      },
       
-      <div class="col export_pdf">
-        <button (click)="exportToPDF()" class="excel_button"><i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;&nbsp;Pdf</button> &nbsp;&nbsp;
-        <button (click)="exportexcel()" class="excel_button"><i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;&nbsp; Excel</button>
-      </div>
-    </div>
+      (error) => {
+        console.error("Request failed", error);
+      }
+    );
+  }
+  mapedplantdatas() {
+    this.impactedLocation = this.selectedPlantIds.map((item: any) => item.item_id);
+    console.log(this.impactedLocation);
+    this.selectedlocationNames = Array.from(new Set(this.impactedLocation));
+  }
 
-    <h3 style="text-align:center;">View Change Request Summary - Plant Wise</h3><br />
-    <div class="border-rfc-heading">
-      <div class="table-wrapper" style="overflow-x: auto;">
-        <table id="excel-table" class="fl-table">
-          <thead class="table-head">
-            <tr class="border-bottom">
-              <th>Status</th>
-              <th *ngFor="let plantId of code">{{ plantId }}</th>
-              <th>Total</th>
+  filterdonutbyplant() {
+    debugger
+    if (this.selectedlocationNames.length > 0) {
+      this.filterdata = this.code.filter((item: any) => this.selectedlocationNames.includes(item.plantId));
+      this.code = this.filterdata;
+    } 
+    console.log("here is multi donut selected plantid", this.code);
+  }
+  getStatusCount(status: string, plantId: string): number {
+    return this.changerequest.filter(item => item.status.trim() === status && item.plantId === plantId).length;
+  }
 
-            </tr>
-          </thead>
-          <tbody>
+  getTotalCount(status: string): number {
+    return this.changerequest.filter(item => item.status.trim() === status).length;
+  }
 
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Open</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigateToOtherComponent(plantId)" class="cursor">{{ getopenCount('Open', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalopen('Open') }}</td>
-            </tr>
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Completed</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigatecompleted(plantId)" class="cursor">{{ getStatusCount('Completed', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalCount('Completed') }}</td>
-            </tr>
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Draft</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigatedraft(plantId)" class="cursor">{{ getStatusCount('Draft', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalCount('Draft') }}</td>
-            </tr>
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Pending</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigatePending(plantId)" class="cursor">{{ getStatusCount('Pending', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalCount('Pending') }}</td>
-            </tr>
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Approved</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigateApproval(plantId)" class="cursor">{{ getStatusCount('Approved', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalCount('Approved') }}</td>
-            </tr>
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Implemented</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigateImplemented(plantId)" class="cursor">{{ getStatusCount('Implemented', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalCount('Implemented') }}</td>
-            </tr>
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Released</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigateReleased(plantId)" class="cursor">{{ getStatusCount('Released', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalCount('Released') }}</td>
-            </tr>
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Rejected</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigateRejected(plantId)" class="cursor">{{ getStatusCount('Rejected', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalCount('Rejected') }}</td>
-            </tr>
-            <tr class="tr-body">
-              <td style="color:Black;font-weight:500;">Closure</td>
-              <ng-container *ngFor="let plantId of code">
-                <td (click)="navigateClosure(plantId)" class="cursor">{{ getStatusCount('Closure', plantId) }}</td>
-              </ng-container>
-              <td>{{ getTotalCount('Closure') }}</td>
-            </tr>
+  getopenCount(_status: string, plantId: string): number {
+    return this.changerequest.filter(item => item.status.trim() !== 'Completed' && item.plantId === plantId).length;
+  }
 
-          </tbody>
-        </table>
-      </div>
+  getTotalopen(_status: string): number {
+    return this.changerequest.filter(item => item.status.trim() !== 'Completed').length;
+  }
 
-    </div>
-  </div>
-</div>
+  navigateToOtherComponent(plantId: string) {
+
+    this.router.navigate(['/filterdashboard'], { queryParams: { plantId: plantId } });
+  }
+  navigatecompleted(plantId: string) {
+    this.router.navigate(['/filtercompleted'], { queryParams: { plantId: plantId } });
+  }
+  navigatedraft(plantId: string) {
+    this.router.navigate(['/filterdraft'], { queryParams: { plantId: plantId } });
+  }
+  navigatePending(plantId: string) {
+    this.router.navigate(['/filterpending'], { queryParams: { plantId: plantId } });
+  }
+  navigateApproval(plantId: string) {
+    this.router.navigate(['/filterapproval'], { queryParams: { plantId: plantId } });
+  }
+  navigateImplemented(plantId: string) {
+    this.router.navigate(['/filterimplemented'], { queryParams: { plantId: plantId } });
+  }
+  navigateClosure(plantId: string) {
+    this.router.navigate(['/filterclosure'], { queryParams: { plantId: plantId } });
+  }
+  navigateReleased(plantId: string) {
+    this.router.navigate(['/filterrelease'], { queryParams: { plantId: plantId } });
+  }
+  navigateRejected(plantId: string) {
+    this.router.navigate(['/filterrejected'], { queryParams: { plantId: plantId } });
+  }
+
+
+
+
+
+
+
+}
