@@ -1,29 +1,19 @@
- sendemailfrom(response: any) {
-   debugger
-   const apiUrl = this.apiurl + '/Email'
-   const CrRequest = response[0].crrequestedBy
-   const to = response[0].crremail
-   const cc = response[0].croemail
-   const requestBody = {
-     "to": to, //Recipients: Requestor, Change Analyst
-     "cc": cc,   //this.emailofreciver,
-     "subject": " Changerequest",
-     "body": "Dear ${CrRequest},\n Thank you for submitting the Change Request. Below are the details of the Change Request.\nRequestor Name:Requestor {{changerequestedby}}\nRequested Date: {{today}}\nPhase: RFC Submission \n Status: Save\n Change Description: {{changeDesc}}\nApprover Level\nApproval 1: Name of Approval (EmpID) - Pending\n Approval 2: Name of Approval (EmpID) - Queued\n http://www.unnati.microlabs.co.in Click here to Log into Unnati and view your status.\nRegards,\nIT Team\nMicro Labs Ltd\nhttp://www.unnati.microlabs.co.in \nwww.unnati.microlabs.co.in",
+const CrRequest = "Muthu";
+const output = `Dear ${CrRequest},
+ Thank you for submitting the Change Request. Below are the details of the Change Request.
+Requestor Name: Requestor {{changerequestedby}}
+Requested Date: {{today}}
+Phase: RFC Submission
+Status: Save
+Change Description: {{changeDesc}}
+Approver Level
+Approval 1: Name of Approval (EmpID) - Pending
+Approval 2: Name of Approval (EmpID) - Queued
+http://www.unnati.microlabs.co.in Click here to Log into Unnati and view your status.
+Regards,
+IT Team
+Micro Labs Ltd
+http://www.unnati.microlabs.co.in
+www.unnati.microlabs.co.in`;
 
-     //Recipients: Requestor, Change Analyst
-   }
-
-   const httpOptions = {
-     headers: new HttpHeaders({
-       'Content-Type': 'application/json'
-     })
-   };
-   this.http.post(apiUrl, requestBody, httpOptions).subscribe(
-     (response: any) => {
-       console.log(response);
-     },
-     (error: any) => {
-       console.log('Post request failed', error);
-
-     });
- }
+console.log(output);
