@@ -1,49 +1,37 @@
-  sendemailfrom(response: any,status:any) {
-    debugger
-    const apiUrl = this.apiurl + '/Email'
-    const CrRequest = response[0].crrequestedBy
-    const to = response[0].crremail
-    const cc = response[0].croemail
-    const requestdate = response[0].crdate
-    const changeDesc = response[0].changeDesc
-    
+sendEmailFrom(response: any, status: any) {
+    debugger;
+    const apiUrl = this.apiurl + '/Email';
+    const CrRequest = response[0].crrequestedBy;
+    const to = response[0].crremail;
+    const cc = response[0].croemail;
+    const requestdate = response[0].crdate;
+    const changeDesc = response[0].changeDesc;
 
-    const output = this.readHtmlFile('assets/email.html');
-    console.log(output);
+    const output = `
+        <div style="font-family: Arial, sans-serif;">
+            <h1>Muthu Sir</h1>
+        </div>
+    `;
+
     const requestBody = {
-      "to": to, //Recipients: Requestor, Change Analyst
-      "cc": cc,   //this.emailofreciver,
-      "subject": `Unnati:IT Change Request:${response[0].itcrid} : Submitted for Approval`,
-      "body": output
-
-      //Recipients: Requestor, Change Analyst
-    }
+        to: to,
+        cc: cc,
+        subject: `Unnati: IT Change Request: ${response[0].itcrid}: Submitted for Approval`,
+        body: output
+    };
 
     const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
+        headers: new HttpHeaders({
+            'Content-Type': 'text/html'
+        })
     };
+
     this.http.post(apiUrl, requestBody, httpOptions).subscribe(
-      (response: any) => {
-        console.log(response);
-      },
-      (error: any) => {
-        console.log('Post request failed', error);
-
-      });
-  }
-
-Above is my ts to send the html file available in assets/email.html and below is my email.html content:
-
-<div>
-  <h1>Muthu Sir</h1>
-</div>
-
-But im getting output in email as:
-<div>
-  <h1>Muthu Sir</h1>
-</div>
-
-but it must show this way means it must design the html and show in email:
-Muthu Sir
+        (response: any) => {
+            console.log(response);
+        },
+        (error: any) => {
+            console.log('Post request failed', error);
+        }
+    );
+}
