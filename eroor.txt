@@ -1,129 +1,44 @@
-Dear {{this.Cremailvalue[0].crrequestedBy}}
+sendemailfrom(response: any, status: any) {
+  // Retrieve data from response
+  const crrequestedBy = this.Cremailvalue[0].crrequestedBy;
+  const crdate = this.Cremailvalue[0].crdate;
+  const changeDesc = this.Cremailvalue[0].changeDesc;
 
-Thank you for {{status}} the Change Request. Below are the details of the Change Request.
-
-Requestor Name: {{this.Cremailvalue[0].crrequestedBy}}
-
-Requested Date: {{this.Cremailvalue[0].crdate}}
-
-Phase: RFC Submission
-
-Status: ${status}
-
-Change Description: {{this.Cremailvalue[0].changeDesc}}
-
-Above is the data im getting in email.
-
-BElow is the ts:
-
-Cremailvalue: any[] = [];
-viewemail(status: any) {
-  debugger
-  const changerequested = this.setcreniatorname.split("-")[0];
-  const changerequest = parseInt(changerequested);
-  alert(changerequest);
-  const apiUrl = this.apiurl + '/ViewCremail/GetViewCremail'
-  const requestBody = {
-
-  }
-  this.http.get(apiUrl, requestBody).subscribe(
-    (response: any) => {
-      this.Cremailvalue = response.filter((item: any) => item.crrempid === changerequest);
-      console.log(this.Cremailvalue,status);
-    },
-    (error: any) => {
-      console.log('Post request failed', error);
-
-    });
-  setTimeout(() => {
-    this.sendemailfrom(this.Cremailvalue, status)
-  }, 1000);
-  
-}
-
-sendemailfrom(response: any,status:any) {
-  debugger
-  const apiUrl = this.apiurl + '/Email'
-  const to = this.Cremailvalue[0].crremail
-  const cc = this.Cremailvalue[0].croemail
-  const requestdate = this.Cremailvalue[0].crdate
-  const changeDesc = this.Cremailvalue[0].changeDesc
-  
-
+  // Read HTML file
   const output = this.readHtmlFile('assets/email.html');
 
-  console.log(output);
-  const requestBody = {
-    "to": to, 
-    "cc": cc,   
-    "subject": `Unnati:IT Change Request:${this.Cremailvalue[0].itcrid} : Submitted for Approval`,
-    "body": output
-  }
+  // Replace template variables with actual data
+  const populatedOutput = output
+    .replace('{{this.Cremailvalue[0].crrequestedBy}}', crrequestedBy)
+    .replace('{{this.Cremailvalue[0].crdate}}', crdate)
+    .replace('{{this.Cremailvalue[0].changeDesc}}', changeDesc)
+    .replace('${status}', status); // Replace ${status} as well
 
+  // Construct email body
+  const to = this.Cremailvalue[0].crremail;
+  const cc = this.Cremailvalue[0].croemail;
+  const subject = `Unnati: IT Change Request:${this.Cremailvalue[0].itcrid} : Submitted for Approval`;
+
+  const requestBody = {
+    to: to,
+    cc: cc,
+    subject: subject,
+    body: populatedOutput // Use the populated HTML
+  };
+
+  // Send the email
   const httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
     })
   };
+
   this.http.post(apiUrl, requestBody, httpOptions).subscribe(
     (response: any) => {
       console.log(response);
     },
     (error: any) => {
       console.log('Post request failed', error);
-
-    });
+    }
+  );
 }
-readHtmlFile(file: string): string {
-  const xhr = new XMLHttpRequest();
-  xhr.open('GET', file, false);
-  xhr.send();
-  if (xhr.status === 200) {
-    return xhr.responseText;
-  } else {
-    console.error('Failed to read HTML file:', file);
-    return ''; // or handle error accordingly
-  }
-}
-
-
-Below is the email.html we are taking from assets in angular project:
-
-<h3><b>Dear</b> {{this.Cremailvalue[0].crrequestedBy}}</h3>
-<p>Thank you for {{status}} the Change Request. Below are the details of the Change Request.</p>
-<p>Requestor Name: {{this.Cremailvalue[0].crrequestedBy}}</p>
-<p>Requested Date: {{this.Cremailvalue[0].crdate}}</p>
-<p>Phase: RFC Submission</p>
-<p>Status: ${status}</p>
-<p>Change Description: {{this.Cremailvalue[0].changeDesc}}</p>
-<table>
-  <thead>
-    <tr>
-      <td>Approver Level</td>
-      <td>Name of Approver</td>
-      <td>Status</td>
-      <td>Remarks with Dates</td>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Approval 1</td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Approval 1</td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
-<p><a href="http://www.unnati.microlabs.co.in">Click here </a>Click here to Log into Unnati and view your status.</p>
-<p>Regards,</p>
-<p>IT Team</p>
-<p>Micro Labs Ltd</p>
-<p><a href="http://www.unnati.microlabs.co.in">www.unnati.microlabs.co.in</a></p>
-<p></p>
-
