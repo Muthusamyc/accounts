@@ -1,23 +1,33 @@
-{
-    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.16",
-    "title": "Unsupported Media Type",
-    "status": 415,
-    "traceId": "00-9e654ac7ec3ccde8db895916272869ea-20edee1de9d35884-00"
+sendemailfrom(output: string, status: any) {
+  const apiUrl = this.apiurl + '/Email';
+  const CrRequest = this.Cremailvalue[0].crrequestedBy;
+  const to = this.Cremailvalue[0].crremail;
+  const cc = this.Cremailvalue[0].croemail;
+  const requestdate = this.Cremailvalue[0].crdate;
+  const changeDesc = this.Cremailvalue[0].changeDesc;
+
+  const requestBody = {
+    "to": to,
+    "cc": cc,
+    "subject": `Unnati:IT Change Request:${this.Cremailvalue[0].itcrid} : Submitted for Approval`,
+    "body": output
+  };
+
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
+
+  // Encode the HTML content as JSON string
+  requestBody.body = JSON.stringify(requestBody.body);
+
+  this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+    (response: any) => {
+      console.log(response);
+    },
+    (error: any) => {
+      console.log('Post request failed', error);
+    }
+  );
 }
-
-
-
-//payload
-{to: "muthusamy.c@techvaraha.com", cc: "muthusamy.c@techvaraha.com",…}
-body
-: 
-"<div>\r\n  <h1>Muthu Sir</h1>\r\n</div>\r\n"
-cc
-: 
-"muthusamy.c@techvaraha.com"
-subject
-: 
-"Unnati:IT Change Request:1 : Submitted for Approval"
-to
-: 
-"muthusamy.c@techvaraha.com"
