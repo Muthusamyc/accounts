@@ -1,1 +1,13 @@
-output = output.replace(/\r\n/g, '');
+Dear {{this.Cremailvalue[0].crrequestedBy}}
+
+Thank you for {{status}} the Change Request. Below are the details of the Change Request.
+
+Requestor Name: {{this.Cremailvalue[0].crrequestedBy}}
+
+Requested Date: {{this.Cremailvalue[0].crdate}}
+
+Phase: RFC Submission
+
+Status: ${status}
+
+Change Description: {{this.Cremailvalue[0].changeDesc}}
