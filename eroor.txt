@@ -5,38 +5,56 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 constructor(private http: HttpClient) {}
 
 viewemail(status: any) {
-  // Your existing code...
+  const changerequested = this.setcreniatorname.split("-")[0];
+  const changerequest = parseInt(changerequested);
+  alert(changerequest);
+  const apiUrl = this.apiurl + '/ViewCremail/GetViewCremail'
+  const requestBody = {};
 
-  this.http.get('assets/email.html', { responseType: 'text' }).subscribe(
-    (output: string) => {
+  this.http.get(apiUrl, requestBody).subscribe(
+    (response: any) => {
+      this.Cremailvalue = response.filter((item: any) => item.crrempid === changerequest);
+      console.log(this.Cremailvalue,status);
+
       // Read HTML file asynchronously
-      console.log(output);
-      this.sendemailfrom(output, status);
+      this.http.get('assets/email.html', { responseType: 'text' }).subscribe(
+        (output: string) => {
+          console.log(output);
+          this.sendemailfrom(output, status);
+        },
+        (error: any) => {
+          console.error('Failed to read HTML file:', error);
+          // Handle error accordingly
+        }
+      );
     },
     (error: any) => {
-      console.error('Failed to read HTML file:', error);
-      // Handle error accordingly
+      console.log('Post request failed', error);
     }
   );
 }
 
 sendemailfrom(output: string, status: any) {
-  // Your existing code...
+  const apiUrl = this.apiurl + '/Email';
+  const CrRequest = this.Cremailvalue[0].crrequestedBy;
+  const to = this.Cremailvalue[0].crremail;
+  const cc = this.Cremailvalue[0].croemail;
+  const requestdate = this.Cremailvalue[0].crdate;
+  const changeDesc = this.Cremailvalue[0].changeDesc;
 
   const requestBody = {
     "to": to,
     "cc": cc,
-    "subject": `Unnati:IT Change Request:${response[0].itcrid} : Submitted for Approval`,
+    "subject": `Unnati:IT Change Request:${this.Cremailvalue[0].itcrid} : Submitted for Approval`,
     "body": output
   };
 
   const httpOptions = {
     headers: new HttpHeaders({
-      'Content-Type': 'text/html' // Set content type to text/html
+      'Content-Type': 'text/html'
     })
   };
 
-  // Send email
   this.http.post(apiUrl, requestBody, httpOptions).subscribe(
     (response: any) => {
       console.log(response);
