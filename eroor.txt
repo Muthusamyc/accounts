@@ -1,44 +1,43 @@
-sendemailfrom(response: any, status: any) {
-  // Retrieve data from response
-  const crrequestedBy = this.Cremailvalue[0].crrequestedBy;
-  const crdate = this.Cremailvalue[0].crdate;
-  const changeDesc = this.Cremailvalue[0].changeDesc;
+  lessonsArray: any[] = [{ text: '' }];
 
-  // Read HTML file
-  const output = this.readHtmlFile('assets/email.html');
+value of this.lessonval is:
 
-  // Replace template variables with actual data
-  const populatedOutput = output
-    .replace('{{this.Cremailvalue[0].crrequestedBy}}', crrequestedBy)
-    .replace('{{this.Cremailvalue[0].crdate}}', crdate)
-    .replace('{{this.Cremailvalue[0].changeDesc}}', changeDesc)
-    .replace('${status}', status); // Replace ${status} as well
-
-  // Construct email body
-  const to = this.Cremailvalue[0].crremail;
-  const cc = this.Cremailvalue[0].croemail;
-  const subject = `Unnati: IT Change Request:${this.Cremailvalue[0].itcrid} : Submitted for Approval`;
-
-  const requestBody = {
-    to: to,
-    cc: cc,
-    subject: subject,
-    body: populatedOutput // Use the populated HTML
-  };
-
-  // Send the email
-  const httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json'
-    })
-  };
-
-  this.http.post(apiUrl, requestBody, httpOptions).subscribe(
-    (response: any) => {
-      console.log(response);
+[
+    {
+        "crlessonId": 4,
+        "itcrid": 124,
+        "lessons": "Lessons learnt1",
+        "attachment": "C:\\fakepath\\citrixserver.txt",
+        "lessonDt": "2024-06-06T18:29:18.01",
+        "createdBy": 135055,
+        "createdDt": "2024-06-06T18:29:18.01",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "itcr": null
     },
-    (error: any) => {
-      console.log('Post request failed', error);
+    {
+        "crlessonId": 5,
+        "itcrid": 124,
+        "lessons": "Lessons learnt2",
+        "attachment": "C:\\fakepath\\citrixserver.txt",
+        "lessonDt": "2024-06-06T18:29:18.023",
+        "createdBy": 135055,
+        "createdDt": "2024-06-06T18:29:18.023",
+        "modifiedBy": null,
+        "modifiedDt": null,
+        "itcr": null
     }
-  );
-}
+]
+
+
+I want to push the value of "lessons" of each item in lessonsArray. It must be added after 'text' : 'all the lessons add here'
+
+
+so that i can show in input and below is my html:
+
+<div>
+  <div *ngFor="let lesson of lessonsArray; let i=index" class="col">
+    <label label-approve>Lessons learnt</label>
+    <textarea [(ngModel)]="lesson.text" class="textarea-implement"></textarea>
+  </div>
+</div>
