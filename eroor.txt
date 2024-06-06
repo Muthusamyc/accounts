@@ -1,6 +1,9 @@
-<div>
-  <div *ngFor="let lesson of lessonsArray; let i=index" class="col" *ngIf="lesson.text !== ''">
-    <label label-approve>Lessons learnt</label>
-    <textarea [(ngModel)]="lesson.text" class="textarea-implement"></textarea>
-  </div>
-</div>
+// Assuming this.lessonval contains the array you provided earlier
+
+// Populate lessonsArray by filtering out empty text values
+this.lessonval.forEach((item) => {
+  const text = `all the lessons add here ${item.lessons}`;
+  if (text.trim() !== '') {
+    this.lessonsArray.push({ text });
+  }
+});
