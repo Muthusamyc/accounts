@@ -1,10 +1,18 @@
-selectedfile: File|undefined ;
+selectedfile: File | undefined;
+
 getattech(event: any) {
-  this.selectedfile = <File > event.target.files[0];
+  this.selectedfile = event.target.files?.[0]; // Optional chaining for safety
 }
+
 crlession() {
+  if (!this.selectedfile) {
+    // Handle the case where selectedfile is undefined
+    return;
+  }
+
   const filedata = new FormData();
-  filedata.append('image', this.selectedfile, this.selectedfile.name[0]);
+  filedata.append('image', this.selectedfile, this.selectedfile.name); // Accessing name directly
+
   this.lessonsArray.forEach((lesson, index) => {
     const apiUrl = this.apiurl + '/CRlession/Approve';
     const requestBody = {
@@ -12,8 +20,8 @@ crlession() {
       "crLessonID": 0,
       "itcrid": this.crid.itcrid,
       "lessons": lesson.text,
-      "lessonDt": this.lessonDt, // Assuming you want the same lessonDt for each lesson
-      "attachment": this.selectedfile, // Assuming you want the same attachment for each lesson
+      "lessonDt": this.lessonDt,
+      "attachment": this.selectedfile,
       "createdBy": this.supportid,
       "createdDt": this.today,
       "modifiedBy": this.supportid,
@@ -26,6 +34,6 @@ crlession() {
       })
     };
 
-the error for
-Argument of type 'File | undefined' is not assignable to parameter of type 'Blob'.
-  Type 'undefined' is not assignable to type 'Blob'.
+    // Rest of your code
+  });
+}
