@@ -1,50 +1,19 @@
-[HttpPost]
-public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
-{
-    try
-    {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("File is not selected or empty");
-        }
-
-        if (string.IsNullOrEmpty(itcrid))
-        {
-            return BadRequest("ITCRID is required");
-        }
-
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", itcrid);
-        if (!Directory.Exists(uploadsFolder))
-        {
-            Directory.CreateDirectory(uploadsFolder);
-        }
-
-        var fileName = file.FileName; // Use the original file name provided by the user
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        return Ok(new { fileName });
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-    }
-}
-above my api code below my ts:
 addFile(): void {
   if (!this.selectedFile) {
     console.error('No file selected.');
     return;
   }
 
+  if (!this.itcrid) {
+    console.error('ITCRID is required.');
+    return;
+  }
+
   const formData = new FormData();
+  formData.append('itcrid', this.itcrid); // Append the ITCRID to the form data
   formData.append('file', this.selectedFile, this.selectedFile.name);
 
-  const apiUrl = this.apiurl + '/CRlession';
+  const apiUrl = this.apiurl + '/CRlession/UploadFile'; // Adjust the API endpoint as per your route
 
   this.http.post(apiUrl, formData).subscribe(
     (response: any) => {
@@ -55,4 +24,3 @@ addFile(): void {
     }
   );
 }
-how to i pass the itcrid for api
