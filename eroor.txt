@@ -41,25 +41,44 @@ export class UploadFileComponent {
 
 
 
-addfile() {
-  const filedata = new FormData();
-  filedata.append('image', this.selectedfile, this.selectedfile.name);
-  const apiUrl = this.apiurl + '/CRlession';
-  const requestBody = {
-    "file": filedata
+import { Component } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+@Component({
+  selector: 'app-upload-file',
+  templateUrl: './upload-file.component.html',
+  styleUrls: ['./upload-file.component.css']
+})
+export class UploadFileComponent {
+  selectedFile: File;
+
+  constructor(private http: HttpClient) { }
+
+  onFileSelected(event): void {
+    this.selectedFile = event.target.files[0];
   }
-  const httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json'
-    })
-  };
 
-  this.http.post(apiUrl, requestBody, httpOptions).subscribe(
-    (response: any) => {
-      console.log(response);
-    },
-    (error: any) => {
-      console.error('POST request failed', error);
-    });
+  addFile(): void {
+    if (!this.selectedFile) {
+      console.error('No file selected.');
+      return;
+    }
 
+    const formData = new FormData();
+    formData.append('image', this.selectedFile, this.selectedFile.name);
+
+    const apiUrl = this.apiurl + '/CRlession';
+
+    this.http.post(apiUrl, formData).subscribe(
+      (response: any) => {
+        console.log(response);
+        // Handle success, maybe display a success message or redirect
+      },
+      (error: any) => {
+        console.error('POST request failed', error);
+        // Handle error, maybe display an error message
+      }
+    );
+  }
 }
+
