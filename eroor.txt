@@ -1,84 +1,36 @@
-// upload-file.component.ts
-import { Component } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+[HttpPost]
+public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
+{
+    try
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("File is not selected or empty");
+        }
 
-@Component({
-  selector: 'app-upload-file',
-  templateUrl: './upload-file.component.html',
-  styleUrls: ['./upload-file.component.css']
-})
-export class UploadFileComponent {
-  uploadedFileName: string;
+        if (string.IsNullOrEmpty(itcrid))
+        {
+            return BadRequest("ITCRID is required");
+        }
 
-  constructor(private http: HttpClient) { }
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", itcrid);
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
 
-  onFileSelected(event): void {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      this.uploadedFileName = file.name;
-      // You can also display preview of selected file if needed
+        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        return Ok(new { fileName });
     }
-  }
-
-  onUpload(): void {
-    const formData = new FormData();
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    formData.append('file', fileInput.files[0]);
-
-    this.http.post<any>('your-api-endpoint', formData).subscribe(
-      (res) => {
-        console.log(res);
-        // Handle success, maybe display a success message or redirect
-      },
-      (err) => {
-        console.error(err);
-        // Handle error, maybe display an error message
-      }
-    );
-  }
-}
-
-
-
-
-import { Component } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
-@Component({
-  selector: 'app-upload-file',
-  templateUrl: './upload-file.component.html',
-  styleUrls: ['./upload-file.component.css']
-})
-export class UploadFileComponent {
-  selectedFile: File;
-
-  constructor(private http: HttpClient) { }
-
-  onFileSelected(event): void {
-    this.selectedFile = event.target.files[0];
-  }
-
-  addFile(): void {
-    if (!this.selectedFile) {
-      console.error('No file selected.');
-      return;
+    catch (Exception ex)
+    {
+        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
     }
-
-    const formData = new FormData();
-    formData.append('image', this.selectedFile, this.selectedFile.name);
-
-    const apiUrl = this.apiurl + '/CRlession';
-
-    this.http.post(apiUrl, formData).subscribe(
-      (response: any) => {
-        console.log(response);
-        // Handle success, maybe display a success message or redirect
-      },
-      (error: any) => {
-        console.error('POST request failed', error);
-        // Handle error, maybe display an error message
-      }
-    );
-  }
 }
-
