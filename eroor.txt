@@ -1,6 +1,27 @@
-selectedfile: File ;
+selectedfile: File|undefined ;
 getattech(event: any) {
   this.selectedfile = <File > event.target.files[0];
 }
-Property 'selectedfile' has no initializer and is not definitely assigned in the constructor.
-Type 'null' is not assignable to type 'File'.
+crlession() {
+  const filedata = new FormData();
+  filedata.append('image', this.selectedfile, this.selectedfile.name[0]);
+  this.lessonsArray.forEach((lesson, index) => {
+    const apiUrl = this.apiurl + '/CRlession/Approve';
+    const requestBody = {
+      "flag": "I",
+      "crLessonID": 0,
+      "itcrid": this.crid.itcrid,
+      "lessons": lesson.text,
+      "lessonDt": this.lessonDt, // Assuming you want the same lessonDt for each lesson
+      "attachment": this.selectedfile, // Assuming you want the same attachment for each lesson
+      "createdBy": this.supportid,
+      "createdDt": this.today,
+      "modifiedBy": this.supportid,
+      "modifiedDt": this.today
+    };
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
