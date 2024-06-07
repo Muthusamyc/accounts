@@ -25,3 +25,7 @@ crlession() {
         'Content-Type': 'application/json'
       })
     };
+
+the error for
+Argument of type 'File | undefined' is not assignable to parameter of type 'Blob'.
+  Type 'undefined' is not assignable to type 'Blob'.
