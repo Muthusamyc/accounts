@@ -1,48 +1,26 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.IO;
-using System.Threading.Tasks;
+selectedfile: File | undefined;
+getattech(event: any) {
+  this.selectedfile = event.target.files?.[0];
+}
+addfile() {
+  const filedata = new FormData();
+  filedata.append('image', this.selectedfile!, this.selectedfile!.name);
+  const apiUrl = this.apiurl + '/CRlession';
+  const requestBody = {
+    "file": filedata
+  }
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
 
-namespace YourNamespace.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class FileUploadController : ControllerBase
-    {
-        [HttpPost]
-        public async Task<IActionResult> UploadFile(IFormFile file)
-        {
-            try
-            {
-                if (file == null || file.Length == 0)
-                {
-                    return BadRequest("File is not selected or empty");
-                }
+  this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+    (response: any) => {
+      console.log(response);
+    },
+    (error: any) => {
+      console.error('POST request failed', error);
+    });
 
-                // Ensure the uploads directory exists
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                // Generate a unique file name to prevent overwriting
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                // Save the file to disk
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-
-                return Ok(new { fileName });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-            }
-        }
-    }
 }
