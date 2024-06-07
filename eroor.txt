@@ -3,3 +3,4 @@ getattech(event: any) {
   this.selectedfile = <File > event.target.files[0];
 }
 Property 'selectedfile' has no initializer and is not definitely assigned in the constructor.
+Type 'null' is not assignable to type 'File'.
