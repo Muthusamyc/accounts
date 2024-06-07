@@ -1,26 +1,35 @@
-addFile(): void {
-  if (!this.selectedFile) {
-    console.error('No file selected.');
-    return;
-  }
+public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
+{
+    try
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("File is not selected or empty");
+        }
 
-  if (!this.itcrid) {
-    console.error('ITCRID is required.');
-    return;
-  }
+        if (string.IsNullOrEmpty(itcrid))
+        {
+            return BadRequest("ITCRID is required");
+        }
 
-  const formData = new FormData();
-  formData.append('itcrid', this.itcrid); // Append the ITCRID to the form data
-  formData.append('file', this.selectedFile, this.selectedFile.name);
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", itcrid);
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
 
-  const apiUrl = this.apiurl + '/CRlession/UploadFile'; // Adjust the API endpoint as per your route
+        var fileName = file.FileName; // Use the original file name provided by the user
+        var filePath = Path.Combine(uploadsFolder, fileName);
 
-  this.http.post(apiUrl, formData).subscribe(
-    (response: any) => {
-      console.log(response);
-    },
-    (error: any) => {
-      console.error('POST request failed', error);
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        return Ok(new { fileName });
     }
-  );
+    catch (Exception ex)
+    {
+        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+    }
 }
