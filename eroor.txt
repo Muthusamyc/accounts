@@ -37,3 +37,29 @@ export class UploadFileComponent {
     );
   }
 }
+
+
+
+
+addfile() {
+  const filedata = new FormData();
+  filedata.append('image', this.selectedfile, this.selectedfile.name);
+  const apiUrl = this.apiurl + '/CRlession';
+  const requestBody = {
+    "file": filedata
+  }
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
+
+  this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+    (response: any) => {
+      console.log(response);
+    },
+    (error: any) => {
+      console.error('POST request failed', error);
+    });
+
+}
