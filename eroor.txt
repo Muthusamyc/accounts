@@ -1,8 +1,62 @@
-var file = HttpContext.Current.Request.Files.Count>0? HttpContext.Current.Request.Files[0]:null
-if(file!=null && file.ContentLength>0)
-{
-var filename = Path.GetFileName(file.FileName);
-var path = Path.Combine(HttpContext.Current.Server.MapPath("~/uploads"),filename);
-file.SavaAs(path);
-}
-return "Succes"+file!=null? "/uploads"+file.FileName:null
+export class FileService {
+  _message: string;
+  private url = environment.fileUploadX_Url;//this.config.FILEUPLOAD_ENDPOINT;//
+  @Output('fileLoad') fileLoaded: EventEmitter<string> = new EventEmitter<string>();
+
+  constructor(private http: HttpClient, private config: ConfigService) {
+  }
+
+  upload(file: File): void {
+
+    var xhr = this.createCORSRequest('POST', this.url);
+
+    const fd = new FormData();
+    fd.append('file', file);
+
+    xhr.send(fd);
+
+  }
+
+  createCORSRequest(method, url) {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+    xhr.addEventListener('loadend', this.handleLoadEnd.bind(this));
+    xhr.addEventListener('error', this.handleLoadEnd);
+    xhr.open(method, url, true);
+
+
+   // xhr.setRequestHeader("Content-Type", "multipart/form-data");
+
+    return xhr;
+  }
+Here is the Controller in web api:
+
+ [Produces("application/json")]
+    [Route("api/[controller]")]    
+    [ApiController]
+    public class UploadFileController : ControllerBase
+    {           
+        [DisableRequestSizeLimit]
+        [HttpPost("UploadFile")]      
+        public async Task<ActionResult> UploadFile()
+        {
+            try
+            {                                
+                var file = Request.Form.Files[0];
+                string fileName = file.FileName;
+                var filePath = Path.Combine("/Logs", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+            }
+            catch (Exception ex) {
+                return BadRequest("Unable to upload the file." );
+            }
+
+            return  Ok();
+        }
+
+
+    }
