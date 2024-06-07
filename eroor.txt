@@ -1,35 +1,27 @@
-public async Task<IActionResult> UploadFile(int itcrid, IFormFile file)
-{
-    try
-    {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("File is not selected or empty");
-        }
 
-        if (itcrid <= 0)
-        {
-            return BadRequest("ITCRID is required and must be a positive integer");
-        }
-
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", itcrid.ToString());
-        if (!Directory.Exists(uploadsFolder))
-        {
-            Directory.CreateDirectory(uploadsFolder);
-        }
-
-        var fileName = file.FileName; // Use the original file name provided by the user
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        return Ok(new { fileName });
+  addFile(): void {
+    if (!this.selectedFile) {
+      console.error('No file selected.');
+      return;
     }
-    catch (Exception ex)
-    {
-        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+
+    if (!this.crid.itcrid) {
+      console.error('ITCRID is required.');
+      return;
     }
-}
+
+    const formData = new FormData();
+    formData.append('itcrid', this.crid.itcrid); // Append the ITCRID to the form data
+    formData.append('file', this.selectedFile, this.selectedFile.name);
+
+    const apiUrl = this.apiurl + '/CRlession/UploadFile'; // Adjust the API endpoint as per your route
+
+    this.http.post(apiUrl, formData).subscribe(
+      (response: any) => {
+        console.log(response);
+      },
+      (error: any) => {
+        console.error('POST request failed', error);
+      }
+    );
+  }
