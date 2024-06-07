@@ -34,3 +34,25 @@ public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
         return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
     }
 }
+above my api code below my ts:
+addFile(): void {
+  if (!this.selectedFile) {
+    console.error('No file selected.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', this.selectedFile, this.selectedFile.name);
+
+  const apiUrl = this.apiurl + '/CRlession';
+
+  this.http.post(apiUrl, formData).subscribe(
+    (response: any) => {
+      console.log(response);
+    },
+    (error: any) => {
+      console.error('POST request failed', error);
+    }
+  );
+}
+how to i pass the itcrid for api
