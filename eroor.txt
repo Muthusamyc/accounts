@@ -1,9 +1,5 @@
-// Assuming this.lessonval contains the array you provided earlier
-
-// Populate lessonsArray by filtering out empty text values
-this.lessonval.forEach((item) => {
-  const text = `all the lessons add here ${item.lessons}`;
-  if (text.trim() !== '') {
-    this.lessonsArray.push({ text });
-  }
-});
+selectedfile: File ;
+getattech(event: any) {
+  this.selectedfile = <File > event.target.files[0];
+}
+Property 'selectedfile' has no initializer and is not definitely assigned in the constructor.
