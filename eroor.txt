@@ -1,2 +1,33 @@
-Argument of type 'File | null' is not assignable to parameter of type 'Blob'.
-  Type 'null' is not assignable to type 'Blob'.
+selectedfile: File | null = null; // Initialize selectedfile as null
+
+getattech(event: any) {
+  this.selectedfile = event.target.files?.[0];
+}
+
+addfile() {
+  if (!this.selectedfile) {
+    console.error('No file selected.');
+    return;
+  }
+
+  const filedata = new FormData();
+  filedata.append('image', this.selectedfile); // Directly append selectedfile
+  const apiUrl = this.apiurl + '/CRlession';
+  const requestBody = {
+    "file": filedata
+  }
+  const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
+
+  this.http.post(apiUrl, requestBody, httpOptions).subscribe(
+    (response: any) => {
+      console.log(response);
+    },
+    (error: any) => {
+      console.error('POST request failed', error);
+    });
+}
+
