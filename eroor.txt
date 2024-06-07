@@ -1,47 +1,68 @@
-[HttpPost]
-public async Task<IActionResult> UploadFile()
-{
-    try
-    {
-        var request = HttpContext.Request;
+ [HttpPost]
+ public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
+ {
+     try
+     {
+         if (file == null || file.Length == 0)
+         {
+             return BadRequest("File is not selected or empty");
+         }
 
-        // Ensure the content type is multipart/form-data
-        if (!request.HasFormContentType)
-        {
-            return BadRequest("Content type is not multipart/form-data");
-        }
+         if (string.IsNullOrEmpty(itcrid))
+         {
+             return BadRequest("ITCRID is required");
+         }
 
-        var form = await request.ReadFormAsync();
+         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "CrFollowup", itcrid);
+         if (!Directory.Exists(uploadsFolder))
+         {
+             Directory.CreateDirectory(uploadsFolder);
+         }
 
-        if (!form.TryGetValue("itcrid", out var itcridValue) || !int.TryParse(itcridValue, out int itcrid) || itcrid <= 0)
-        {
-            return BadRequest("ITCRID is required and must be a positive integer");
-        }
+         var fileName = file.FileName; // Use the original file name provided by the user
+         var filePath = Path.Combine(uploadsFolder, fileName);
 
-        var file = form.Files.FirstOrDefault();
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("File is not selected or empty");
-        }
+         using (var stream = new FileStream(filePath, FileMode.Create))
+         {
+             await file.CopyToAsync(stream);
+         }
 
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", itcrid.ToString());
-        if (!Directory.Exists(uploadsFolder))
-        {
-            Directory.CreateDirectory(uploadsFolder);
-        }
+         return Ok(new { fileName });
+     }
+     catch (Exception ex)
+     {
+         return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+     }
+ }
+above my webapi code and below my ts:
+addFile(): void {
+  if (!this.selectedFile) {
+    console.error('No file selected.');
+    return;
+  }
 
-        var fileName = file.FileName; // Use the original file name provided by the user
-        var filePath = Path.Combine(uploadsFolder, fileName);
+  if (!this.crid.itcrid) {
+    console.error('ITCRID is required.');
+    return;
+  }
+  const itcrid = this.crid.itcrid.toString();
+  const formData = new FormData();
+  const requestBody = {
+    "itcrid": itcrid,
+    "file": formData
+  }
+  
+  formData.append('file', this.selectedFile, this.selectedFile.name);
+  
+  const apiUrl = this.apiurl + '/CRlession/UploadFile'; // Adjust the API endpoint as per your route
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        return Ok(new { fileName });
+  this.http.post(apiUrl, requestBody).subscribe(
+    (response: any) => {
+      console.log(response);
+    },
+    (error: any) => {
+      console.error('POST request failed', error);
     }
-    catch (Exception ex)
-    {
-        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-    }
-}
+  );
+} 
+i want how to pass the value for api please to give correct ts code
