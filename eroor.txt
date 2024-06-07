@@ -1,4 +1,4 @@
-public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
+public async Task<IActionResult> UploadFile(int itcrid, IFormFile file)
 {
     try
     {
@@ -7,12 +7,12 @@ public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
             return BadRequest("File is not selected or empty");
         }
 
-        if (string.IsNullOrEmpty(itcrid))
+        if (itcrid <= 0)
         {
-            return BadRequest("ITCRID is required");
+            return BadRequest("ITCRID is required and must be a positive integer");
         }
 
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", itcrid);
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", itcrid.ToString());
         if (!Directory.Exists(uploadsFolder))
         {
             Directory.CreateDirectory(uploadsFolder);
