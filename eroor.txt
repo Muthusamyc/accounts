@@ -1,68 +1,36 @@
- [HttpPost]
- public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
- {
-     try
-     {
-         if (file == null || file.Length == 0)
-         {
-             return BadRequest("File is not selected or empty");
-         }
+[HttpPost]
+public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
+{
+    try
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("File is not selected or empty");
+        }
 
-         if (string.IsNullOrEmpty(itcrid))
-         {
-             return BadRequest("ITCRID is required");
-         }
+        if (string.IsNullOrEmpty(itcrid))
+        {
+            return BadRequest("ITCRID is required");
+        }
 
-         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "CrFollowup", itcrid);
-         if (!Directory.Exists(uploadsFolder))
-         {
-             Directory.CreateDirectory(uploadsFolder);
-         }
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "CrFollowup", itcrid);
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
 
-         var fileName = file.FileName; // Use the original file name provided by the user
-         var filePath = Path.Combine(uploadsFolder, fileName);
+        var fileName = file.FileName; // Use the original file name provided by the user
+        var filePath = Path.Combine(uploadsFolder, fileName);
 
-         using (var stream = new FileStream(filePath, FileMode.Create))
-         {
-             await file.CopyToAsync(stream);
-         }
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
 
-         return Ok(new { fileName });
-     }
-     catch (Exception ex)
-     {
-         return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-     }
- }
-above my webapi code and below my ts:
-addFile(): void {
-  if (!this.selectedFile) {
-    console.error('No file selected.');
-    return;
-  }
-
-  if (!this.crid.itcrid) {
-    console.error('ITCRID is required.');
-    return;
-  }
-  const itcrid = this.crid.itcrid.toString();
-  const formData = new FormData();
-  const requestBody = {
-    "itcrid": itcrid,
-    "file": formData
-  }
-  
-  formData.append('file', this.selectedFile, this.selectedFile.name);
-  
-  const apiUrl = this.apiurl + '/CRlession/UploadFile'; // Adjust the API endpoint as per your route
-
-  this.http.post(apiUrl, requestBody).subscribe(
-    (response: any) => {
-      console.log(response);
-    },
-    (error: any) => {
-      console.error('POST request failed', error);
+        return Ok(new { fileName });
     }
-  );
-} 
-i want how to pass the value for api please to give correct ts code
+    catch (Exception ex)
+    {
+        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+    }
+}
