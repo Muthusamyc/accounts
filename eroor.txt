@@ -5,13 +5,10 @@ getattech(event: any) {
 }
 
 crlession() {
-  if (!this.selectedfile) {
-    // Handle the case where selectedfile is undefined
-    return;
-  }
-
   const filedata = new FormData();
-  filedata.append('image', this.selectedfile, this.selectedfile.name); // Accessing name directly
+
+  // Asserting that this.selectedfile is not undefined
+  filedata.append('image', this.selectedfile!, this.selectedfile!.name);
 
   this.lessonsArray.forEach((lesson, index) => {
     const apiUrl = this.apiurl + '/CRlession/Approve';
@@ -21,7 +18,7 @@ crlession() {
       "itcrid": this.crid.itcrid,
       "lessons": lesson.text,
       "lessonDt": this.lessonDt,
-      "attachment": this.selectedfile,
+      "attachment": this.selectedfile!,
       "createdBy": this.supportid,
       "createdDt": this.today,
       "modifiedBy": this.supportid,
