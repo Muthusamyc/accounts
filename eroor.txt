@@ -1,36 +1,117 @@
-selectedfile: File | undefined;
+export class FileService {
+  _message: string;
+  private url = environment.fileUploadX_Url;//this.config.FILEUPLOAD_ENDPOINT;//
+  @Output('fileLoad') fileLoaded: EventEmitter<string> = new EventEmitter<string>();
 
-getattech(event: any) {
-  this.selectedfile = event.target.files?.[0]; // Optional chaining for safety
-}
+  constructor(private http: HttpClient, private config: ConfigService) {
+  }
 
-crlession() {
-  const filedata = new FormData();
+  upload(file: File): void {
 
-  // Asserting that this.selectedfile is not undefined
-  filedata.append('image', this.selectedfile!, this.selectedfile!.name);
+    var xhr = this.createCORSRequest('POST', this.url);
 
-  this.lessonsArray.forEach((lesson, index) => {
-    const apiUrl = this.apiurl + '/CRlession/Approve';
-    const requestBody = {
-      "flag": "I",
-      "crLessonID": 0,
-      "itcrid": this.crid.itcrid,
-      "lessons": lesson.text,
-      "lessonDt": this.lessonDt,
-      "attachment": this.selectedfile!,
-      "createdBy": this.supportid,
-      "createdDt": this.today,
-      "modifiedBy": this.supportid,
-      "modifiedDt": this.today
-    };
+    const fd = new FormData();
+    fd.append('file', file);
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
+    xhr.send(fd);
 
-    // Rest of your code
-  });
-}
+  }
+
+  createCORSRequest(method, url) {
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+    xhr.addEventListener('loadend', this.handleLoadEnd.bind(this));
+    xhr.addEventListener('error', this.handleLoadEnd);
+    xhr.open(method, url, true);
+
+
+   // xhr.setRequestHeader("Content-Type", "multipart/form-data");
+
+    return xhr;
+  }
+Here is the Controller in web api:
+
+ [Produces("application/json")]
+    [Route("api/[controller]")]    
+    [ApiController]
+    public class UploadFileController : ControllerBase
+    {           
+        [DisableRequestSizeLimit]
+        [HttpPost("UploadFile")]      
+        public async Task<ActionResult> UploadFile()
+        {
+            try
+            {                                
+                var file = Request.Form.Files[0];
+                string fileName = file.FileName;
+                var filePath = Path.Combine("/Logs", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+            }
+            catch (Exception ex) {
+                return BadRequest("Unable to upload the file." );
+            }
+
+            return  Ok();
+        }
+
+
+    }
+Here is the startup.cs in web api:
+
+public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddCors(o => o.AddPolicy("ThePolicy", builder =>
+           {
+               builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+           }));
+
+            //services.AddCors(c =>
+            //{
+            //    c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+            //});
+
+            ConfigureServicesModule<AviationIQ_Dev_Phase2Context>.Register(services, Configuration);
+            services.Configure<FormOptions>(o => {
+                o.ValueLengthLimit = int.MaxValue;
+                o.MultipartBodyLengthLimit = int.MaxValue;
+                o.MemoryBufferThreshold = int.MaxValue;
+            });
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            //app.UseHttpsRedirection();
+            //app.UseMvc();
+            ConfigureModule.Configure(app, env, Configuration);
+
+            app.UseCors("ThePolicy");
+
+        }
+    }
