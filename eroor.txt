@@ -1,36 +1,83 @@
-[HttpPost]
-public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
-{
-    try
-    {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("File is not selected or empty");
-        }
+ public async Task<IActionResult> UploadFile(string itcrid, IFormFile file)
+ {
+     try
+     {
+         if (file == null || file.Length == 0)
+         {
+             return BadRequest("File is not selected or empty");
+         }
 
-        if (string.IsNullOrEmpty(itcrid))
-        {
-            return BadRequest("ITCRID is required");
-        }
+         if (string.IsNullOrEmpty(itcrid))
+         {
+             return BadRequest("ITCRID is required");
+         }
 
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "CrFollowup", itcrid);
-        if (!Directory.Exists(uploadsFolder))
-        {
-            Directory.CreateDirectory(uploadsFolder);
-        }
+         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "CrFollowup", itcrid);
+         if (!Directory.Exists(uploadsFolder))
+         {
+             Directory.CreateDirectory(uploadsFolder);
+         }
 
-        var fileName = file.FileName; // Use the original file name provided by the user
-        var filePath = Path.Combine(uploadsFolder, fileName);
+         var fileName = file.FileName; // Use the original file name provided by the user
+         var filePath = Path.Combine(uploadsFolder, fileName);
 
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
+         using (var stream = new FileStream(filePath, FileMode.Create))
+         {
+             await file.CopyToAsync(stream);
+         }
 
-        return Ok(new { fileName });
-    }
-    catch (Exception ex)
-    {
-        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-    }
-}
+         return Ok(new { fileName });
+     }
+     catch (Exception ex)
+     {
+         return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+     }
+ }
+avove my web api below my ts:
+ addFile(): void {
+   if (!this.selectedFile) {
+     console.error('No file selected.');
+     return;
+   }
+
+   if (!this.crid.itcrid) {
+     console.error('ITCRID is required.');
+     return;
+   }
+   const itcrid = this.crid.itcrid.toString();
+   const formData = new FormData();
+
+   formData.append('itcrid', itcrid); 
+   formData.append('file', this.selectedFile, this.selectedFile.name);
+   
+   const apiUrl = this.apiurl + '/CRlession'; // Adjust the API endpoint as per your route
+
+   this.http.post(apiUrl, formData).subscribe(
+     (response: any) => {
+       console.log(response);
+     },
+     (error: any) => {
+       console.error('POST request failed', error);
+     }
+   );
+ this is my payload :
+------WebKitFormBoundaryFSyOwbR2Qxc3mT3G
+Content-Disposition: form-data; name="itcrid"
+
+128
+------WebKitFormBoundaryFSyOwbR2Qxc3mT3G
+Content-Disposition: form-data; name="file"; filename="eroor.txt"
+Content-Type: text/plain
+
+
+------WebKitFormBoundaryFSyOwbR2Qxc3mT3G--
+but i itcrid is not pass to api it show error:
+"type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "errors": {
+        "itcrid": [
+            "The itcrid field is required."
+        ]
+    },
+
