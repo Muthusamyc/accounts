@@ -1,66 +1,35 @@
-public async Task<IActionResult> UploadFile([FromForm] string itcrid, [FromForm] IFormFile file)
-{
-    try
-    {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("File is not selected or empty");
-        }
+  getlessondat() {
+    const apiUrls = this.apiurl + '/CRlession/GetCrLession'
+    const requestBody = {
 
-        if (string.IsNullOrEmpty(itcrid))
-        {
-            return BadRequest("ITCRID is required");
-        }
-
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "CrFollowup", itcrid);
-        if (!Directory.Exists(uploadsFolder))
-        {
-            Directory.CreateDirectory(uploadsFolder);
-        }
-
-        var fileName = file.FileName; // Use the original file name provided by the user
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        return Ok(new { fileName });
     }
-    catch (Exception ex)
-    {
-        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-    }
-}
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'content-Type': 'application/json'
+      })
+    };
+    this.http.get(apiUrls, requestBody).subscribe(
+      (response: any) => {
+        this.lessonval = response.filter((item: any) => item.itcrid === Number(this.crid.itcrid))
+        console.log('cr release info', this.lessonval)
 
+        this.lessonvalviewdt = this.lessonval[0].lessonDt
+        this.lessonvalviewComments = this.lessonval[0].lessons
+        this.lessonvalviewattachment = this.lessonval[0].attachment
+        const apimnfdate = this.datepipe.transform(this.lessonvalviewdt, 'dd-MMM-yyyy') || '';
+        const [day, month, year] = apimnfdate.split('-');
+        const dateObject = new Date(`${year}-${month}-${day}`);
+        const formatDate = dateObject.toISOString().split('T')[0];
+        this.lessonDt = formatDate
 
-
-addFile(): void {
-    if (!this.selectedFile) {
-        console.error('No file selected.');
-        return;
-    }
-
-    if (!this.crid.itcrid) {
-        console.error('ITCRID is required.');
-        return;
-    }
-
-    const itcrid = this.crid.itcrid.toString();
-    const formData = new FormData();
-
-    formData.append('itcrid', itcrid); 
-    formData.append('file', this.selectedFile, this.selectedFile.name);
-
-    const apiUrl = this.apiurl + '/CRlession'; // Adjust the API endpoint as per your route
-
-    this.http.post(apiUrl, formData).subscribe(
-        (response: any) => {
-            console.log(response);
-        },
-        (error: any) => {
-            console.error('POST request failed', error);
-        }
-    );
-}
+        this.lessonval.forEach((item) => {
+          this.lessonsArray.push({ text: `${item.lessons}` });
+        });
+        console.log('this.lessonsArray', this.lessonsArray)
+        this.attachment = this.lessonvalviewattachment
+      },
+      (error) => {
+        console.error("Post failed", error)
+      }
+    )
+  }
