@@ -1,0 +1,19 @@
+<!-- First Table -->
+<table class="fl-table" style="width:100%; margin-left:-1%">
+  <!-- Table headers and body -->
+  <tbody>
+    <tr class="tr-body" *ngFor="let pltdata of supportengineers | paginate: { itemsPerPage: noOfRows, currentPage: page }">
+      <!-- Table row content -->
+    </tr>
+  </tbody>
+</table>
+
+<!-- Second Table -->
+<table class="fl-table" style="width:100%; margin-left:-1%">
+  <!-- Table headers and body -->
+  <tbody>
+    <tr class="tr-body" *ngFor="let pltdata of supportassignto | paginate: { itemsPerPage: noOfRows1, currentPage: page1 }">
+      <!-- Table row content -->
+    </tr>
+  </tbody>
+</table>
