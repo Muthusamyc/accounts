@@ -1,11 +1,6 @@
-ERROR TypeError: ctx.createRangefor is not a function
-    at ChangeRequestComponent_Template (change-request.component.html:389:53)
-    at executeTemplate (core.mjs:11268:9)
-    at refreshView (core.mjs:12791:13)
-    at detectChangesInView$1 (core.mjs:13015:9)
-    at detectChangesInViewIfAttached (core.mjs:12978:5)
-    at detectChangesInComponent (core.mjs:12967:5)
-    at detectChangesInChildComponents (core.mjs:13028:9)
-    at refreshView (core.mjs:12841:13)
-    at detectChangesInView$1 (core.mjs:13015:9)
-    at detectChangesInViewIfAttached (core.mjs:12978:5)
+   <pagination-controls (pageChange)="onPageChange($event)" [id]="config1.id"></pagination-controls>
+
+
+
+NG2: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
