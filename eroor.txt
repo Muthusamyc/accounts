@@ -1,25 +1,11 @@
-ngOnInit(): void {
-  this.page = 1;
-  this.page1 = 1;
-  this.noOfRows = 5;
-  this.noOfRows1 = 5;
-  this.config.itemsPerPage = this.noOfRows;
-  this.config.currentPage = this.page;
-  this.config1.itemsPerPage = this.noOfRows1;
-  this.config1.currentPage = this.page1;
-}
-
-
-
-
-
-ngOnChanges(changes: SimpleChanges): void {
-  if (changes.noOfRows) {
-    this.config.itemsPerPage = this.noOfRows;
-    this.page = 1; // Reset to the first page when items per page changes
-  }
-  if (changes.noOfRows1) {
-    this.config1.itemsPerPage = this.noOfRows1;
-    this.page1 = 1; // Reset to the first page when items per page changes
-  }
-}
+ERROR TypeError: ctx.createRangefor is not a function
+    at ChangeRequestComponent_Template (change-request.component.html:389:53)
+    at executeTemplate (core.mjs:11268:9)
+    at refreshView (core.mjs:12791:13)
+    at detectChangesInView$1 (core.mjs:13015:9)
+    at detectChangesInViewIfAttached (core.mjs:12978:5)
+    at detectChangesInComponent (core.mjs:12967:5)
+    at detectChangesInChildComponents (core.mjs:13028:9)
+    at refreshView (core.mjs:12841:13)
+    at detectChangesInView$1 (core.mjs:13015:9)
+    at detectChangesInViewIfAttached (core.mjs:12978:5)
