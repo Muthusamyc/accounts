@@ -1,4 +1,2 @@
-onPageChange(pageNumber: number) {
-    this.page = pageNumber;
-    // Load data or handle other logic for the first table
-  }
+NG2: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
