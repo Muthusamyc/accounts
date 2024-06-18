@@ -1,6 +1,8 @@
-   <pagination-controls (pageChange)="onPageChange($event)" [id]="config1.id"></pagination-controls>
+config1: PaginationInstance = {
+  id: 'pagination2', // Ensure this is initialized properly
+  itemsPerPage: this.noOfRows1,
+  currentPage: this.page1
+};
 
 
-
-NG2: Type 'string | undefined' is not assignable to type 'string'.
-  Type 'undefined' is not assignable to type 'string'.
+<pagination-controls (pageChange)="onPageChange($event)" [id]="config1?.id"></pagination-controls>
