@@ -1,4 +1,319 @@
-<div *ngIf="lessonvalviewattachment">
-        <p>Attachment: {{ lessonvalviewattachment }}</p>
-        <button (click)="viewFile(crid.itcrid, lessonvalviewattachment)">View File</button>
-    </div>
+     <table class="fl-table" style="width:100%;margin-left:-1%">
+       <thead *ngIf="ischangeanalyst" class="table-head">
+
+         <tr class="border-bottom">
+           <th style="width:5%">Select</th>
+           <th style="width:5%">Update</th>
+           <th style="width:5%">Delete</th>
+           <th style="width:10%">RFC #</th>
+           <th style="width:10%">Requestor</th>
+           <th style="width:20%">Description</th>
+           <th style="width:10%">Stage</th>
+           <th style="width:10%">RFC Status</th>
+           <th style="width:5%">Type</th>
+           <th style="width:5%">Classifications</th>
+           <th style="width:5%">RFC Date</th>
+           <th style="width:5%">Expected Date of Completion</th>
+           <th style="width:5%">Task Count</th>
+           <!--<th>Attachments</th>-->
+
+         </tr>
+       </thead>
+       <tbody *ngIf="ischangeanalyst && filtersdata.length > 0; else noData">
+         <tr class="tr-body" *ngFor="let pltdata of filtersdata | paginate:{itemsPerPage:noOfRows,currentPage:page }">
+           <td><input type="radio" (click)="onRadioSelect(pltdata)" name="one" id="one" /></td>
+           <td>
+             <a href="" *ngIf="pltdata.status!='Cancelled'" (click)="onRadio(pltdata)" routerLink="/executive/{{pltdata.itcrid}}/edit">
+               <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+             </a>
+           </td>
+           <td>
+             <i *ngIf="pltdata.status!='Cancelled'  && pltdata.status=='Draft'" class="fa fa-trash" aria-hidden="true" (click)="deleteRow(pltdata.itcrid)"></i>
+           </td>
+           <td>{{pltdata.crcode}}</td>
+           <td>{{pltdata.crowner}}</td>
+           <td>{{pltdata.changeDesc}}</td>
+           <td>{{pltdata.stage}}</td>
+           <td [ngSwitch]="pltdata.status.trim()">
+             <span *ngSwitchCase="'Draft'"> <span style="color: #3c8dbc;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Pending Approval'"> <span style="color: #808080ff; ">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Submitted'"> <span style="color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Approved'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Approved level1'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Approved level2'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Completed'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Rejected'"> <span style="color: red;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Seek Clarification'"> <span style="color:cornflowerblue;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Implement'"> <span class=" text-info">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Implemented'"> <span class=" text-info">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Pending'"> <span style="color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Released'"> <span style="color: rgb(154, 235, 73);">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Cancelled'"> <span style="color: rgb(255, 0, 0);">{{ pltdata.status }}</span></span>
+           </td>
+           <td>{{pltdata.categoryName}}</td>
+           <td>{{pltdata.classificationName}}</td>
+           <td>{{pltdata.crdate | date:'dd-MM-yyyy' }}</td>
+           <td>{{pltdata.estimatedDateCompletion | date:'dd-MM-yyyy' }}</td>
+           <td>{{pltdata.taskcount}}</td>
+           <!--<td><i class="fa fa-download" aria-hidden="true"></i></td>-->
+
+         </tr>
+
+       </tbody>
+       <ng-template #noData>
+         <tr *ngIf="ischangeanalyst">
+           <td colspan="13">There are no RFCs</td>
+         </tr>
+       </ng-template>
+     </table>
+
+
+   </div>
+   <!-- Pagination-->
+   <div class="pagination" style="display:flex;justify-content:center;">
+     <!--<pagination-controls (pageChange)="page = $event"></pagination-controls>-->
+
+     <tr class="pagination-row">
+       <td colspan="3">
+         <pagination-template #p="paginationApi" (pageChange)="page = $event">
+           <div class="row no-gutters">
+             <div class="col-md-4 no-padding">
+
+             </div>
+             <div class="col-md-8 no-padding">
+               <div class="custom-pagination" style="display:flex;justify-content:center;">
+                 <div class="page-number" style="display:flex;justify-content:center;">
+                   <span style="margin-left: -400px; margin-top:5px">Page:</span>
+                   <span>
+                     <select name="pageToggle" id="pageToggle" [(ngModel)]="page" style="width:50px">
+                       <ng-container *ngFor="let item of createRange(p.getLastPage())">
+                         <option (click)="page = item.value" [value]="item.value">{{item.value}}</option>
+                       </ng-container>
+                     </select>
+                     <span> of {{p.getLastPage()}}</span>
+                   </span>
+
+
+                 </div>
+                 <div class="page-number" style="margin-left: -130px">
+                   No of rows:
+                   <select name="noOfRowsVisible" [(ngModel)]="noOfRows" style="width:70px">
+                     <option value="2">2</option>
+                     <option value="5">5</option>
+                     <option value="10">10</option>
+                     <option value="20">20</option>
+                     <option value="50">50</option>
+                   </select>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </pagination-template>
+       </td>
+     </tr>
+     <pagination-controls (pageChange)="page = $event" style="margin-left:"></pagination-controls>
+   </div>
+   <!--Pagination-->
+
+   <br *ngIf="issuperadmin" />
+   <br *ngIf="issuperadmin" />
+   <h1 style="margin-left:3%;margin-bottom:1%;" *ngIf="issupportegineer"><b><u style="font-size: 21px;">SUPPORT ENGINEER-TASK ASSIGNED</u></b></h1>
+   <div class="table-wrapper p-3">
+     <table class="fl-table" style="width:100%;margin-left:-1%;">
+       <!--<h1 style="margin-left:8.5%;margin-bottom:1%;" *ngIf="ischangeanalyst"><b><u style="font-size: 21px;">CHANGE ANALYST</u></b></h1>-->
+       <thead *ngIf="issupportegineer" class="table-head">
+         <tr class="border-bottom ">
+           <th>Select</th>
+           <th>Update</th>
+           <th>RFC #</th>
+           <th>Task ID</th>
+           <th>Requestor</th>
+           <th>Description</th>
+           <th>Stage</th>
+           <th>RFC Status</th>
+           <th>Task Status</th>
+           <th>Type</th>
+           <th>Classifications</th>
+           <th>RFC Date</th>
+           <th>Expected Date of Completion</th>
+           <th>Task Count</th>
+           <!--<th>Attachments</th>-->
+
+
+
+         </tr>
+       </thead>
+       <tbody *ngIf="issupportegineer && allengineer && supportengineers.length > 0; else novalue">
+         <tr class="tr-body" *ngFor="let pltdata of supportengineers| paginate:{id:pagination1,itemsPerPage:noOfRows1,currentPage:page1 } ">
+           <td><input type="radio" (change)="onRadioSelect(pltdata)" name="one" id="one" /></td>
+           <td>
+             <a href="" *ngIf="pltdata.status!='Cancelled'" (click)="onRadio(pltdata)" routerLink="/executive/{{pltdata.itcrid}}/edit">
+               <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+             </a>
+           </td>
+           <td>{{pltdata.crcode}}</td>
+           <td>{{pltdata.itcrexecId}}</td>
+           <td>{{pltdata.crowner}}</td>
+           <td>{{pltdata.changeDesc}}</td>
+           <td>{{pltdata.stage}}</td>
+           <td [ngSwitch]="pltdata.status.trim()">
+             <span *ngSwitchCase="'Draft'"> <span style="color: #3c8dbc;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Pending Approval'"> <span style="color: #808080ff; ">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Submitted'"> <span style="color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Approved'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Approved level1'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Approved level2'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Completed'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Rejected'"> <span style="color: red;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Seek Clarification'"> <span style="color:cornflowerblue;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Implement'"> <span class=" text-info">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Implemented'"> <span class=" text-info">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Pending'"> <span style="color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Released'"> <span style="color: rgb(154, 235, 73);">{{ pltdata.status }}</span></span>
+             <span *ngSwitchCase="'Cancelled'"> <span style="color: rgb(255, 0,0);">{{ pltdata.status }}</span></span>
+           </td>
+           <td>{{pltdata.taskstatus}}</td>
+           <td>{{pltdata.categoryName}}</td>
+           <td>{{pltdata.classificationName}}</td>
+           <td>{{pltdata.crdate | date:'dd-MM-yyyy' }}</td>
+           <td>{{pltdata.estimatedDateCompletion | date:'dd-MM-yyyy' }}</td>
+           <!--<td><i class="fa fa-download" aria-hidden="true"></i></td>-->
+           <td>{{pltdata.taskcount}}</td>
+
+         </tr>
+        
+   </tbody>
+   <ng-template #novalue>
+     <tr *ngIf="issupportegineer && allengineer">
+       <td colspan="13">There are no RFCs</td>
+     </tr>
+   </ng-template>
+   <tbody *ngIf="issupportegineer">
+     <tr class="tr-body" *ngFor="let pltdata of supporassignto">
+       <td><input type="radio" (change)="onRadioSelect(pltdata)" name="one" id="one" /></td>
+       <td>
+         <a href="" *ngIf="pltdata.status!='Cancelled'" (click)="onRadio(pltdata)" routerLink="/executive/{{pltdata.itcrid}}/edit">
+           <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+         </a>
+       </td>
+
+       <td>{{pltdata.crcode}}</td>
+       <td>{{pltdata.itcrExecID}}</td>
+       <td>{{pltdata.crowner}}</td>
+       <td>{{pltdata.changeDesc}}</td>
+       <td>{{pltdata.stage}}</td>
+       <td [ngSwitch]="pltdata.status.trim()">
+         <span *ngSwitchCase="'Draft'"> <span style="color: #3c8dbc;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Pending Approval'"> <span style="color: #808080ff; ">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Submitted'"> <span style="color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Approved'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Approved level1'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Approved level2'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Completed'"> <span style="color: green;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Rejected'"> <span style="color: red;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Seek Clarification'"> <span style="color:cornflowerblue;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Implement'"> <span class=" text-info">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Implemented'"> <span class=" text-info">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Pending'"> <span style="color: rgba(var(--bs-warning-rgb), var(--bs-text-opacity)) !important;">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Released'"> <span style="color: rgb(154, 235, 73);">{{ pltdata.status }}</span></span>
+         <span *ngSwitchCase="'Cancelled'"> <span style="color: rgb(255, 0,0);">{{ pltdata.status }}</span></span>
+
+       </td>
+       <td>{{pltdata.taskstatus}}</td>
+       <td>{{pltdata.categoryName}}</td>
+       <td>{{pltdata.classificationName}}</td>
+       <td>{{pltdata.crdate | date:'dd-MM-yyyy' }}</td>
+       <td>{{pltdata.estimatedDateCompletion | date:'dd-MM-yyyy' }}</td>
+       <!--<td><i class="fa fa-download" aria-hidden="true"></i></td>-->
+       <td>{{pltdata.taskcount}}</td>
+
+     </tr>
+
+   </tbody>
+   <!--<ng-template #nospassignvalue>
+   <tr *ngIf="issupportegineer">
+     <td colspan="13">There is no value</td>
+   </tr>
+ </ng-template>-->
+   </table>
+ </div>
+    <!-- Pagination-->
+<div class="pagination" style="display:flex;justify-content:center;">
+  <!--<pagination-controls (pageChange)="page = $event"></pagination-controls>-->
+
+  <tr class="pagination-row">
+    <td colspan="3">
+      <pagination-template #p="paginationApi" (pageChange)="page1 = $event">
+        <div class="row no-gutters">
+          <div class="col-md-4 no-padding">
+
+          </div>
+          <div class="col-md-8 no-padding">
+            <div class="custom-pagination" style="display:flex;justify-content:center;">
+              <div class="page-number" style="display:flex;justify-content:center;">
+                <span style="margin-left: -400px; margin-top:5px">Page:</span>
+                <span>
+                  <select name=" " id="pageToggle1" [(ngModel)]="page1" style="width:50px">
+                    <ng-container *ngFor="let item of createRangefor(p.getLastPage())">
+                      <option (click)="page1 = item.value" [value]="item.value">{{item.value}}</option>
+                    </ng-container>
+                  </select>
+                  <span> of {{p.getLastPage()}}</span>
+                </span>
+
+
+              </div>
+              <div class="page-number" style="margin-left: -130px">
+                No of rows:
+                <select name="noOfRows1Visible" [(ngModel)]="noOfRows1" style="width:70px">
+                  <option value="2">2</option>
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </pagination-template>
+    </td>
+  </tr>
+  <pagination-controls id="pagination1" (pageChange)="page1 = $event" style="margin-left:"></pagination-controls>
+</div>
+<!--Pagination-->
+above my html and below my ts:
+ createRange(lastPage: number): any {
+   let paginationArray: any = [];
+   for (let i = 0; i < lastPage; i++) {
+     const page = {
+       label: '${i+1}',
+       value: i + 1
+     };
+     
+     paginationArray.push(page);
+   }
+   return paginationArray;
+ }
+
+ createRangefor(lastPage: number): any {
+   let paginationArray: any = [];
+   for (let i = 0; i < lastPage; i++) {
+     const page1 = {
+       label: '${i+1}',
+       value: i + 1
+     };
+
+     paginationArray.push(page1);
+   }
+   return paginationArray;
+ }
+
+
+
+ page: number = 1;
+ page1: number = 2;
+ noOfRows = 5;
+ noOfRows1 = 3;
+ noOfPages: number | undefined;
+  
