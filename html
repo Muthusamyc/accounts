@@ -1,5 +1,41 @@
-<!-- Pagination for first table -->
-<pagination-controls (pageChange)="onPageChange($event)" [id]="config.id" style="margin-left:"></pagination-controls>
+pageChangeForTable1(pageNumber: number) {
+  this.pagesize = pageNumber;
+}
 
-<!-- Pagination for second table -->
-<pagination-controls (pageChange)="onPageChange1($event)" [id]="config1.id" style="margin-left:"></pagination-controls>
+pageChangeForTable2(pageNumber: number) {
+  this.page1 = pageNumber;
+}
+
+noOfRowsTable1Changed(rows: number) {
+  this.noOfRows = rows;
+}
+
+noOfRowsTable2Changed(rows: number) {
+  this.noOfRows1 = rows;
+}
+
+
+
+createRangeForTable1(lastPage: number): any {
+  let pageArray: any = [];
+  for (let i = 0; i < lastPage; i++) {
+    const page = {
+      label: `${i + 1}`,
+      value: i + 1
+    };
+    pageArray.push(page);
+  }
+  return pageArray;
+}
+
+createRangeForTable2(lastPage: number): any {
+  let pageArray: any = [];
+  for (let i = 0; i < lastPage; i++) {
+    const page = {
+      label: `${i + 1}`,
+      value: i + 1
+    };
+    pageArray.push(page);
+  }
+  return pageArray;
+}
