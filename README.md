@@ -5,3 +5,4 @@ pageChangeForTable1(event: Event) {
     // Perform additional operations if needed
   }
 }
+NG5: Argument of type 'number' is not assignable to parameter of type 'Event'.
