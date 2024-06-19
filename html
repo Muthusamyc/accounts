@@ -1,35 +1,19 @@
-pageChangeForTable1(pageNumber: number) {
-  this.pagesize = pageNumber;
-}
+// Ensure these variables are declared and initialized appropriately in your component
+pagesize: number = 10; // example default page size
+filtersdata: any[] = []; // example array of data to paginate
 
-pageChangeForTable2(pageNumber: number) {
-  this.page1 = pageNumber;
-}
-
-noOfRowsTable1Changed(rows: number) {
-  this.noOfRows = rows;
-}
-
-noOfRowsTable2Changed(rows: number) {
-  this.noOfRows1 = rows;
-}
-
-
-
-createRangeForTable1(lastPage: number): any {
-  let pageArray: any = [];
-  for (let i = 0; i < lastPage; i++) {
-    const page = {
-      label: `${i + 1}`,
-      value: i + 1
-    };
-    pageArray.push(page);
+// Method for handling page changes
+pageChangeForTable1(value: any) {
+  if (value !== null && value !== undefined) {
+    this.pagesize = Number(value); 
+    // Here you might want to fetch data based on the new page size
+    // E.g., this.fetchData();
   }
-  return pageArray;
 }
 
-createRangeForTable2(lastPage: number): any {
-  let pageArray: any = [];
+// Method to create an array for pagination options
+createRangeForTable1(lastPage: number): any[] {
+  let pageArray: any[] = [];
   for (let i = 0; i < lastPage; i++) {
     const page = {
       label: `${i + 1}`,
