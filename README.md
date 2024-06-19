@@ -1,15 +1,4 @@
-pageChangeForTable1(event: Event) {
-  const value = (event.target as HTMLSelectElement)?.value;
-  if (value !== null && value !== undefined) {
-    this.pagesize = Number(value); 
-    // Perform additional operations if needed
-  }
-}
+Argument of type 'number' is not assignable to parameter of type 'Event'.
 
 
-
-<select name="pageToggle" id="pageToggle" [(ngModel)]="pagesize" (change)="pageChangeForTable1($event)">
-  <ng-container *ngFor="let item of createRangeForTable1(p?.getLastPage() ?? 0)">
-    <option [value]="item.value">{{ item.label }}</option>
-  </ng-container>
-</select>
+<pagination-template #p="paginationApi" (pageChange)="pageChangeForTable1($event)">
