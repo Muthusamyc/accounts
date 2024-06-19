@@ -1,19 +1,19 @@
-<!-- First Table -->
-<table class="fl-table" style="width:100%; margin-left:-1%">
-  <!-- Table headers and body -->
-  <tbody>
-    <tr class="tr-body" *ngFor="let pltdata of supportengineers | paginate: { itemsPerPage: noOfRows, currentPage: page }">
-      <!-- Table row content -->
-    </tr>
-  </tbody>
-</table>
+<!-- First Table Pagination -->
+<pagination-template #p="paginationApi" (pageChange)="pageChangeForTable1($event)">
+  <!-- Pagination controls and options for table 1 -->
+  <select name="pageToggle" id="pageToggle" [(ngModel)]="pagesize" (change)="pageChangeForTable1($event.target.value)">
+    <ng-container *ngFor="let item of createRangeForTable1(p.getLastPage())">
+      <option [value]="item.value">{{ item.label }}</option>
+    </ng-container>
+  </select>
+</pagination-template>
 
-<!-- Second Table -->
-<table class="fl-table" style="width:100%; margin-left:-1%">
-  <!-- Table headers and body -->
-  <tbody>
-    <tr class="tr-body" *ngFor="let pltdata of supportassignto | paginate: { itemsPerPage: noOfRows1, currentPage: page1 }">
-      <!-- Table row content -->
-    </tr>
-  </tbody>
-</table>
+<!-- Second Table Pagination -->
+<pagination-template #q="paginationApi" (pageChange)="pageChangeForTable2($event)">
+  <!-- Pagination controls and options for table 2 -->
+  <select name="pageToggle1" id="pageToggle1" [(ngModel)]="page1" (change)="pageChangeForTable2($event.target.value)">
+    <ng-container *ngFor="let item of createRangeForTable2(q.getLastPage())">
+      <option [value]="item.value">{{ item.label }}</option>
+    </ng-container>
+  </select>
+</pagination-template>
