@@ -121,3 +121,5 @@ getviewcrdata() {
     }
   );
 }
+
+Here when im clicking on the pageIndex, why its not showing the values in the dropdown like 5,10 or more. Nothing is happening after clicking on it. No dropdowns are coming after clicking on it. How to fix that?
