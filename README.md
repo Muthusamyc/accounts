@@ -12,3 +12,4 @@ pageChangeForTable1(newPageSize: number) {
   this.pagesize = newPageSize;
   // Perform additional operations if needed, such as fetching data with the new page size
 }
+ Object is possibly 'null'.
