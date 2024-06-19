@@ -108,3 +108,5 @@
    }
    return pageArray;
  }
+this for error :
+NG5002: Parser Error: Conditional expression $event.target ? ($event.target as HTMLSelectElement requires all 3 expressions at column 72 in [pageChangeForTable1($event.target ? ($event.target as HTMLSelectElement).value : null)]
