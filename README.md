@@ -6,3 +6,6 @@
     </ng-container>
   </select>
 </pagination-template>
+
+this time this error:
+NG5002: Parser Error: Missing expected ) at column 36 in [pageChangeForTable1(($event.target as HTMLSelectElement).value)]
