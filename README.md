@@ -3,3 +3,6 @@
     <option [value]="item.value">{{ item.label }}</option>
   </ng-container>
 </select>
+
+
+NG9: Property 'value' does not exist on type 'EventTarget'.
