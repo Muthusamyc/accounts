@@ -6,3 +6,5 @@
     </ng-container>
   </select>
 </pagination-template>
+it showing this error :
+NG9: Property 'value' does not exist on type 'EventTarget'.
