@@ -1,24 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  template: `
+    <div *ngIf="loadComponent">
+      <router-outlet></router-outlet>
+    </div>
+  `
 })
-export class AppComponent implements OnInit {
-  constructor(private router: Router) {}
+export class AppComponent {
+  loadComponent = false;
 
-  ngOnInit() {
-    // Listen for route navigation end
+  constructor(private router: Router) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      // Check if the route is the one you want to trigger full page load
-      if (event.url === '/home') {
-        // Reload the page
-        window.location.reload();
+      // Handle navigation end here
+      if (event instanceof NavigationEnd) {
+        // Check if the route is the one you want to trigger full page-like load
+        if (event.url === '/home') {
+          this.loadComponent = false;
+          setTimeout(() => {
+            this.loadComponent = true;
+          }, 100); // Delay to simulate a "full page" load
+        }
       }
     });
   }
