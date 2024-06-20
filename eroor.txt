@@ -1,104 +1,25 @@
-import { Component } from '@angular/core';
-import { environment } from '/IT_Portal/IT-Portal/IT-Portal.UI/src/environments/environment';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PasscrdataService } from '../change-request/passcrdata.service';
-import { HttpClient, HttpHeaders, HttpInterceptor, HttpInterceptorFn, HttpRequest,HttpHandler, HttpEvent} from '@angular/common/http';
-import { Session } from 'inspector';
-import { Observable } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
+export class AppComponent implements OnInit {
+  constructor(private router: Router) {}
 
-export class HomeComponent {
-  username: string = '';
-  password: string = '';
-  supportid: any;
-  supportempid: any;
-  supportteams: any[] = [];
-  private apiurl = environment.apiurls
-
-
-  constructor(private http: HttpClient, private routeservice: PasscrdataService, private route: ActivatedRoute, private router: Router) {
-    this.getsupporttid()
-    setTimeout(() => {
-      this.getsupportteams();
-    }, 100);
-  }
-
-  /*intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  console.log("Intercepting Requests",request)
-  alert("Intercepting Requests"+request)
-  return next.handle(request);
-}*/
-
-  login() {
-
-  }
-
-  ngOnInit(): void {
-    //this.employeeid();
-
-    //this.getsupportteams();
-    setTimeout(() => {
-      this.employeeid();
-    }, 1500);
-  }
-
-  getsupporttid() {
-    this.routeservice.getsupportteam();
-    this.supportid = this.routeservice.supporterID;
-  }
-
-  getsupportteams() {
-    const apiUrls = this.apiurl + '/SupportTeam'
-    const requestBody = {
-
-    }
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'content-Type': 'application/json'
-      })
-    };
-    this.http.get(apiUrls, requestBody).subscribe(
-      (response: any) => {
-        this.supportteams = response.filter((row: any) => row.empId == parseInt(this.supportid.trim()));
-        this.supportempid = this.supportteams[0].empId;
-      },
-      (error) => {
-        console.error("Get failed", error)
+  ngOnInit() {
+    // Listen for route navigation end
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      // Check if the route is the one you want to trigger full page load
+      if (event.url === '/home') {
+        // Reload the page
+        window.location.reload();
       }
-    )
-  }
-
-  idofemployee: any;
-  employeeid() {
-    this.route.params.subscribe(params => {
-      this.idofemployee = params['this.empNumber'];
-      //console.log("id from link", this.idofemployee);
-      this.routeservice.setEmployeeId(this.idofemployee);
     });
-
-    const getToken = localStorage.getItem('token');
-    if (!getToken) {
-      localStorage.setItem('token', this.idofemployee);
-    }
-    
-    if (getToken == this.idofemployee) {
-      localStorage.setItem('isLoggedin', 'true');
-    } else {
-      localStorage.setItem('isLoggedin', 'false');
-    }
-
-    const getLogData = localStorage.getItem('isLoggedin');
-
-    if (getLogData == 'true') {
-      this.router.navigate(['/dashboard']);
-    } else {
-      alert("You're Not Authenticated!");
-      return;
-    }
-
   }
 }
