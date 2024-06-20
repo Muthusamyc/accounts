@@ -1,28 +1,39 @@
+import { Component } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
 @Component({
   selector: 'app-root',
-  template: `
-    <div *ngIf="loadComponent">
-      <router-outlet></router-outlet>
-    </div>
-  `
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
 })
 export class AppComponent {
-  loadComponent = false;
-
+  title = 'IT_Portal';
   constructor(private router: Router) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      // Handle navigation end here
-      if (event instanceof NavigationEnd) {
-        // Check if the route is the one you want to trigger full page-like load
-        if (event.url === '/home') {
-          this.loadComponent = false;
-          setTimeout(() => {
-            this.loadComponent = true;
-          }, 100); // Delay to simulate a "full page" load
-        }
+      if (event.url === '/home') {
+        // Reload the page
+        window.location.reload();
       }
     });
   }
+
+
+
 }
+
+im getting error:
+
+TS2769: No overload matches this call.
+  Overload 1 of 2, '(observerOrNext?: Partial<Observer<Event_2>> | ((value: Event_2) => void) | undefined): Subscription', gave the following error.
+    Argument of type '(event: NavigationEnd) => void' is not assignable to parameter of type 'Partial<Observer<Event_2>> | ((value: Event_2) => void) | undefined'.
+      Type '(event: NavigationEnd) => void' is not assignable to type '(value: Event_2) => void'.
+        Types of parameters 'event' and 'value' are incompatible.
+          Type 'Event_2' is not assignable to type 'NavigationEnd'.
+            Property 'urlAfterRedirects' is missing in type 'NavigationStart' but required in type 'NavigationEnd'.
+  Overload 2 of 2, '(next?: ((value: Event_2) => void) | null | undefined, error?: ((error: any) => void) | null | undefined, complete?: (() => void) | null | undefined): Subscription', gave the following error.
+    Argument of type '(event: NavigationEnd) => void' is not assignable to parameter of type '(value: Event_2) => void'.
+      Types of parameters 'event' and 'value' are incompatible.
+        Type 'Event_2' is not assignable to type 'NavigationEnd'.
