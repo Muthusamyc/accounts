@@ -10,11 +10,13 @@ import { Subscription } from 'rxjs';
 export class AppComponent implements OnDestroy {
   title = 'IT_Portal';
   private navigationSubscription: Subscription;
+  private isFirstNavigation = true;
 
   constructor(private router: Router) {
     this.navigationSubscription = this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd && event.url === '/home') {
-        // Reload the page
+      if (event instanceof NavigationEnd && event.url === '/home' && this.isFirstNavigation) {
+        // Reload the page only once
+        this.isFirstNavigation = false;
         window.location.reload();
       }
     });
