@@ -1,18 +1,32 @@
-import { MatPaginatorModule } from '@angular/material/paginator';
+  employeeid() {
+    this.route.params.subscribe(params => {
+      this.idofemployee = params['this.empNumber'];
+      console.log("id from link", this.idofemployee);
+      this.routeservice.setEmployeeId(this.idofemployee);
+    });
 
-@import '~@angular/material/theming';
-// Include a theme
-@include mat-core();
+    localStorage.setItem('token', this.idofemployee);
+    alert(localStorage.getItem('token'));
 
-<mat-paginator [length]="totalItems"
-               [pageSize]="pageSize"
-               [pageIndex]="pageIndex"
-               [pageSizeOptions]="[5, 10, 25, 100]"
-               (page)="onPageChange($event)"
-               aria-label="Select page" style="margin-right:34%">
-</mat-paginator>
+    /*alert('supportempid' + this.supportempid)
+    alert('idofemployee' + this.idofemployee)*/
+    
+    if (this.supportempid == this.idofemployee) {
+      localStorage.setItem('isLoggedin', 'true');
+    } else {
+      localStorage.setItem('isLoggedin', 'false');
+    }
+
+    const getLogData = localStorage.getItem('isLoggedin');
+
+    if (getLogData == 'true') {
+      this.router.navigate(['/dashboard']);
+    } else {
+      alert("You're Not Authenticated!");
+      return;
+    }
+
+  }
 
 
-pageIndex = 0;
-pageSize = 10;
-totalItems = 1000;
+Here i dont want to remove the 'token' from localstorage if i refresh the page, i want to save it until i logs out from the page(that will contain removeItem). Currently, its saving the value of this.idofemployee and showing in alert also but then when i refresh the page, its showing the current new token. I want to show the old one as i have not logged out. How do i do this? This is my angular project
