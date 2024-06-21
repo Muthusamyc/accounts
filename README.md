@@ -1,13 +1,6 @@
 const currentDate = new Date();
-const options: Intl.DateTimeFormatOptions = {
-  timeZone: 'Asia/Kolkata', // Set the timezone to UTC+05:30 (Chennai, Kolkata, Mumbai, New Delhi)
-  hour12: false, // Use 24-hour format
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit'
-};
-
-this.today = currentDate.toLocaleString('en-IN', options);
+const datePart = currentDate.toISOString().slice(0, 10);
+const timePart = currentDate.getHours().toString().padStart(2, '0') + ':' +
+                 currentDate.getMinutes().toString().padStart(2, '0') + ':' +
+                 currentDate.getSeconds().toString().padStart(2, '0');
+const dateTimeString = `${datePart} ${timePart}`;
