@@ -1,5 +1,13 @@
 const currentDate = new Date();
-const datePart = currentDate.toISOString().slice(0, 10); // Extract yyyy-mm-dd
-const timePart = currentDate.toISOString().slice(11, 19); // Extract hh:mm:ss
+const options = {
+  timeZone: 'Asia/Kolkata', // Set the timezone to UTC+05:30 (Chennai, Kolkata, Mumbai, New Delhi)
+  hour12: false, // Use 24-hour format
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit'
+};
 
-this.today = `${datePart} ${timePart}`;
+this.today = currentDate.toLocaleString('en-IN', options);
