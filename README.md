@@ -1,20 +1,40 @@
-[HttpGet]
-public async Task<IActionResult> GetEmployee()
+public async Task<IActionResult> GetEmployee(int pagesize = 10)
 {
-    int pageno = 1; int pagesize = 10;
-    int skip = (pageno - 1) * pagesize;
-    int total = _context.VwEmployeeMasters.Count();
-    
-    for (int i = 0; i < total; i++)
-    {
-        var employeedata = await _context.VwEmployeeMasters
-                        .OrderBy(c => c.EmployeeId)
-                        .Skip(skip)
-                        .Take(pagesize)
-                        .ToListAsync();
+    int pageno = 1; // Start from page 1
+    int total = await _context.VwEmployeeMasters.CountAsync();
 
-        var count = employeedata.Count();
-        return Ok(new { employeedata, count, skip, total });
+    List<object> allData = new List<object>();
+
+    while ((pageno - 1) * pagesize < total)
+    {
+        int skip = (pageno - 1) * pagesize;
+
+        var employeedata = await _context.VwEmployeeMasters
+                                .OrderBy(c => c.EmployeeId)
+                                .Skip(skip)
+                                .Take(pagesize)
+                                .ToListAsync();
+
+        var count = employeedata.Count;
+
+        var pageData = new { employeedata, count, skip, total };
+        allData.Add(pageData);
+
+        pageno++;
     }
-    return Ok(new { employeedata, count, skip, total });
+
+    return Ok(allData);
+}
+
+
+
+
+
+
+
+[HttpGet]
+public async Task<IActionResult> GetEmployees(int pageSize = 10)
+{
+    var result = await GetEmployee(pageSize);
+    return result;
 }
