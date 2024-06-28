@@ -28,8 +28,14 @@ public async Task<IActionResult> GetEmployee(int pagesize = 10)
 
 
 
-Fetch error
-Internal Server Error http://localhost:5014/swagger/v1/swagger.json
+try
+    {
+        // Your existing code here
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+    }
 
 
 
