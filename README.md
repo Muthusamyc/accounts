@@ -1,18 +1,3 @@
-import { Component } from '@angular/core';
-
-@Component({
-  selector: 'app-your-component',
-  templateUrl: './your-component.component.html',
-  styleUrls: ['./your-component.component.css']
-})
-export class YourComponent {
-
-  constructor() {}
-
-  showAlert(): void {
-    const confirmation = confirm('Shall I proceed?');
-    if (confirmation) {
-      alert('Thank you');
-    }
-  }
-}
+select cattyp.CategoryTypeID,cattyp.CategoryID,catid.CategoryName,cattyp.CategoryType,cattyp.IsActive,cattyp.CreatedBy,cattyp.CreatedDate,catid.ModifiedBy,cattyp.ModifiedDate
+			from IT.CategoryTyp as cattyp
+			left join IT.Category catid on catid.ITCategoryID=cattyp.CategoryID
