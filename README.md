@@ -1,38 +1,36 @@
-Issue Ticket No
-Descriptions
-Priuority
-Reported Date
-Assigned Date
-Status
-Initial Category
-Initial Category Type
-User Emp No
-User Name
-Plant Code
-Plant name
-Paygroup
-Emppoyee Category
-Status
-1st Assigned To
-Last Assigned to 
-Last Updated Date
-Last Updated by IT Engineer
-Last Remarks by IT Engineer
-Final Caegory
-Final Category Type
-Resolved by
-Resolution Date
-Resoltuion Remarks
-Closure Date
-Closure By
-Closure Remarks
-Response SLA Date
-Response SLA update Engineer
-Response SLA Met / Not Met
-Response SLA Breached Reason
-Response SLA Date
-Response SLA Update
-Response SLA Delayed by 
-Resolution SLA Met / Not Met
-Resolution SLA Breached Reason
-Resolution SLA Delayed by 
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .scrollable {
+            max-height: 200px;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+<table>
+    <tr>
+        <th>Column 1</th>
+        <th>Column 2</th>
+    </tr>
+    <tr>
+        <td>Short text</td>
+        <td class="scrollable">Long text goes here. Long text goes here. Long text goes here. Long text goes here. Long text goes here. Long text goes here. Long text goes here. Long text goes here. Long text goes here. Long text goes here.</td>
+    </tr>
+</table>
+
+</body>
+</html>
