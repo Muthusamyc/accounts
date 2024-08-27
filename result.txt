@@ -18,6 +18,7 @@ public async Task<IActionResult> UploadFiles([FromForm] string itcrid, [FromForm
             Directory.CreateDirectory(uploadsFolder);
         }
 
+        var fileRecords = new List<FileRecord>();
         foreach (var file in files)
         {
             if (file.Length > 0)
@@ -29,53 +30,31 @@ public async Task<IActionResult> UploadFiles([FromForm] string itcrid, [FromForm
                 {
                     await file.CopyToAsync(stream);
                 }
+
+                // Create a file record object
+                var fileRecord = new FileRecord
+                {
+                    ItcrId = itcrid,
+                    FileName = fileName,
+                    FilePath = filePath,
+                    UploadedAt = DateTime.UtcNow
+                };
+
+                fileRecords.Add(fileRecord);
             }
         }
 
-        return Ok(new { message = $"{files.Count} files uploaded successfully." });
+        // Save file records to the database
+        using (var dbContext = new ApplicationDbContext(/* options */))
+        {
+            await dbContext.FileRecords.AddRangeAsync(fileRecords);
+            await dbContext.SaveChangesAsync();
+        }
+
+        return Ok(new { message = $"{files.Count} files uploaded and recorded successfully." });
     }
     catch (Exception ex)
     {
         return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
     }
-}
-
-
-
-
-
-
-addFiles(itcrid: any): void {
-  if (!this.selectedFiles || this.selectedFiles.length === 0) {
-    console.error('No files selected.');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('itcrid', itcrid);
-
-  for (let i = 0; i < this.selectedFiles.length; i++) {
-    formData.append('files', this.selectedFiles[i], this.selectedFiles[i].name);
-  }
-
-  const apiUrl = this.apiurl + '/ChangeRequest';
-
-  this.http.post(apiUrl, formData).subscribe(
-    (response: any) => {
-      console.log('Files uploaded successfully', response);
-    },
-    (error: any) => {
-      console.error('Error uploading files', error);
-    }
-  );
-}
-
-
-<input type="file" (change)="onFileSelected($event)" multiple>
-
-
-selectedFiles: FileList;
-
-onFileSelected(event: any): void {
-  this.selectedFiles = event.target.files;
 }
