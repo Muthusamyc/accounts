@@ -1,23 +1,27 @@
-        public async Task<IActionResult> UploadFile([FromForm] string itcrid, [FromForm] IFormFile file)
+public async Task<IActionResult> UploadFiles([FromForm] string itcrid, [FromForm] List<IFormFile> files)
+{
+    try
+    {
+        if (files == null || files.Count == 0)
         {
-            try
+            return BadRequest("No files selected for upload.");
+        }
+
+        if (string.IsNullOrEmpty(itcrid))
+        {
+            return BadRequest("ITCRID is required.");
+        }
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ChangeRequest", itcrid);
+        if (!Directory.Exists(uploadsFolder))
+        {
+            Directory.CreateDirectory(uploadsFolder);
+        }
+
+        foreach (var file in files)
+        {
+            if (file.Length > 0)
             {
-                if (file == null || file.Length == 0)
-                {
-                    return BadRequest("File is not selected or empty");
-                }
-
-                if (string.IsNullOrEmpty(itcrid))
-                {
-                    return BadRequest("ITCRID is required");
-                }
-
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ChangeRequest", itcrid);
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
                 var fileName = file.FileName; // Use the original file name provided by the user
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
@@ -25,35 +29,53 @@
                 {
                     await file.CopyToAsync(stream);
                 }
-
-                return Ok(new { fileName });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
             }
         }
 
+        return Ok(new { message = $"{files.Count} files uploaded successfully." });
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+    }
+}
 
-above my Asp.net code and below my angular code 
-addFile(itcrid: any): void {
-  if (!this.selectedFile) {
-    console.error('No file selected.');
+
+
+
+
+
+addFiles(itcrid: any): void {
+  if (!this.selectedFiles || this.selectedFiles.length === 0) {
+    console.error('No files selected.');
     return;
   }
 
   const formData = new FormData();
-
   formData.append('itcrid', itcrid);
-  formData.append('file', this.selectedFile, this.selectedFile.name);
+
+  for (let i = 0; i < this.selectedFiles.length; i++) {
+    formData.append('files', this.selectedFiles[i], this.selectedFiles[i].name);
+  }
 
   const apiUrl = this.apiurl + '/ChangeRequest';
 
   this.http.post(apiUrl, formData).subscribe(
     (response: any) => {
-
+      console.log('Files uploaded successfully', response);
     },
     (error: any) => {
+      console.error('Error uploading files', error);
     }
   );
+}
+
+
+<input type="file" (change)="onFileSelected($event)" multiple>
+
+
+selectedFiles: FileList;
+
+onFileSelected(event: any): void {
+  this.selectedFiles = event.target.files;
 }
