@@ -33,3 +33,27 @@
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
             }
         }
+
+
+above my Asp.net code and below my angular code 
+addFile(itcrid: any): void {
+  if (!this.selectedFile) {
+    console.error('No file selected.');
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('itcrid', itcrid);
+  formData.append('file', this.selectedFile, this.selectedFile.name);
+
+  const apiUrl = this.apiurl + '/ChangeRequest';
+
+  this.http.post(apiUrl, formData).subscribe(
+    (response: any) => {
+
+    },
+    (error: any) => {
+    }
+  );
+}
