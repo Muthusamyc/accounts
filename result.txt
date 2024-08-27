@@ -1,60 +1,144 @@
-public async Task<IActionResult> UploadFiles([FromForm] string itcrid, [FromForm] List<IFormFile> files)
+using AutoMapper;
+using IT_Portal.Application.Contracts.Persistence;
+using IT_Portal.Application.Features.changerequest;
+using IT_Portal.Persistence.DatabaseContext;
+using IT_Portal.Persistence.IT_Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
+using System.Security.Claims;
+
+namespace IT_Portal.API.Controllers
 {
-    try
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ChangeRequestController : ControllerBase
     {
-        if (files == null || files.Count == 0)
+        private readonly IChangeRequest _changeRequest;
+        private readonly MicroLabsDevContext _context;
+
+        public ChangeRequestController(IChangeRequest changeRequest, MicroLabsDevContext context)
         {
-            return BadRequest("No files selected for upload.");
+            this._changeRequest = changeRequest;
+            this._context = context;
         }
 
-        if (string.IsNullOrEmpty(itcrid))
+        [HttpPost("InsertChangeRequest")]
+        public async Task<IActionResult> InsertChangeRequest(ChangeRequestSP obj)
         {
-            return BadRequest("ITCRID is required.");
+            var spObj = await _changeRequest.InsertChangeRequest(obj);
+            return Ok(spObj);
         }
 
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ChangeRequest", itcrid);
-        if (!Directory.Exists(uploadsFolder))
+        [HttpGet("Getrequest")]
+        public async Task<IActionResult> GetRequest()
         {
-            Directory.CreateDirectory(uploadsFolder);
+            var data = await _context.ChangeRequests.ToListAsync();
+            return Ok(data);
         }
 
-        var fileRecords = new List<FileRecord>();
-        foreach (var file in files)
+        /*Get Attached*/
+       
+        [HttpPost]
+        public async Task<IActionResult> UploadFiles([FromForm] string itcrid, [FromForm] List<IFormFile> files)
         {
-            if (file.Length > 0)
+            try
             {
-                var fileName = file.FileName; // Use the original file name provided by the user
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                int Itcrid = 0;
+                if (files == null || files.Count == 0)
                 {
-                    await file.CopyToAsync(stream);
+                    return BadRequest("No files selected for upload.");
                 }
 
-                // Create a file record object
-                var fileRecord = new FileRecord
+                if (string.IsNullOrEmpty(itcrid))
                 {
-                    ItcrId = itcrid,
-                    FileName = fileName,
-                    FilePath = filePath,
-                    UploadedAt = DateTime.UtcNow
-                };
+                    return BadRequest("ITCRID is required.");
+                }
 
-                fileRecords.Add(fileRecord);
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "ChangeRequest", itcrid);
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var fileRecords = new List<FileRecord>();
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileName = file.FileName; // Use the original file name provided by the user
+                        var filePath = Path.Combine(uploadsFolder, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        
+                        // Create a file record object
+                        var fileRecord = new FileRecord
+                        {
+                            Itcrid = Itcrid,
+                            AttachedFile = fileName,
+                        };
+
+                        fileRecords.Add(fileRecord);
+                    }
+                }
+
+                // Save file records to the database
+                DataTable dt = new DataTable();
+                var con = (SqlConnection)_context.Database.GetDbConnection();
+                using (var cmd = new SqlCommand("IT.Sp_AttachedFile", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Itcrid", FileRecord.Itcrid);
+                    cmd.Parameters.AddWithValue("@AttachedFile", FileRecord.AttachedFile);
+                    
+                }
+
+                    return Ok(new { message = $"{files.Count} files uploaded and recorded successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
             }
         }
 
-        // Save file records to the database
-        using (var dbContext = new ApplicationDbContext(/* options */))
+
+        [HttpGet("GetFile")]
+        public IActionResult GetFile(string itcrid, string fileName)
         {
-            await dbContext.FileRecords.AddRangeAsync(fileRecords);
-            await dbContext.SaveChangesAsync();
+            try
+            {
+                if (string.IsNullOrEmpty(itcrid) || string.IsNullOrEmpty(fileName))
+                {
+                    return BadRequest("ITCRID and fileName are required");
+                }
+
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "ChangeRequest", itcrid, fileName);
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound("File not found");
+                }
+
+                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                var fileType = "application/octet-stream"; // You can determine the file type based on the file extension
+                return File(fileStream, fileType, fileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+            }
         }
 
-        return Ok(new { message = $"{files.Count} files uploaded and recorded successfully." });
+        private class FileRecord
+        {
+            public int Itcrid { get; set; }
+            public string AttachedFile { get; set; }
+        }
     }
-    catch (Exception ex)
-    {
-        return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
-    }
+
 }
