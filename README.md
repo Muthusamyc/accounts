@@ -1,3 +1,18 @@
-select CR.CRCODE,CR.Status,CR.[Stage]
-,(select Concat(CRA.ApproverID ,'-', CRA.ApprovedDt) LastApprBy from IT.CRApprover CRA where CRA.CRID=CR.ITCRID and ModifiedDt=(select max(ModifiedDt)  from IT.CRApprover where CRID=CR.ITCRID))
-
+SELECT 
+    CR.CRCODE,
+    CR.Status,
+    CR.[Stage],
+    (SELECT CRA.ApproverID 
+     FROM IT.CRApprover CRA 
+     WHERE CRA.CRID = CR.ITCRID 
+       AND CRA.ModifiedDt = (SELECT MAX(ModifiedDt) 
+                             FROM IT.CRApprover 
+                             WHERE CRID = CR.ITCRID)) AS LastApproverID,
+    (SELECT CRA.ApprovedDt 
+     FROM IT.CRApprover CRA 
+     WHERE CRA.CRID = CR.ITCRID 
+       AND CRA.ModifiedDt = (SELECT MAX(ModifiedDt) 
+                             FROM IT.CRApprover 
+                             WHERE CRID = CR.ITCRID)) AS LastApprovedDate
+FROM 
+    IT.CR CR;
