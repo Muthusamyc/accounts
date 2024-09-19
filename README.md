@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using System.Net;
 using System.Net.Mail;
 
@@ -20,19 +19,33 @@ namespace IT_Portal.API.Controllers
                     // No credentials needed for SMTP without authentication
                     smtpClient.UseDefaultCredentials = false;
                     smtpClient.EnableSsl = false;
-                    System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
-                    NetworkCred.UserName = "noreply@microlabs.in";
-                    NetworkCred.Password = "Password@1";
+                    NetworkCredential NetworkCred = new NetworkCredential
+                    {
+                        UserName = "noreply@microlabs.in",
+                        Password = "Password@1"
+                    };
                     smtpClient.Credentials = NetworkCred;
-                    MailMessage mailMessage = new MailMessage();
-                    mailMessage.From = new MailAddress("noreply@microlabs.in");
-                    mailMessage.To.Add(emailModel.To);
-                    mailMessage.CC.Add(emailModel.CC);
 
-                    mailMessage.Subject = emailModel.Subject;
-                    mailMessage.IsBodyHtml = true;
-                    mailMessage.Body = emailModel.Body;
-                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls| SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                    MailMessage mailMessage = new MailMessage
+                    {
+                        From = new MailAddress("noreply@microlabs.in"),
+                        Subject = emailModel.Subject,
+                        IsBodyHtml = true,
+                        Body = emailModel.Body
+                    };
+                    
+                    // Add To address
+                    mailMessage.To.Add(emailModel.To);
+
+                    // Add CC address only if it's not null or empty
+                    if (!string.IsNullOrEmpty(emailModel.CC))
+                    {
+                        mailMessage.CC.Add(emailModel.CC);
+                    }
+
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | 
+                                                           SecurityProtocolType.Tls11 | 
+                                                           SecurityProtocolType.Tls12;
                     smtpClient.Send(mailMessage);
                 }
                 return Ok("Email sent successfully");
